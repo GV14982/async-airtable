@@ -1,0 +1,30 @@
+{
+  "name": "async-airtable",
+  "version": "1.0.0",
+  "description": "A lightweight, promisified airtable client",
+  "main": "/lib/asyncAirtable",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GV14982/async-airtable.git"
+  },
+  "keywords": [
+    "async",
+    "airtable",
+    "promise",
+    "asynchronus",
+    "air",
+    "table"
+  ],
+  "author": "Graham Vasquez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GV14982/async-airtable/issues"
+  },
+  "homepage": "https://github.com/GV14982/async-airtable#readme",
+  "dependencies": {
+    "airtable": "^0.8.1"
+  }
+}
