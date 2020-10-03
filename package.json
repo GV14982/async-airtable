@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "A lightweight, promisified airtable client",
   "main": "/lib/asyncAirtable",
-  "scripts": {
-    "test": "mocha"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GV14982/async-airtable.git"
@@ -25,6 +23,7 @@
   },
   "homepage": "https://github.com/GV14982/async-airtable#readme",
   "dependencies": {
-    "airtable": "^0.8.1"
-  }
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {}
 }
