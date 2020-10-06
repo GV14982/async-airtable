@@ -1,13 +1,4 @@
-let initResult;
 describe('.bulkUpdate', () => {
-  beforeAll(async (done) => {
-    initResult = await global.asyncAirtable.find(
-      process.env.AIRTABLE_TABLE,
-      process.env.UPDATE_RECORD_ID,
-    );
-    done();
-  });
-
   afterAll(async (done) => {
     await global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE, [
       JSON.parse(process.env.UPDATE_RECORD_RESET),
@@ -29,7 +20,6 @@ describe('.bulkUpdate', () => {
       expect(Object.keys(result.fields).length).toBeGreaterThan(0);
       expect(result.createdTime).toBeDefined();
     });
-    expect(JSON.stringify(results[0])).not.toEqual(JSON.stringify(initResult));
     done();
   });
 
