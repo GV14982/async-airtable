@@ -1,4 +1,13 @@
+let initResult;
 describe('.update', () => {
+  beforeAll(async (done) => {
+    initResult = await global.asyncAirtable.find(
+      process.env.AIRTABLE_TABLE,
+      process.env.UPDATE_RECORD_ID,
+    );
+    done();
+  });
+
   afterAll(async (done) => {
     await global.asyncAirtable.update(
       process.env.AIRTABLE_TABLE,
@@ -19,6 +28,7 @@ describe('.update', () => {
     expect(result.fields).toBeDefined();
     expect(result.createdTime).toBeDefined();
     expect(Object.keys(result.fields).length).toBeGreaterThan(0);
+    expect(JSON.stringify(result)).not.toEqual(JSON.stringify(initResult));
     done();
   });
 
