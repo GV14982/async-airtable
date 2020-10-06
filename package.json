@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "A lightweight, promisified airtable client",
   "main": "/lib/asyncAirtable",
-  "scripts": {},
+  "scripts": {
+    "test": "jest"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GV14982/async-airtable.git"
@@ -25,5 +27,32 @@
   "dependencies": {
     "node-fetch": "^2.6.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/jest": "^26.0.14",
+    "babel-eslint": "^10.1.0",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.10.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-jest": "^24.0.2",
+    "husky": "^4.3.0",
+    "jest": "^26.5.0",
+    "lint-staged": "^10.4.0",
+    "prettier": "^2.1.2"
+  },
+  "jest": {
+    "verbose": true,
+    "collectCoverage": true,
+    "setupFiles": [
+      "<rootDir>/setupFile.js"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npx lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.{js,md,json}": "prettier --write"
+  }
 }
