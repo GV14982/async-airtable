@@ -1,0 +1,42 @@
+name: Tests
+
+on:
+  push:
+    branches: 
+      - master
+  pull_request:
+    branches: 
+      - master
+
+jobs:
+  test:
+    runs-on: macos-latest
+    
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{matrix.node-version}}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{matrix.node-version}}
+      - name: install
+        run: npm install
+      - name: test
+        run: npm test
+      env:
+        CI: true
+        AIRTABLE_KEY: ${{secrets.AIRTABLE_KEY}}
+        AIRTABLE_BASE: ${{secrets.AIRTABLE_BASE}}
+        AIRTABLE_TABLE: 'referrals'
+        TEST_FIELD: 'id'
+        TEST_FILTER: "{channel} = 'datboi_fourtwenty'"
+        NEW_RECORD: '{"referrer": "anotherTestUser", "channel": "testUser", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
+        BAD_NEW_RECORD: '{"referrer": ["test"], "channel": "testUser", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
+        UPDATE_RECORD_ID: 'recGD71m0NnODi8WF'
+        UPDATE_RECORD: '{"id": "recGD71m0NnODi8WF", "referrer": "datboi", "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
+        UPDATE_RECORD_RESET: '{"id": "recGD71m0NnODi8WF", "referrer": "twitchUser", "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
+        BAD_ID_UPDATE_RECORD: '{"id": "recGD71m0NnODi8W", "referrer": "datboi", "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
+        BAD_FIELD_UPDATE_RECORD: '{"id": "recGD71m0NnODi8WF", "referrer": ["datboi"], "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
