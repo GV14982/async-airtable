@@ -36,3 +36,8 @@ jobs:
           UPDATE_RECORD_RESET: '{"id": "recG78pQG6UScZ1zS", "referrer": "twitchUser", "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
           BAD_ID_UPDATE_RECORD: '{"id": "recGD71m0NnODi8W", "referrer": "datboi", "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
           BAD_FIELD_UPDATE_RECORD: '{"id": "recG78pQG6UScZ1zS", "referrer": ["datboi"], "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: coverage/clover.xml
+          name: Async Airtable Mac Coverage
