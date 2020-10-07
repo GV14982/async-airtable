@@ -1,6 +1,6 @@
 {
-  "name": "async-airtable",
-  "version": "0.0.1",
+  "name": "asyncairtable",
+  "version": "0.1.0",
   "description": "A lightweight, promisified airtable client",
   "main": "/lib/asyncAirtable",
   "scripts": {
