@@ -36,10 +36,8 @@ jobs:
           UPDATE_RECORD_RESET: '{"id": "recVk4o0fhjFrRUii", "referrer": "twitchUser", "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
           BAD_ID_UPDATE_RECORD: '{"id": "recGD71m0NnODi8W", "referrer": "datboi", "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
           BAD_FIELD_UPDATE_RECORD: '{"id": "recVk4o0fhjFrRUii", "referrer": ["datboi"], "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
-      - run: ls -a
-      - run: pwd
       - name: Upload to coveralls
         uses: coverallsapp/github-action@master
         with:
-          github-token: ${{ secrets.COVERALLS_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: ./coverage/lcov.info
