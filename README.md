@@ -16,7 +16,7 @@ They have an existing library, but it is callback based and can get a little klu
 ## Installation
 
 ```
-npm install async-airtable
+npm install asyncairtable
 ```
 
 ## Usage
