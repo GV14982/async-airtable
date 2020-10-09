@@ -1,0 +1,43 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Install
+        run: npm install
+      - name: Run tests
+        run: npm test
+        env:
+          CI: true
+          AIRTABLE_KEY: ${{secrets.AIRTABLE_KEY}}
+          AIRTABLE_BASE: ${{secrets.AIRTABLE_BASE}}
+          AIRTABLE_TABLE: 'referrals'
+          TEST_FIELD: 'id'
+          TEST_FILTER: "{channel} = 'datboi_fourtwenty'"
+          NEW_RECORD: '{"referrer": "anotherTestUser", "channel": "testUser", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
+          BAD_NEW_RECORD: '{"referrer": ["test"], "channel": "testUser", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
+          UPDATE_RECORD_ID: 'recG78pQG6UScZ1zS'
+          UPDATE_RECORD: '{"id": "recG78pQG6UScZ1zS", "referrer": "datboi", "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
+          UPDATE_RECORD_RESET: '{"id": "recG78pQG6UScZ1zS", "referrer": "twitchUser", "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
+          BAD_ID_UPDATE_RECORD: '{"id": "recGD71m0NnODi8W", "referrer": "datboi", "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
+          BAD_FIELD_UPDATE_RECORD: '{"id": "recG78pQG6UScZ1zS", "referrer": ["datboi"], "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
+      - name: Upload to coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage/lcov.info
