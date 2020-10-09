@@ -24,7 +24,7 @@ jobs:
         run: npm test
         env:
           AIRTABLE_KEY: ${{secrets.AIRTABLE_KEY}}
-          AIRTABLE_BASE: appwAUmHwnxdZgI6b
+          AIRTABLE_BASE: ${{secrets.AIRTABLE_BASE}}
           AIRTABLE_TABLE: "test"
           TEST_FIELD: "title"
           TEST_FILTER: "{email} = 'same@test.com'"
