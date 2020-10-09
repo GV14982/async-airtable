@@ -27,9 +27,9 @@ const asyncAirtable = new AsyncAirtable(API_KEY, BASE_ID);
 
 asyncAirtable.select(TABLE_NAME, { ...OPTS }, PAGE_NUM);
 asyncAirtable.find(TABLE_NAME, RECORD_ID);
-asyncAirtable.create(TABLE_NAME, { ...FIELDS });
-asyncAirtable.update(TABLE_NAME, { RECORD_ID, ...FIELDS });
-asyncAirtable.delete(TABLE_NAME, RECORD_ID);
+asyncAirtable.createRecord(TABLE_NAME, { ...FIELDS });
+asyncAirtable.updateRecord(TABLE_NAME, { RECORD_ID, ...FIELDS });
+asyncAirtable.deleteRecord(TABLE_NAME, RECORD_ID);
 asyncAirtable.bulkCreate(TABLE_NAME, [
   { ...FIELDS },
   { ...FIELDS },
