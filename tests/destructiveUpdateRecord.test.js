@@ -1,5 +1,5 @@
 let initResult;
-describe('.update( (DESTRUCTIVE)', () => {
+describe('.updateRecord( (DESTRUCTIVE)', () => {
   beforeAll(async (done) => {
     initResult = await global.asyncAirtable.find(
       process.env.AIRTABLE_TABLE,
@@ -9,7 +9,7 @@ describe('.update( (DESTRUCTIVE)', () => {
   });
 
   afterAll(async (done) => {
-    await global.asyncAirtable.update(
+    await global.asyncAirtable.updateRecord(
       process.env.AIRTABLE_TABLE,
       JSON.parse(process.env.DESTRUCTIVE_UPDATE_RECORD_RESET),
     );
@@ -17,7 +17,7 @@ describe('.update( (DESTRUCTIVE)', () => {
   });
 
   test('should update a record and set unprovided field to null', async (done) => {
-    const result = await global.asyncAirtable.update(
+    const result = await global.asyncAirtable.updateRecord(
       process.env.AIRTABLE_TABLE,
       JSON.parse(process.env.DESTRUCTIVE_UPDATE_RECORD),
       true,
