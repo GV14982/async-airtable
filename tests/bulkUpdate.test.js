@@ -64,7 +64,7 @@ describe('.bulkUpdate', () => {
       global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE, [
         JSON.parse(process.env.BAD_ID_UPDATE_RECORD),
       ]),
-    ).rejects.toThrowError(/INVALID_RECORDS/g);
+    ).rejects.toThrowError(/ROW_DOES_NOT_EXIST/g);
     done();
   });
 

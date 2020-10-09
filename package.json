@@ -36,15 +36,10 @@
     "eslint-plugin-jest": "^24.0.2",
     "husky": "^4.3.0",
     "jest": "^26.5.0",
+    "jest-html-reporter": "^3.2.0",
+    "jest-junit": "^12.0.0",
     "lint-staged": "^10.4.0",
     "prettier": "^2.1.2"
-  },
-  "jest": {
-    "verbose": true,
-    "collectCoverage": true,
-    "setupFiles": [
-      "<rootDir>/setupFile.js"
-    ]
   },
   "husky": {
     "hooks": {
