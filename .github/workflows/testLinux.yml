@@ -23,19 +23,24 @@ jobs:
       - name: Run tests
         run: npm test
         env:
-          CI: true
           AIRTABLE_KEY: ${{secrets.AIRTABLE_KEY}}
           AIRTABLE_BASE: ${{secrets.AIRTABLE_BASE}}
-          AIRTABLE_TABLE: 'referrals'
-          TEST_FIELD: 'id'
-          TEST_FILTER: "{channel} = 'datboi_fourtwenty'"
-          NEW_RECORD: '{"referrer": "anotherTestUser", "channel": "testUser", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
-          BAD_NEW_RECORD: '{"referrer": ["test"], "channel": "testUser", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
-          UPDATE_RECORD_ID: 'recGD71m0NnODi8WF'
-          UPDATE_RECORD: '{"id": "recGD71m0NnODi8WF", "referrer": "datboi", "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
-          UPDATE_RECORD_RESET: '{"id": "recGD71m0NnODi8WF", "referrer": "twitchUser", "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
-          BAD_ID_UPDATE_RECORD: '{"id": "recGD71m0NnODi8W", "referrer": "datboi", "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
-          BAD_FIELD_UPDATE_RECORD: '{"id": "recGD71m0NnODi8WF", "referrer": ["datboi"], "channel": "daboi_fourtwenty", "ip-address": "127.0.0.1", "platform": "mixer(RIP)", "user-agent": "idk a user agent I guess", "data-hash": "hash"}'
+          AIRTABLE_TABLE: "test"
+          TEST_FIELD: "title"
+          TEST_FILTER: "{email} = 'same@test.com'"
+          FIND_ID: "rec66Qg32AP25DJwG"
+          NEW_RECORD: '{"title": "test-create", "value": 23, "email": "new@test.com"}'
+          BAD_NEW_RECORD: '{"title": "test-bad-create", "value": "nope", "email": "new@test.com"}'
+          UPDATE_RECORD_ID: "recI2hLAazYN9rTKc"
+          UPDATE_RECORD: '{"id": "recI2hLAazYN9rTKc", "title": "test-UPDATED"}'
+          UPDATE_RECORD_RESET: '{"id": "recI2hLAazYN9rTKc", "title": "test-update"}'
+          BAD_ID_UPDATE_RECORD: '{"id": "recABCDEFGHASDKLa", "title": "test-BAD-ID-UPDATED"}'
+          BAD_FIELD_UPDATE_RECORD: '{"id": "recI2hLAazYN9rTKc", "value": "nope"}'
+          DESTRUCTIVE_UPDATE_NULL_FIELD: "email"
+          DESTRUCTIVE_UPDATE_RECORD_ID: "recuV3ptCt77Kgao2"
+          DESTRUCTIVE_UPDATE_RECORD: '{"id": "recuV3ptCt77Kgao2", "title": "test-UPDATED-destructive", "value": 23}'
+          DESTRUCTIVE_UPDATE_RECORD_RESET: '{"id": "recuV3ptCt77Kgao2", "title": "test-destructive", "value": 23, "email": "destructive@test.com"}'
+          CREATE_DELETE_RECORD: '{"title": "test-to-be-deleted", "value": 42, "email": "sure@test.com"}'
       - name: Upload to coveralls
         uses: coverallsapp/github-action@master
         with:
