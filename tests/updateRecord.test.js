@@ -1,5 +1,5 @@
 let initResult;
-describe('.update', () => {
+describe('.updateRecord', () => {
   beforeAll(async (done) => {
     initResult = await global.asyncAirtable.find(
       process.env.AIRTABLE_TABLE,
@@ -9,7 +9,7 @@ describe('.update', () => {
   });
 
   afterAll(async (done) => {
-    await global.asyncAirtable.update(
+    await global.asyncAirtable.updateRecord(
       process.env.AIRTABLE_TABLE,
       JSON.parse(process.env.UPDATE_RECORD_RESET),
     );
@@ -17,7 +17,7 @@ describe('.update', () => {
   });
 
   test('should update a record with provided data', async (done) => {
-    const result = await global.asyncAirtable.update(
+    const result = await global.asyncAirtable.updateRecord(
       process.env.AIRTABLE_TABLE,
       JSON.parse(process.env.UPDATE_RECORD),
     );
@@ -33,7 +33,7 @@ describe('.update', () => {
   });
 
   test('should throw an error if you do not pass a table', async (done) => {
-    await expect(global.asyncAirtable.update()).rejects.toThrowError(
+    await expect(global.asyncAirtable.updateRecord()).rejects.toThrowError(
       'Argument "table" is required',
     );
     done();
@@ -41,14 +41,14 @@ describe('.update', () => {
 
   test('should throw an error if you do not pass a record', async (done) => {
     await expect(
-      global.asyncAirtable.update(process.env.AIRTABLE_TABLE),
+      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE),
     ).rejects.toThrowError('Argument "record" is required');
     done();
   });
 
   test('should throw an error if pass a field that does not exist', async (done) => {
     await expect(
-      global.asyncAirtable.update(process.env.AIRTABLE_TABLE, {
+      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE, {
         id: process.env.UPDATE_RECORD_ID,
         gringle: 'grangle',
       }),
@@ -58,7 +58,7 @@ describe('.update', () => {
 
   test('should throw an error if you send an incorrect id', async (done) => {
     await expect(
-      global.asyncAirtable.update(
+      global.asyncAirtable.updateRecord(
         process.env.AIRTABLE_TABLE,
         JSON.parse(process.env.BAD_ID_UPDATE_RECORD),
       ),
@@ -68,7 +68,7 @@ describe('.update', () => {
 
   test('should throw an error if pass a field with the incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.update(
+      global.asyncAirtable.updateRecord(
         process.env.AIRTABLE_TABLE,
         JSON.parse(process.env.BAD_FIELD_UPDATE_RECORD),
       ),
@@ -78,14 +78,17 @@ describe('.update', () => {
 
   test('should throw an error if pass the table argument with an incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.update(10, JSON.parse(process.env.BAD_NEW_RECORD)),
+      global.asyncAirtable.updateRecord(
+        10,
+        JSON.parse(process.env.BAD_NEW_RECORD),
+      ),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
 
   test('should throw an error if pass the record argument with an incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.update(process.env.AIRTABLE_TABLE, 10),
+      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE, 10),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });

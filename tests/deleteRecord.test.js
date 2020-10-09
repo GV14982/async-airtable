@@ -1,5 +1,5 @@
 let lastId;
-describe('.delete', () => {
+describe('.deleteRecord', () => {
   beforeAll(async (done) => {
     const result = await global.asyncAirtable.select(
       process.env.AIRTABLE_TABLE,
@@ -10,7 +10,7 @@ describe('.delete', () => {
   });
 
   test('should delete a record with the given id', async (done) => {
-    const deleted = await global.asyncAirtable.delete(
+    const deleted = await global.asyncAirtable.deleteRecord(
       process.env.AIRTABLE_TABLE,
       lastId,
     );
@@ -25,7 +25,7 @@ describe('.delete', () => {
   });
 
   test('should throw an error if you do not pass a table', async (done) => {
-    await expect(global.asyncAirtable.delete()).rejects.toThrowError(
+    await expect(global.asyncAirtable.deleteRecord()).rejects.toThrowError(
       'Argument "table" is required',
     );
     done();
@@ -33,35 +33,38 @@ describe('.delete', () => {
 
   test('should throw an error if you do not pass an id', async (done) => {
     await expect(
-      global.asyncAirtable.delete(process.env.AIRTABLE_TABLE),
+      global.asyncAirtable.deleteRecord(process.env.AIRTABLE_TABLE),
     ).rejects.toThrowError('Argument "id" is required');
     done();
   });
 
   test('should throw an error if the id does not exist', async (done) => {
     await expect(
-      global.asyncAirtable.delete(process.env.AIRTABLE_TABLE, 'doesnotexist'),
+      global.asyncAirtable.deleteRecord(
+        process.env.AIRTABLE_TABLE,
+        'doesnotexist',
+      ),
     ).rejects.toThrowError(/"NOT_FOUND"/g);
     done();
   });
 
   test('should throw an error if the id has already been deleted', async (done) => {
     await expect(
-      global.asyncAirtable.delete(process.env.AIRTABLE_TABLE, lastId),
+      global.asyncAirtable.deleteRecord(process.env.AIRTABLE_TABLE, lastId),
     ).rejects.toThrowError(/"Record not found"/g);
     done();
   });
 
   test('should throw an error if pass the table argument with an incorrect data type', async (done) => {
-    await expect(global.asyncAirtable.delete(10, lastId)).rejects.toThrowError(
-      /Incorrect data type/g,
-    );
+    await expect(
+      global.asyncAirtable.deleteRecord(10, lastId),
+    ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
 
   test('should throw an error if pass the id argument with an incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.delete(process.env.AIRTABLE_TABLE, 10),
+      global.asyncAirtable.deleteRecord(process.env.AIRTABLE_TABLE, 10),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
