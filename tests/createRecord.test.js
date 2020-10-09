@@ -1,7 +1,7 @@
 let created;
-describe('.create', () => {
+describe('.createRecord', () => {
   test('should create a new entry in the table with the given fields', async (done) => {
-    const result = await global.asyncAirtable.create(
+    const result = await global.asyncAirtable.createRecord(
       process.env.AIRTABLE_TABLE,
       JSON.parse(process.env.NEW_RECORD),
     );
@@ -33,7 +33,7 @@ describe('.create', () => {
   });
 
   test('should throw an error if you do not pass a table', async (done) => {
-    await expect(global.asyncAirtable.create()).rejects.toThrowError(
+    await expect(global.asyncAirtable.createRecord()).rejects.toThrowError(
       'Argument "table" is required',
     );
     done();
@@ -41,14 +41,14 @@ describe('.create', () => {
 
   test('should throw an error if you do not pass a record', async (done) => {
     await expect(
-      global.asyncAirtable.create(process.env.AIRTABLE_TABLE),
+      global.asyncAirtable.createRecord(process.env.AIRTABLE_TABLE),
     ).rejects.toThrowError('Argument "record" is required');
     done();
   });
 
   test('should throw an error if pass a field that does not exist', async (done) => {
     await expect(
-      global.asyncAirtable.create(process.env.AIRTABLE_TABLE, {
+      global.asyncAirtable.createRecord(process.env.AIRTABLE_TABLE, {
         gringle: 'grangle',
       }),
     ).rejects.toThrowError(/UNKNOWN_FIELD_NAME/g);
@@ -57,7 +57,7 @@ describe('.create', () => {
 
   test('should throw an error if pass a field with the incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.create(
+      global.asyncAirtable.createRecord(
         process.env.AIRTABLE_TABLE,
         JSON.parse(process.env.BAD_NEW_RECORD),
       ),
@@ -67,20 +67,23 @@ describe('.create', () => {
 
   test('should throw an error if pass the table argument with an incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.create(10, JSON.parse(process.env.BAD_NEW_RECORD)),
+      global.asyncAirtable.createRecord(
+        10,
+        JSON.parse(process.env.BAD_NEW_RECORD),
+      ),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
 
   test('should throw an error if pass the record argument with an incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.create(process.env.AIRTABLE_TABLE, 10),
+      global.asyncAirtable.createRecord(process.env.AIRTABLE_TABLE, 10),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
 
   test('should delete created record for suite', async (done) => {
-    const deleted = await global.asyncAirtable.delete(
+    const deleted = await global.asyncAirtable.deleteRecord(
       process.env.AIRTABLE_TABLE,
       created.id,
     );
