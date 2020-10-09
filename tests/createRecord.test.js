@@ -2,7 +2,7 @@ let created;
 describe('.createRecord', () => {
   test('should create a new entry in the table with the given fields', async (done) => {
     const result = await global.asyncAirtable.createRecord(
-      'referrals',
+      process.env.AIRTABLE_TABLE,
       JSON.parse(process.env.NEW_RECORD),
     );
     expect(result).toBeDefined();
@@ -79,6 +79,21 @@ describe('.createRecord', () => {
     await expect(
       global.asyncAirtable.createRecord(process.env.AIRTABLE_TABLE, 10),
     ).rejects.toThrowError(/Incorrect data type/g);
+    done();
+  });
+
+  test('should delete created record for suite', async (done) => {
+    const deleted = await global.asyncAirtable.deleteRecord(
+      process.env.AIRTABLE_TABLE,
+      created.id,
+    );
+    expect(deleted).toBeDefined();
+    expect(typeof deleted).toBe('object');
+    expect(Object.keys(deleted).length).toBeGreaterThan(0);
+    expect(deleted.deleted).toBeDefined();
+    expect(deleted.deleted).toBe(true);
+    expect(deleted.id).toBeDefined();
+    expect(deleted.id).toBe(created.id);
     done();
   });
 });

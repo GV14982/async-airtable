@@ -1,18 +1,24 @@
-let lastIds;
+let deleteGroup = [];
 describe('.bulkDelete', () => {
   beforeAll(async (done) => {
-    const result = await global.asyncAirtable.select(
+    const results = await global.asyncAirtable.bulkCreate(
       process.env.AIRTABLE_TABLE,
-      { maxRecords: 5, sort: [{ field: 'id', direction: 'desc' }] },
+      [
+        JSON.parse(process.env.CREATE_DELETE_RECORD),
+        JSON.parse(process.env.CREATE_DELETE_RECORD),
+        JSON.parse(process.env.CREATE_DELETE_RECORD),
+      ],
     );
-    lastIds = [result[3].id, result[4].id];
+    results.map((result) => {
+      deleteGroup.push(result.id);
+    });
     done();
   });
 
   test('should delete a record with the given id', async (done) => {
     const deleted = await global.asyncAirtable.bulkDelete(
       process.env.AIRTABLE_TABLE,
-      lastIds,
+      deleteGroup,
     );
     expect(deleted).toBeDefined();
     expect(Array.isArray(deleted)).toBe(true);
@@ -22,7 +28,7 @@ describe('.bulkDelete', () => {
       expect(del.deleted).toBeDefined();
       expect(del.deleted).toBe(true);
       expect(del.id).toBeDefined();
-      expect(del.id).toBe(lastIds[i]);
+      expect(deleteGroup).toContain(del.id);
     });
     done();
   });
@@ -52,14 +58,14 @@ describe('.bulkDelete', () => {
 
   test('should throw an error if the id has already been deleted', async (done) => {
     await expect(
-      global.asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE, lastIds),
+      global.asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE, deleteGroup),
     ).rejects.toThrowError(/"NOT_FOUND"/g);
     done();
   });
 
   test('should throw an error if pass the table argument with an incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.bulkDelete(10, lastIds),
+      global.asyncAirtable.bulkDelete(10, deleteGroup),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });

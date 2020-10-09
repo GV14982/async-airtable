@@ -1,10 +1,11 @@
 let created;
+let deleteGroup = [];
 describe('.bulkCreate', () => {
   test('should create a new entry in the table with the given fields', async (done) => {
-    const results = await global.asyncAirtable.bulkCreate('referrals', [
-      JSON.parse(process.env.NEW_RECORD),
-      JSON.parse(process.env.NEW_RECORD),
-    ]);
+    const results = await global.asyncAirtable.bulkCreate(
+      process.env.AIRTABLE_TABLE,
+      [JSON.parse(process.env.NEW_RECORD), JSON.parse(process.env.NEW_RECORD)],
+    );
     expect(results).toBeDefined();
     expect(Array.isArray(results)).toBe(true);
     expect(results.length).toBeGreaterThan(0);
@@ -15,6 +16,9 @@ describe('.bulkCreate', () => {
       expect(result.createdTime).toBeDefined();
     });
     created = results[0];
+    results.map((result) => {
+      deleteGroup.push(result.id);
+    });
     done();
   });
 
@@ -82,6 +86,24 @@ describe('.bulkCreate', () => {
     await expect(
       global.asyncAirtable.bulkCreate(process.env.AIRTABLE_TABLE, 10),
     ).rejects.toThrowError(/Incorrect data type/g);
+    done();
+  });
+
+  test('should delete created records for suite', async (done) => {
+    const deleted = await global.asyncAirtable.bulkDelete(
+      process.env.AIRTABLE_TABLE,
+      deleteGroup,
+    );
+    expect(deleted).toBeDefined();
+    expect(Array.isArray(deleted)).toBe(true);
+    expect(deleted.length).toBeGreaterThan(0);
+    deleted.forEach((del, i) => {
+      expect(Object.keys(del).length).toBeGreaterThan(0);
+      expect(del.deleted).toBeDefined();
+      expect(del.deleted).toBe(true);
+      expect(del.id).toBeDefined();
+      expect(deleteGroup).toContain(del.id);
+    });
     done();
   });
 });

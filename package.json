@@ -39,13 +39,6 @@
     "lint-staged": "^10.4.0",
     "prettier": "^2.1.2"
   },
-  "jest": {
-    "verbose": true,
-    "collectCoverage": true,
-    "setupFiles": [
-      "<rootDir>/setupFile.js"
-    ]
-  },
   "husky": {
     "hooks": {
       "pre-commit": "npx lint-staged"
