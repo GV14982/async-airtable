@@ -1,9 +1,9 @@
 const requiredMethods = [
   'select',
   'find',
-  'create',
-  'update',
-  'delete',
+  'createRecord',
+  'updateRecord',
+  'deleteRecord',
   'bulkCreate',
   'bulkUpdate',
   'bulkDelete',
