@@ -66,7 +66,7 @@ describe('.bulkCreate', () => {
   test('should throw an error if pass a field with the incorrect data type', async (done) => {
     await expect(
       global.asyncAirtable.bulkCreate(process.env.AIRTABLE_TABLE, [
-        JSON.parse(process.env.BAD_NEW_RECORD),
+        { ...JSON.parse(process.env.NEW_RECORD), value: 'nope' },
       ]),
     ).rejects.toThrowError(/INVALID_VALUE_FOR_COLUMN/g);
     done();
@@ -74,10 +74,7 @@ describe('.bulkCreate', () => {
 
   test('should throw an error if pass the table argument with an incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.bulkCreate(
-        10,
-        JSON.parse(process.env.BAD_NEW_RECORD),
-      ),
+      global.asyncAirtable.bulkCreate(10, JSON.parse(process.env.NEW_RECORD)),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
@@ -86,24 +83,6 @@ describe('.bulkCreate', () => {
     await expect(
       global.asyncAirtable.bulkCreate(process.env.AIRTABLE_TABLE, 10),
     ).rejects.toThrowError(/Incorrect data type/g);
-    done();
-  });
-
-  test('should delete created records for suite', async (done) => {
-    const deleted = await global.asyncAirtable.bulkDelete(
-      process.env.AIRTABLE_TABLE,
-      deleteGroup,
-    );
-    expect(deleted).toBeDefined();
-    expect(Array.isArray(deleted)).toBe(true);
-    expect(deleted.length).toBeGreaterThan(0);
-    deleted.forEach((del, i) => {
-      expect(Object.keys(del).length).toBeGreaterThan(0);
-      expect(del.deleted).toBeDefined();
-      expect(del.deleted).toBe(true);
-      expect(del.id).toBeDefined();
-      expect(deleteGroup).toContain(del.id);
-    });
     done();
   });
 });

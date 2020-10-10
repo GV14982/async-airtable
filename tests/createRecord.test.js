@@ -57,20 +57,17 @@ describe('.createRecord', () => {
 
   test('should throw an error if pass a field with the incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.createRecord(
-        process.env.AIRTABLE_TABLE,
-        JSON.parse(process.env.BAD_NEW_RECORD),
-      ),
+      global.asyncAirtable.createRecord(process.env.AIRTABLE_TABLE, {
+        ...JSON.parse(process.env.NEW_RECORD),
+        value: 'nope',
+      }),
     ).rejects.toThrowError(/INVALID_VALUE_FOR_COLUMN/g);
     done();
   });
 
   test('should throw an error if pass the table argument with an incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.createRecord(
-        10,
-        JSON.parse(process.env.BAD_NEW_RECORD),
-      ),
+      global.asyncAirtable.createRecord(10, JSON.parse(process.env.NEW_RECORD)),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
@@ -79,21 +76,6 @@ describe('.createRecord', () => {
     await expect(
       global.asyncAirtable.createRecord(process.env.AIRTABLE_TABLE, 10),
     ).rejects.toThrowError(/Incorrect data type/g);
-    done();
-  });
-
-  test('should delete created record for suite', async (done) => {
-    const deleted = await global.asyncAirtable.deleteRecord(
-      process.env.AIRTABLE_TABLE,
-      created.id,
-    );
-    expect(deleted).toBeDefined();
-    expect(typeof deleted).toBe('object');
-    expect(Object.keys(deleted).length).toBeGreaterThan(0);
-    expect(deleted.deleted).toBeDefined();
-    expect(deleted.deleted).toBe(true);
-    expect(deleted.id).toBeDefined();
-    expect(deleted.id).toBe(created.id);
     done();
   });
 });

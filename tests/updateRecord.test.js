@@ -1,25 +1,17 @@
 let initResult;
 describe('.updateRecord', () => {
   beforeAll(async (done) => {
-    initResult = await global.asyncAirtable.find(
-      process.env.AIRTABLE_TABLE,
-      process.env.UPDATE_RECORD_ID,
-    );
-    done();
-  });
-
-  afterAll(async (done) => {
-    await global.asyncAirtable.updateRecord(
-      process.env.AIRTABLE_TABLE,
-      JSON.parse(process.env.UPDATE_RECORD_RESET),
-    );
+    initResult = await global.asyncAirtable.select(process.env.AIRTABLE_TABLE, {
+      maxRecords: 1,
+      view: 'Grid view',
+    });
     done();
   });
 
   test('should update a record with provided data', async (done) => {
     const result = await global.asyncAirtable.updateRecord(
       process.env.AIRTABLE_TABLE,
-      JSON.parse(process.env.UPDATE_RECORD),
+      { id: initResult[0].id, ...JSON.parse(process.env.UPDATE_RECORD) },
     );
     expect(result).toBeDefined();
     expect(typeof result).toBe('object');
@@ -28,7 +20,29 @@ describe('.updateRecord', () => {
     expect(result.fields).toBeDefined();
     expect(result.createdTime).toBeDefined();
     expect(Object.keys(result.fields).length).toBeGreaterThan(0);
-    expect(JSON.stringify(result)).not.toEqual(JSON.stringify(initResult));
+    expect(JSON.stringify(result)).not.toEqual(JSON.stringify(initResult[0]));
+    initResult[0] = result;
+    done();
+  });
+
+  test('should update a record and set unprovided field to null if you pass in the destructive arg', async (done) => {
+    const result = await global.asyncAirtable.updateRecord(
+      process.env.AIRTABLE_TABLE,
+      {
+        id: initResult[0].id,
+        ...JSON.parse(process.env.DESTRUCTIVE_UPDATE_RECORD),
+      },
+      true,
+    );
+    expect(result).toBeDefined();
+    expect(typeof result).toBe('object');
+    expect(Object.keys(result).length).toBeGreaterThan(0);
+    expect(result.id).toBeDefined();
+    expect(result.fields).toBeDefined();
+    expect(result.createdTime).toBeDefined();
+    expect(Object.keys(result.fields).length).toBeGreaterThan(0);
+    expect(JSON.stringify(result)).not.toEqual(JSON.stringify(initResult[0]));
+    expect(result).not.toHaveProperty('email');
     done();
   });
 
@@ -46,10 +60,10 @@ describe('.updateRecord', () => {
     done();
   });
 
-  test('should throw an error if pass a field that does not exist', async (done) => {
+  test('should throw an error if you pass a field that does not exist', async (done) => {
     await expect(
       global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE, {
-        id: process.env.UPDATE_RECORD_ID,
+        id: initResult[0].id,
         gringle: 'grangle',
       }),
     ).rejects.toThrowError(/UNKNOWN_FIELD_NAME/g);
@@ -58,30 +72,31 @@ describe('.updateRecord', () => {
 
   test('should throw an error if you send an incorrect id', async (done) => {
     await expect(
-      global.asyncAirtable.updateRecord(
-        process.env.AIRTABLE_TABLE,
-        JSON.parse(process.env.BAD_ID_UPDATE_RECORD),
-      ),
+      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE, {
+        id: 'doesnotexist',
+        ...JSON.parse(process.env.UPDATE_RECORD),
+      }),
     ).rejects.toThrowError(/NOT_FOUND/g);
     done();
   });
 
   test('should throw an error if pass a field with the incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.updateRecord(
-        process.env.AIRTABLE_TABLE,
-        JSON.parse(process.env.BAD_FIELD_UPDATE_RECORD),
-      ),
+      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE, {
+        id: initResult[0].id,
+        value: 'nope',
+        ...JSON.parse(process.env.UPDATE_RECORD),
+      }),
     ).rejects.toThrowError(/INVALID_VALUE_FOR_COLUMN/g);
     done();
   });
 
   test('should throw an error if pass the table argument with an incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.updateRecord(
-        10,
-        JSON.parse(process.env.BAD_NEW_RECORD),
-      ),
+      global.asyncAirtable.updateRecord(10, {
+        id: initResult[0].id,
+        ...JSON.parse(process.env.UPDATE_RECORD),
+      }),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
