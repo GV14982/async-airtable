@@ -14,19 +14,15 @@ They have an existing library, but it is callback based and can get a little klu
 
 - NodeJS
 - npm
-- [Airtable account](https://airtable.com/signup) and an [API key](https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key-)
+- [Airtable account](https://airtable.com/signup)
 
-## Setup
+## Installation
 
-- Head on over to Airtable and [create a new base](https://support.airtable.com/hc/en-us/articles/202579399-Creating-a-new-base-via-CSV-spreadsheet-import) using the base.csv file from this repo.
+- Be sure get your [API key](https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key-)
 
-- Then make sure to set the [field type](https://support.airtable.com/hc/en-us/articles/203261415-Customizing-the-field-type) of the _value_ column to **number** and the _email_ column to **email**.
-
-- Then get the base ID of your new base. You can do this by heading over to [Airtable's API page](https://airtable.com/api) and selecting that base from the list, you should see:
+- To get the base ID of your new base. You can do this by heading over to [Airtable's API page](https://airtable.com/api) and selecting that base from the list, you should see:
 
   > The ID of this base is BASE_ID
-
-- Make sure to copy the base ID and your [API key](https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key-) into the .env
 
 - Install all dependancies:
 
@@ -34,9 +30,7 @@ They have an existing library, but it is callback based and can get a little klu
 npm install asyncairtable
 ```
 
-Then you should be good to get to work!👍
-
-To verify everything is working, just run 'npm test' and as long as nothing fails you're set. ✅
+Then you should be good to go!👍
 
 ## Usage
 
