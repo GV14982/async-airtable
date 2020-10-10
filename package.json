@@ -18,7 +18,20 @@
     "air",
     "table"
   ],
-  "author": "Graham Vasquez",
+  "author": {
+    "name": "Graham Vasquez",
+    "url": "https://github.com/GV14982"
+  },
+  "contributors": [
+    {
+      "name": "Cas Ibrahim",
+      "url": "https://github.com/mamacas"
+    },
+    {
+      "name": "Sean Metzgar",
+      "url": "https://github.com/seanmetzgar"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/GV14982/async-airtable/issues"
