@@ -1,6 +1,8 @@
 # Async Airtable
 
-[![YourActionName Actions Status](https://github.com/gv14982/async-airtable/workflows/Tests/badge.svg)](https://github.com/gv14982/async-airtable/actions)
+[![YourActionName Actions Status](https://github.com/gv14982/async-airtable/workflows/Linux/badge.svg)](https://github.com/gv14982/async-airtable/actions)
+[![YourActionName Actions Status](https://github.com/gv14982/async-airtable/workflows/Mac/badge.svg)](https://github.com/gv14982/async-airtable/actions)
+[![YourActionName Actions Status](https://github.com/gv14982/async-airtable/workflows/Windows/badge.svg)](https://github.com/gv14982/async-airtable/actions)
 [![Coverage Status](https://coveralls.io/repos/github/GV14982/async-airtable/badge.svg?branch=master)](https://coveralls.io/github/GV14982/async-airtable?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
