@@ -26,10 +26,10 @@ jobs:
           AIRTABLE_KEY: ${{secrets.AIRTABLE_KEY}}
           AIRTABLE_BASE: ${{secrets.AIRTABLE_BASE}}
           AIRTABLE_TABLE: 'tests Mac'
-          TEST_FILTER: "{email} = 'same@test.com'"
+          TEST_FILTER: '{email} = 'same@test.com'
           NEW_RECORD: '{"title": "test-create", "value": 23, "email": "new@test.com"}'
-          UPDATE_RECORD: '{"id": "recI2hLAazYN9rTKc", "title": "test-UPDATED"}'
-          DESTRUCTIVE_UPDATE_RECORD: '{"id": "recuV3ptCt77Kgao2", "title": "test-UPDATED-destructive", "value": 23}'
+          UPDATE_RECORD: '{"title": "test-UPDATED"}'
+          DESTRUCTIVE_UPDATE_RECORD: '{"title": "test-UPDATED-destructive", "value": 23}'
       - name: Upload to coveralls
         uses: coverallsapp/github-action@master
         with:

@@ -18,7 +18,7 @@ They have an existing library, but it is callback based and can get a little klu
 
 - Head on over to Airtable and [create a new base](https://support.airtable.com/hc/en-us/articles/202579399-Creating-a-new-base-via-CSV-spreadsheet-import) using the base.csv file from this repo.
 
-- Then make sure to set the _value_ column to **number** and the _email_ column to **email**.
+- Then make sure to set the [field type](https://support.airtable.com/hc/en-us/articles/203261415-Customizing-the-field-type) of the _value_ column to **number** and the _email_ column to **email**.
 
 - Then get the base ID of your new base. You can do this by heading over to [Airtable's API page](https://airtable.com/api) and selecting that base from the list, you should see:
 
