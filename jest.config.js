@@ -2,9 +2,10 @@
 // https://jestjs.io/docs/en/configuration.html
 
 module.exports = {
-  verbose: true,
   setupFiles: ['./setupFile.js'],
   collectCoverage: true,
   coverageDirectory: 'coverage',
   coveragePathIgnorePatterns: ['/node_modules/'],
+  globalSetup: './globalSetup.js',
+  globalTeardown: './globalTeardown.js',
 };

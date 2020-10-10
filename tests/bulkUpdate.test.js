@@ -1,24 +1,21 @@
 let initResult;
 describe('.bulkUpdate', () => {
   beforeAll(async (done) => {
-    initResult = await global.asyncAirtable.find(
-      process.env.AIRTABLE_TABLE,
-      process.env.UPDATE_RECORD_ID,
-    );
-    done();
-  });
-
-  afterAll(async (done) => {
-    await global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE, [
-      JSON.parse(process.env.UPDATE_RECORD_RESET),
-    ]);
+    initResult = await global.asyncAirtable.select(process.env.AIRTABLE_TABLE, {
+      view: 'Grid view',
+    });
+    initResult = initResult.slice(initResult.length - 7, initResult.length - 4);
     done();
   });
 
   test('should update a record with provided data', async (done) => {
     const results = await global.asyncAirtable.bulkUpdate(
       process.env.AIRTABLE_TABLE,
-      [JSON.parse(process.env.UPDATE_RECORD)],
+      [
+        { id: initResult[0].id, ...JSON.parse(process.env.UPDATE_RECORD) },
+        { id: initResult[1].id, ...JSON.parse(process.env.UPDATE_RECORD) },
+        { id: initResult[2].id, ...JSON.parse(process.env.UPDATE_RECORD) },
+      ],
     );
     expect(results).toBeDefined();
     expect(Array.isArray(results)).toBe(true);
@@ -29,7 +26,9 @@ describe('.bulkUpdate', () => {
       expect(Object.keys(result.fields).length).toBeGreaterThan(0);
       expect(result.createdTime).toBeDefined();
     });
-    expect(JSON.stringify(results[0])).not.toEqual(JSON.stringify(initResult));
+    results.forEach((result, i) => {
+      expect(JSON.stringify(result)).not.toEqual(JSON.stringify(initResult[i]));
+    });
     done();
   });
 
@@ -51,7 +50,7 @@ describe('.bulkUpdate', () => {
     await expect(
       global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE, [
         {
-          id: process.env.UPDATE_RECORD_ID,
+          id: initResult[0].id,
           gringle: 'grangle',
         },
       ]),
@@ -62,16 +61,20 @@ describe('.bulkUpdate', () => {
   test('should throw an error if you send an incorrect id', async (done) => {
     await expect(
       global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE, [
-        JSON.parse(process.env.BAD_ID_UPDATE_RECORD),
+        { id: 'doesnotexist', ...JSON.parse(process.env.UPDATE_RECORD) },
       ]),
-    ).rejects.toThrowError(/ROW_DOES_NOT_EXIST/g);
+    ).rejects.toThrowError(/INVALID_RECORDS/g);
     done();
   });
 
   test('should throw an error if pass a field with the incorrect data type', async (done) => {
     await expect(
       global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE, [
-        JSON.parse(process.env.BAD_FIELD_UPDATE_RECORD),
+        {
+          id: initResult[0].id,
+          ...JSON.parse(process.env.UPDATE_RECORD),
+          value: 'nope',
+        },
       ]),
     ).rejects.toThrowError(/INVALID_VALUE_FOR_COLUMN/g);
     done();
@@ -80,7 +83,7 @@ describe('.bulkUpdate', () => {
   test('should throw an error if pass the table argument with an incorrect data type', async (done) => {
     await expect(
       global.asyncAirtable.bulkUpdate(10, [
-        JSON.parse(process.env.BAD_NEW_RECORD),
+        JSON.parse(process.env.UPDATE_RECORD),
       ]),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();

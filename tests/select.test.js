@@ -54,7 +54,7 @@ describe('.select', () => {
     const items = await global.asyncAirtable.select(
       process.env.AIRTABLE_TABLE,
       {
-        sort: [{ field: process.env.TEST_FIELD }],
+        sort: [{ field: 'title' }],
       },
     );
     checkResult(items);
@@ -65,7 +65,7 @@ describe('.select', () => {
     const items = await global.asyncAirtable.select(
       process.env.AIRTABLE_TABLE,
       {
-        fields: [process.env.TEST_FIELD],
+        fields: ['title'],
       },
     );
     checkResult(items, parseInt(process.env.NUM_RECORDS), true);

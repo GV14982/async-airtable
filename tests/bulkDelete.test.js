@@ -1,17 +1,14 @@
-let deleteGroup = [];
+let deleteGroup;
 describe('.bulkDelete', () => {
   beforeAll(async (done) => {
-    const results = await global.asyncAirtable.bulkCreate(
+    const results = await global.asyncAirtable.select(
       process.env.AIRTABLE_TABLE,
-      [
-        JSON.parse(process.env.CREATE_DELETE_RECORD),
-        JSON.parse(process.env.CREATE_DELETE_RECORD),
-        JSON.parse(process.env.CREATE_DELETE_RECORD),
-      ],
+      { view: 'Grid view' },
     );
-    results.map((result) => {
-      deleteGroup.push(result.id);
-    });
+
+    deleteGroup = results
+      .slice(results.length - 4, results.length)
+      .map((result) => result.id);
     done();
   });
 
@@ -23,7 +20,7 @@ describe('.bulkDelete', () => {
     expect(deleted).toBeDefined();
     expect(Array.isArray(deleted)).toBe(true);
     expect(deleted.length).toBeGreaterThan(0);
-    deleted.forEach((del, i) => {
+    deleted.forEach((del) => {
       expect(Object.keys(del).length).toBeGreaterThan(0);
       expect(del.deleted).toBeDefined();
       expect(del.deleted).toBe(true);

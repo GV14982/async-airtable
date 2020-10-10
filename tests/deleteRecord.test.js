@@ -1,11 +1,11 @@
 let deleteMe;
 describe('.deleteRecord', () => {
   beforeAll(async (done) => {
-    const result = await global.asyncAirtable.createRecord(
+    const result = await global.asyncAirtable.select(
       process.env.AIRTABLE_TABLE,
-      JSON.parse(process.env.CREATE_DELETE_RECORD),
+      { maxRecords: 2, view: 'Grid view' },
     );
-    deleteMe = result.id;
+    deleteMe = result[1].id;
     done();
   });
 
