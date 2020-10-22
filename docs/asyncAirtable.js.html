@@ -27,6 +27,9 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>const nodeFetch = require('node-fetch');
+const buildOpts = require('./buildOpts');
+const checkError = require('./checkError');
+const checkArg = require('./checkArg');
 const baseURL = 'https://api.airtable.com/v0';
 
 /**
@@ -95,6 +98,8 @@ const validOptions = [
  * @constructor
  */
 class AsyncAirtable {
+  rateLimited = false;
+
   /**
    * Creates a new instance of the AsyncAirtable library.
    * @constructor
@@ -156,9 +161,9 @@ class AsyncAirtable {
    */
   select = async (table, options = undefined, page = undefined) => {
     try {
-      this.checkArg(table, 'table', 'string', true);
-      this.checkArg(options, 'options', 'object');
-      this.checkArg(page, 'page', 'number');
+      checkArg(table, 'table', 'string', true);
+      checkArg(options, 'options', 'object');
+      checkArg(page, 'page', 'number');
       let url = `${baseURL}/${this.base}/${table}`;
       const opts = options ? { ...options } : {};
       Object.keys(opts).forEach((option) => {
@@ -173,11 +178,11 @@ class AsyncAirtable {
             opts.offset = offset;
           }
           try {
-            const res = await nodeFetch(`${url}?${this.buildOpts(opts)}`, {
+            const res = await nodeFetch(`${url}?${buildOpts(opts)}`, {
               headers: { Authorization: `Bearer ${this.apiKey}` },
             });
             const body = await res.json();
-            if (this.checkError(res.status)) {
+            if (checkError(res.status)) {
               throw new Error(JSON.stringify(body));
             }
             if (i + 1 === page) {
@@ -196,11 +201,11 @@ class AsyncAirtable {
             opts.offset = offset;
           }
           try {
-            const res = await nodeFetch(`${url}?${this.buildOpts(opts)}`, {
+            const res = await nodeFetch(`${url}?${buildOpts(opts)}`, {
               headers: { Authorization: `Bearer ${this.apiKey}` },
             });
             const body = await res.json();
-            if (this.checkError(res.status)) {
+            if (checkError(res.status)) {
               throw new Error(JSON.stringify(body));
             }
             data = data.concat(body.records);
@@ -227,14 +232,14 @@ class AsyncAirtable {
    */
   find = async (table, id) => {
     try {
-      this.checkArg(table, 'table', 'string', true);
-      this.checkArg(id, 'id', 'string', true);
+      checkArg(table, 'table', 'string', true);
+      checkArg(id, 'id', 'string', true);
       let url = `${baseURL}/${this.base}/${table}/${id}`;
       const res = await nodeFetch(url, {
         headers: { Authorization: `Bearer ${this.apiKey}` },
       });
       const data = await res.json();
-      if (this.checkError(res.status)) {
+      if (checkError(res.status)) {
         throw new Error(JSON.stringify(data));
       }
       return data;
@@ -251,8 +256,8 @@ class AsyncAirtable {
    */
   createRecord = async (table, record) => {
     try {
-      this.checkArg(table, 'table', 'string', true);
-      this.checkArg(record, 'record', 'object', true);
+      checkArg(table, 'table', 'string', true);
+      checkArg(record, 'record', 'object', true);
       let url = `${baseURL}/${this.base}/${table}`;
       const body = { fields: record };
       const res = await nodeFetch(url, {
@@ -264,7 +269,7 @@ class AsyncAirtable {
         },
       });
       const data = await res.json();
-      if (this.checkError(res.status)) {
+      if (checkError(res.status)) {
         throw new Error(JSON.stringify(data));
       }
       return data;
@@ -282,8 +287,8 @@ class AsyncAirtable {
    */
   updateRecord = async (table, record, destructive = false) => {
     try {
-      this.checkArg(table, 'table', 'string', true);
-      this.checkArg(record, 'record', 'object', true);
+      checkArg(table, 'table', 'string', true);
+      checkArg(record, 'record', 'object', true);
       let url = `${baseURL}/${this.base}/${table}/${record.id}`;
       const fields = {};
       Object.keys(record).forEach((key) => {
@@ -298,7 +303,7 @@ class AsyncAirtable {
         },
       });
       const data = await res.json();
-      if (this.checkError(res.status)) {
+      if (checkError(res.status)) {
         throw new Error(JSON.stringify(data));
       }
       return data;
@@ -315,8 +320,8 @@ class AsyncAirtable {
    */
   deleteRecord = async (table, id) => {
     try {
-      this.checkArg(table, 'table', 'string', true);
-      this.checkArg(id, 'id', 'string', true);
+      checkArg(table, 'table', 'string', true);
+      checkArg(id, 'id', 'string', true);
       let url = `${baseURL}/${this.base}/${table}/${id}`;
       const res = await nodeFetch(url, {
         method: 'delete',
@@ -325,7 +330,7 @@ class AsyncAirtable {
         },
       });
       const data = await res.json();
-      if (this.checkError(res.status)) {
+      if (checkError(res.status)) {
         throw new Error(JSON.stringify(data));
       }
       return data;
@@ -342,8 +347,8 @@ class AsyncAirtable {
    */
   bulkCreate = async (table, records) => {
     try {
-      this.checkArg(table, 'table', 'string', true);
-      this.checkArg(records, 'records', 'object', true);
+      checkArg(table, 'table', 'string', true);
+      checkArg(records, 'records', 'object', true);
       let url = `${baseURL}/${this.base}/${table}`;
       const body = records.map((record) => ({
         fields: record,
@@ -357,7 +362,7 @@ class AsyncAirtable {
         },
       });
       const data = await res.json();
-      if (this.checkError(res.status)) {
+      if (checkError(res.status)) {
         throw new Error(JSON.stringify(data));
       }
       return data.records;
@@ -374,8 +379,8 @@ class AsyncAirtable {
    */
   bulkUpdate = async (table, records) => {
     try {
-      this.checkArg(table, 'table', 'string', true);
-      this.checkArg(records, 'records', 'object', true);
+      checkArg(table, 'table', 'string', true);
+      checkArg(records, 'records', 'object', true);
       let url = `${baseURL}/${this.base}/${table}`;
       const body = records.map((record) => {
         const id = record.id;
@@ -394,7 +399,7 @@ class AsyncAirtable {
         },
       });
       const data = await res.json();
-      if (this.checkError(res.status)) {
+      if (checkError(res.status)) {
         throw new Error(JSON.stringify(data));
       }
       return data.records;
@@ -411,8 +416,8 @@ class AsyncAirtable {
    */
   bulkDelete = async (table, ids) => {
     try {
-      this.checkArg(table, 'table', 'string', true);
-      this.checkArg(ids, 'ids', 'object', true);
+      checkArg(table, 'table', 'string', true);
+      checkArg(ids, 'ids', 'object', true);
       let query = '';
       ids.forEach((id, i) => {
         if (i !== 0) {
@@ -429,7 +434,7 @@ class AsyncAirtable {
         },
       });
       const data = await res.json();
-      if (this.checkError(res.status)) {
+      if (checkError(res.status)) {
         throw new Error(JSON.stringify(data));
       }
       return data.records;
@@ -456,7 +461,7 @@ module.exports = AsyncAirtable;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Thu Oct 22 2020 03:49:46 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Thu Oct 22 2020 03:58:30 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
