@@ -1,23 +1,31 @@
 {
   "tags": {
-      "allowUnknownTags": true,
-      "dictionaries": ["jsdoc","closure"]
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc","closure"]
   },
   "source": {
-      "include": ["lib"],
-      "includePattern": ".+\\.js(doc|x)?$",
-      "excludePattern": "(^|\\/|\\\\)_"
+    "include": ["lib"],
+    "includePattern": ".+\\.js(doc|x)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
   },
   "plugins": [
-      "plugins/markdown"
+    "plugins/markdown"
   ],
   "templates": {
-      "cleverLinks": true,
-      "monospaceLinks": true
+    "cleverLinks": true,
+    "monospaceLinks": true,
+    "logo": {
+      "url": "../.assets/logo_white.png",
+      "width": "150px",
+      "height": "63px",
+      "link": "https://github.com/GV14982/async-airtable"
+    },
+    "footerText": "My awesome footer text"
   },
   "opts": {
-      "destination": "docs",
-      "recurse": true,
-      "readme": "README.md"
+    "destination": "docs",
+    "recurse": true,
+    "readme": "README.md",
+    "template": "node_modules/tui-jsdoc-template"
   }
 }

@@ -52,7 +52,8 @@
     "jest": "^26.5.0",
     "jsdoc": "^3.6.6",
     "lint-staged": "^10.4.0",
-    "prettier": "^2.1.2"
+    "prettier": "^2.1.2",
+    "tui-jsdoc-template": "^1.2.2"
   },
   "husky": {
     "hooks": {

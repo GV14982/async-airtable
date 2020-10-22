@@ -2,23 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: AsyncAirtable</title>
+    <title>Class: AsyncAirtable | Class: AsyncAirtable</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-jsdoc.css">
     <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/tui-doc.css">
+
+    
 </head>
-
 <body>
+<nav class="lnb" id="lnb">
+    <div class="logo" style="width: 150px; height: 63px">
+        
+            <a href="https://github.com/GV14982/async-airtable" rel="noopener noreferrer" target="_blank">
+                <img src="../.assets/logo_white.png" width="100%" height="100%">
+            </a>
+        
+    </div>
+    <div class="title">
+        <h1><a href="index.html" class="link">Class: AsyncAirtable</a></h1>
+        
+    </div>
+    <div class="search-container" id="search-container">
+        <input type="text" placeholder="Search">
+        <ul></ul>
+    </div>
+    
+    <div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="AsyncAirtable.html">AsyncAirtable</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="AsyncAirtable_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="AsyncAirtable.html#bulkCreate">bulkCreate</a></li><li><a href="AsyncAirtable.html#bulkDelete">bulkDelete</a></li><li><a href="AsyncAirtable.html#bulkUpdate">bulkUpdate</a></li><li><a href="AsyncAirtable.html#createRecord">createRecord</a></li><li><a href="AsyncAirtable.html#deleteRecord">deleteRecord</a></li><li><a href="AsyncAirtable.html#find">find</a></li><li><a href="AsyncAirtable.html#select">select</a></li><li><a href="AsyncAirtable.html#updateRecord">updateRecord</a></li></ul></div></li></ul></div><div class="lnb-api hidden"><h3><a href="global.html">Global</a></h3></div>
+</nav>
+<div id="resizer"></div>
 
-<div id="main">
-
-    <h1 class="page-title">Class: AsyncAirtable</h1>
-
+<div class="main" id="main">
     
 
 
@@ -30,39 +50,48 @@
     
         <h2><span class="attribs"><span class="type-signature"></span></span>AsyncAirtable<span class="signature">(apiKey, base)</span><span class="type-signature"></span></h2>
         
+            <div class="class-description"><p>The main AsyncAirtable library</p></div>
+        
     
 </header>
 
 <article>
-    <div class="container-overview">
     
+        <div class="container-overview">
         
+            
+
+<dt>
+    
+        <h4 class="name" id="AsyncAirtable">
+            
+                new <span class="type-signature"></span>AsyncAirtable<span class="signature">(apiKey, base)</span><span class="type-signature"></span>
+                
+            
+            <div class="container-source members">
+                <code><a href="asyncAirtable.js.html">asyncAirtable.js</a></code>,
+                <code><a href="asyncAirtable.js.html#line75">line 75</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
 
     
 
     
-    <h4 class="name" id="AsyncAirtable"><span class="type-signature"></span>new AsyncAirtable<span class="signature">(apiKey, base)</span><span class="type-signature"></span></h4>
-    
 
     
 
-
-
-<div class="description">
-    <p>Creates a new instance of the AsyncAirtable library.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
     
 
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
 <table class="params">
     <thead>
     <tr>
@@ -131,9 +160,22 @@
     </tbody>
 </table>
 
+    </div>
+    
 
+    
 
+    
 
+    
+
+    
+
+    
+
+    
+
+    
 
 
 <dl class="details">
@@ -163,13 +205,6 @@
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="asyncAirtable.js.html">asyncAirtable.js</a>, <a href="asyncAirtable.js.html#line72">line 72</a>
-    </li></ul></dd>
-    
-
-    
 
     
 
@@ -177,26 +212,13 @@
 </dl>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     
-    </div>
+
+</dd>
+
+        
+        </div>
+    
 
     
 
@@ -215,34 +237,44 @@
     
         <h3 class="subsection-title">Methods</h3>
 
-        
+        <dl>
+                
+
+<dt>
+    
+        <h4 class="name" id="bulkCreate">
             
+                <span class="type-signature"></span>bulkCreate<span class="signature">(table, records)</span><span class="type-signature"></span>
+                
+            
+            <div class="container-source members">
+                <code><a href="asyncAirtable.js.html">asyncAirtable.js</a></code>,
+                <code><a href="asyncAirtable.js.html#line278">line 278</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Creates multiple new records on the specified table.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="bulkCreate"><span class="type-signature"></span>bulkCreate<span class="signature">(table, records)</span><span class="type-signature"></span></h4>
-    
 
     
-
-
-
-<div class="description">
-    <p>Creates multiple new records on the specified table.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
 <table class="params">
     <thead>
     <tr>
@@ -311,9 +343,22 @@
     </tbody>
 </table>
 
+    </div>
+    
 
+    
 
+    
 
+    
+
+    
+
+    
+
+    
+
+    
 
 
 <dl class="details">
@@ -343,13 +388,6 @@
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="asyncAirtable.js.html">asyncAirtable.js</a>, <a href="asyncAirtable.js.html#line320">line 320</a>
-    </li></ul></dd>
-    
-
-    
 
     
 
@@ -357,52 +395,48 @@
 </dl>
 
 
+    
 
+</dd>
 
+            
+                
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<dt>
+    
+        <h4 class="name" id="bulkDelete">
+            
+                <span class="type-signature"></span>bulkDelete<span class="signature">(table, ids)</span><span class="type-signature"></span>
+                
+            
+            <div class="container-source members">
+                <code><a href="asyncAirtable.js.html">asyncAirtable.js</a></code>,
+                <code><a href="asyncAirtable.js.html#line347">line 347</a></code>
+            </div>
+            
+        </h4>
 
         
-            
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Deletes multiple records from the specified table</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="bulkDelete"><span class="type-signature"></span>bulkDelete<span class="signature">(table, ids)</span><span class="type-signature"></span></h4>
-    
 
     
-
-
-
-<div class="description">
-    <p>Deletes multiple records from the specified table</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
 <table class="params">
     <thead>
     <tr>
@@ -471,9 +505,22 @@
     </tbody>
 </table>
 
+    </div>
+    
 
+    
 
+    
 
+    
+
+    
+
+    
+
+    
+
+    
 
 
 <dl class="details">
@@ -503,13 +550,6 @@
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="asyncAirtable.js.html">asyncAirtable.js</a>, <a href="asyncAirtable.js.html#line389">line 389</a>
-    </li></ul></dd>
-    
-
-    
 
     
 
@@ -517,52 +557,48 @@
 </dl>
 
 
+    
 
+</dd>
 
+            
+                
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<dt>
+    
+        <h4 class="name" id="bulkUpdate">
+            
+                <span class="type-signature"></span>bulkUpdate<span class="signature">(table, records)</span><span class="type-signature"></span>
+                
+            
+            <div class="container-source members">
+                <code><a href="asyncAirtable.js.html">asyncAirtable.js</a></code>,
+                <code><a href="asyncAirtable.js.html#line310">line 310</a></code>
+            </div>
+            
+        </h4>
 
         
-            
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Updates multiple records on the specified table</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="bulkUpdate"><span class="type-signature"></span>bulkUpdate<span class="signature">(table, records)</span><span class="type-signature"></span></h4>
-    
 
     
-
-
-
-<div class="description">
-    <p>Updates multiple records on the specified table</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
 <table class="params">
     <thead>
     <tr>
@@ -631,9 +667,22 @@
     </tbody>
 </table>
 
+    </div>
+    
 
+    
 
+    
 
+    
+
+    
+
+    
+
+    
+
+    
 
 
 <dl class="details">
@@ -663,13 +712,6 @@
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="asyncAirtable.js.html">asyncAirtable.js</a>, <a href="asyncAirtable.js.html#line352">line 352</a>
-    </li></ul></dd>
-    
-
-    
 
     
 
@@ -677,52 +719,48 @@
 </dl>
 
 
+    
 
+</dd>
 
+            
+                
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<dt>
+    
+        <h4 class="name" id="createRecord">
+            
+                <span class="type-signature"></span>createRecord<span class="signature">(table, record)</span><span class="type-signature"></span>
+                
+            
+            <div class="container-source members">
+                <code><a href="asyncAirtable.js.html">asyncAirtable.js</a></code>,
+                <code><a href="asyncAirtable.js.html#line187">line 187</a></code>
+            </div>
+            
+        </h4>
 
         
-            
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Creates a new record on the specified table.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="createRecord"><span class="type-signature"></span>createRecord<span class="signature">(table, record)</span><span class="type-signature"></span></h4>
-    
 
     
-
-
-
-<div class="description">
-    <p>Creates a new record on the specified table.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
 <table class="params">
     <thead>
     <tr>
@@ -791,9 +829,22 @@
     </tbody>
 </table>
 
+    </div>
+    
 
+    
 
+    
 
+    
+
+    
+
+    
+
+    
+
+    
 
 
 <dl class="details">
@@ -823,13 +874,6 @@
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="asyncAirtable.js.html">asyncAirtable.js</a>, <a href="asyncAirtable.js.html#line229">line 229</a>
-    </li></ul></dd>
-    
-
-    
 
     
 
@@ -837,52 +881,48 @@
 </dl>
 
 
+    
 
+</dd>
 
+            
+                
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<dt>
+    
+        <h4 class="name" id="deleteRecord">
+            
+                <span class="type-signature"></span>deleteRecord<span class="signature">(table, id)</span><span class="type-signature"></span>
+                
+            
+            <div class="container-source members">
+                <code><a href="asyncAirtable.js.html">asyncAirtable.js</a></code>,
+                <code><a href="asyncAirtable.js.html#line251">line 251</a></code>
+            </div>
+            
+        </h4>
 
         
-            
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Deletes a record from the specified table.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="deleteRecord"><span class="type-signature"></span>deleteRecord<span class="signature">(table, id)</span><span class="type-signature"></span></h4>
-    
 
     
-
-
-
-<div class="description">
-    <p>Deletes a record from the specified table.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
 <table class="params">
     <thead>
     <tr>
@@ -951,9 +991,22 @@
     </tbody>
 </table>
 
+    </div>
+    
 
+    
 
+    
 
+    
+
+    
+
+    
+
+    
+
+    
 
 
 <dl class="details">
@@ -983,13 +1036,6 @@
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="asyncAirtable.js.html">asyncAirtable.js</a>, <a href="asyncAirtable.js.html#line293">line 293</a>
-    </li></ul></dd>
-    
-
-    
 
     
 
@@ -997,52 +1043,48 @@
 </dl>
 
 
+    
 
+</dd>
 
+            
+                
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<dt>
+    
+        <h4 class="name" id="find">
+            
+                <span class="type-signature"></span>find<span class="signature">(table, id)</span><span class="type-signature"></span>
+                
+            
+            <div class="container-source members">
+                <code><a href="asyncAirtable.js.html">asyncAirtable.js</a></code>,
+                <code><a href="asyncAirtable.js.html#line163">line 163</a></code>
+            </div>
+            
+        </h4>
 
         
-            
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Finds a record on the specified table.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="find"><span class="type-signature"></span>find<span class="signature">(table, id)</span><span class="type-signature"></span></h4>
-    
 
     
-
-
-
-<div class="description">
-    <p>Finds a record on the specified table.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
 <table class="params">
     <thead>
     <tr>
@@ -1111,9 +1153,22 @@
     </tbody>
 </table>
 
+    </div>
+    
 
+    
 
+    
 
+    
+
+    
+
+    
+
+    
+
+    
 
 
 <dl class="details">
@@ -1143,13 +1198,6 @@
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="asyncAirtable.js.html">asyncAirtable.js</a>, <a href="asyncAirtable.js.html#line205">line 205</a>
-    </li></ul></dd>
-    
-
-    
 
     
 
@@ -1157,52 +1205,48 @@
 </dl>
 
 
+    
 
+</dd>
 
+            
+                
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<dt>
+    
+        <h4 class="name" id="select">
+            
+                <span class="type-signature"></span>select<span class="signature">(table, options<span class="signature-attributes">opt</span>, page<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+                
+            
+            <div class="container-source members">
+                <code><a href="asyncAirtable.js.html">asyncAirtable.js</a></code>,
+                <code><a href="asyncAirtable.js.html#line92">line 92</a></code>
+            </div>
+            
+        </h4>
 
         
-            
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Select record(s) from the specified table.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="select"><span class="type-signature"></span>select<span class="signature">(table, options<span class="signature-attributes">opt</span>, page<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
-    
 
     
-
-
-
-<div class="description">
-    <p>Select record(s) from the specified table.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
 <table class="params">
     <thead>
     <tr>
@@ -1324,9 +1368,22 @@
     </tbody>
 </table>
 
+    </div>
+    
 
+    
 
+    
 
+    
+
+    
+
+    
+
+    
+
+    
 
 
 <dl class="details">
@@ -1356,13 +1413,6 @@
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="asyncAirtable.js.html">asyncAirtable.js</a>, <a href="asyncAirtable.js.html#line134">line 134</a>
-    </li></ul></dd>
-    
-
-    
 
     
 
@@ -1370,52 +1420,48 @@
 </dl>
 
 
+    
 
+</dd>
 
+            
+                
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<dt>
+    
+        <h4 class="name" id="updateRecord">
+            
+                <span class="type-signature"></span>updateRecord<span class="signature">(table, record, destructive<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+                
+            
+            <div class="container-source members">
+                <code><a href="asyncAirtable.js.html">asyncAirtable.js</a></code>,
+                <code><a href="asyncAirtable.js.html#line218">line 218</a></code>
+            </div>
+            
+        </h4>
 
         
-            
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Updates a record on the specified table.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="updateRecord"><span class="type-signature"></span>updateRecord<span class="signature">(table, record, destructive<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
-    
 
     
-
-
-
-<div class="description">
-    <p>Updates a record on the specified table.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
 <table class="params">
     <thead>
     <tr>
@@ -1551,9 +1597,22 @@
     </tbody>
 </table>
 
+    </div>
+    
 
+    
 
+    
 
+    
+
+    
+
+    
+
+    
+
+    
 
 
 <dl class="details">
@@ -1583,13 +1642,6 @@
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="asyncAirtable.js.html">asyncAirtable.js</a>, <a href="asyncAirtable.js.html#line260">line 260</a>
-    </li></ul></dd>
-    
-
-    
 
     
 
@@ -1597,25 +1649,11 @@
 </dl>
 
 
+    
 
+</dd>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
+            </dl>
     
 
     
@@ -1630,17 +1668,24 @@
 
 </div>
 
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AsyncAirtable.html">AsyncAirtable</a></li></ul><h3><a href="global.html">Global</a></h3>
-</nav>
-
-<br class="clear">
-
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Thu Oct 22 2020 03:58:30 GMT-0400 (Eastern Daylight Time)
+    <img class="logo" src="../.assets/logo_white.png" style="width: 150px; height: 63px">
+    <div class="footer-text">My awesome footer text</div>
 </footer>
+<script>prettyPrint();</script>
+<script src="scripts/jquery.min.js"></script>
+<script src="scripts/tui-doc.js"></script>
+<script src="scripts/linenumber.js"></script>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+    <script>
+        var id = 'AsyncAirtable_sub'.replace(/"/g, '_');
+        var selectedApi = document.getElementById(id); // do not use jquery selector
+        var $selectedApi = $(selectedApi);
+
+        $selectedApi.removeClass('hidden');
+        $selectedApi.parent().find('.glyphicon').removeClass('glyphicon-plus').addClass('glyphicon-minus');
+        showLnbApi();
+    </script>
+
 </body>
 </html>
