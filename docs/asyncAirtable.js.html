@@ -115,16 +115,18 @@ const validOptions = [
  */
 
 /**
- * Creates a new instance of the AsyncAirtable library.
+ * The main AsyncAirtable Library
  * @class
- * @classdesc The main AsyncAirtable library
- * @constructor
- * @param {string} apiKey - The API Key from AirTable
- * @param {string} base - The base id from AirTable
  */
 class AsyncAirtable {
   rateLimited = false;
 
+  /**
+   * Creates a new instance of the AsyncAirtable library.
+   * @constructor
+   * @param {string} apiKey - The API Key from AirTable
+   * @param {string} base - The base id from AirTable
+   */
   constructor(apiKey, base) {
     if (!apiKey) throw new Error('API Key is required.');
     if (!base) throw new Error('Base ID is required.');
