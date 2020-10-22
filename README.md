@@ -1,10 +1,11 @@
 # Async Airtable
 
-[![YourActionName Actions Status](https://github.com/gv14982/async-airtable/workflows/Linux/badge.svg)](https://github.com/gv14982/async-airtable/actions)
-[![YourActionName Actions Status](https://github.com/gv14982/async-airtable/workflows/Mac/badge.svg)](https://github.com/gv14982/async-airtable/actions)
-[![YourActionName Actions Status](https://github.com/gv14982/async-airtable/workflows/Windows/badge.svg)](https://github.com/gv14982/async-airtable/actions)
-[![Coverage Status](https://coveralls.io/repos/github/GV14982/async-airtable/badge.svg?branch=master)](https://coveralls.io/github/GV14982/async-airtable?branch=master)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build: Linux](https://img.shields.io/github/workflow/status/GV14982/async-airtable/Linux?label=Build%3A%20Linux&logo=linux&logoColor=white&style=for-the-badge)](https://github.com/gv14982/async-airtable/actions)
+[![Build: MacOS](https://img.shields.io/github/workflow/status/GV14982/async-airtable/Mac?label=Build%3A%20MacOS&logo=apple&logoColor=white&style=for-the-badge)](https://github.com/gv14982/async-airtable/actions)
+[![Build: Windows](https://img.shields.io/github/workflow/status/GV14982/async-airtable/Windows?label=Build%3A%20Mac&logo=windows&logoColor=white&style=for-the-badge)](https://github.com/gv14982/async-airtable/actions)
+
+[![Coverage](https://img.shields.io/coveralls/github/GV14982/async-airtable?style=for-the-badge)](https://coveralls.io/github/GV14982/async-airtable?branch=master)
+[![MIT License](https://img.shields.io/github/license/GV14982/async-airtable?style=for-the-badge)](LICENSE.md)
 
 AsyncAirtable is a lightweight npm package to handle working with the [Airtable API](https://airtable.com/api).
 

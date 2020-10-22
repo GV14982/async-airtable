@@ -1,42 +1,6 @@
 const nodeFetch = require('node-fetch');
 const baseURL = 'https://api.airtable.com/v0';
 
-/**
- * @typedef Options
- * @type {Object}
- * @description An object of possible options. This object cannot be initialized, it is for reference only.
- * @property {string[]} [fields] - An array of specific field names to be returned. Returns all fields if none are supplied.
- * @property {string} [filterByFormula] - A [formula used](https://support.airtable.com/hc/en-us/articles/203255215-Formula-Field-Reference) to filter the records
- * @property {number} [maxRecords=100] - The maximum total number of records that will be returned in your requests. Should be smaller than or equal to `pageSize`.
- * @property {number} [pageSize=100] - The number of records returned in each request. Must be less than or equal to 100.
- * @property {Object[]} [sort] -
- * A list of sort objects that specifies
- * how the records will be ordered.
- * Each sort object must have a field key
- * specifying the name of the field to sort on,
- * and an optional direction key that is either
- * "asc" or "desc". The default direction is "asc".
- * ```
- * [
- *   {
- *     field: "title",
- *     direction: "desc"
- *   },
- *   {
- *     field: "date",
- *     direction: "asc"
- *   }
- * ]
- * ```
- * @property {string} [view] -
- * The name or id of a view on the specified table.
- * If set, only the records in that view will be returned.
- * The records will be sorted according to the order
- * of the view unless the sort parameter is included,
- * which overrides that order. Fields hidden in this view
- * will be returned in the results. To only return
- * a subset of fields, use the fields parameter.
- */
 const validOptions = [
   'fields',
   'filterByFormula',
@@ -46,41 +10,23 @@ const validOptions = [
   'view',
 ];
 
-/**
- * @typedef Record
- * @type {Object}
- * @name Record
- * @description  An object of the properties. This object cannot be initialized, it is for reference only.
- * @example
- * {
- *   "id": "recABCDEFGHIJK",
- *   "title": "hello",
- *   "description": "world"
- * }
- * @property {string} [id] - Airtable Record ID (only needed for updates)
- * @property {any} ...fields - Add a separate property for each field
- */
+interface Record {
+  id?: string;
+  [key: string]: any;
+}
 
-/**
- * The main AsyncAirtable library
- * @class
- * @constructor
- */
-class AsyncAirtable {
-  /**
-   * Creates a new instance of the AsyncAirtable library.
-   * @constructor
-   * @param {string} apiKey - The API Key from AirTable
-   * @param {string} base - The base id from AirTable
-   */
-  constructor(apiKey, base) {
+class AsyncAirtable implements Record {
+  apiKey: string;
+  base: string;
+  
+  constructor(apiKey?: string, base?: string) {
     if (!apiKey) throw new Error('API Key is required.');
     if (!base) throw new Error('Base ID is required.');
     this.apiKey = apiKey;
     this.base = base;
   }
 
-  buildOpts = (opts) => {
+  buildOpts = (opts: object) => {
     const params = Object.keys(opts)
       .map((key, i) => {
         const opt = opts[key];
@@ -109,9 +55,9 @@ class AsyncAirtable {
     return encodeURI(params);
   };
 
-  checkError = (status) => !(status < 300 && status >= 200);
+  checkError = (status: number) => !(status < 300 && status >= 200);
 
-  checkArg = (arg, name, type, required) => {
+  checkArg = (arg: any, name: string, type: string, required: boolean = false) => {
     if (!arg && required) throw new Error(`Argument "${name}" is required.`);
     if (arg && typeof arg !== type)
       throw new Error(
@@ -119,26 +65,19 @@ class AsyncAirtable {
       );
   };
 
-  /**
-   * Select record(s) from the specified table.
-   * @method
-   * @param {string} table - Table name
-   * @param {Options} [options] - Options object, used to filter records
-   * @param {number} [page] - Used to get a specific page of records
-   */
-  select = async (table, options = undefined, page = undefined) => {
+  select = async (table: string, options: object, page: number) => {
     try {
       this.checkArg(table, 'table', 'string', true);
       this.checkArg(options, 'options', 'object');
       this.checkArg(page, 'page', 'number');
       let url = `${baseURL}/${this.base}/${table}`;
-      const opts = options ? { ...options } : {};
+      const opts: any = options ? { ...options } : {};
       Object.keys(opts).forEach((option) => {
         if (!validOptions.includes(option)) {
           throw new Error(`Invalid option: ${option}`);
         }
       });
-      let offset;
+      let offset: number|Number;
       if (page) {
         for (let i = 0; i < page; i++) {
           if (offset) {
@@ -155,7 +94,7 @@ class AsyncAirtable {
             if (i + 1 === page) {
               return body.records;
             }
-            offset = body.offset;
+            offset = parseInt(body.offset);
           } catch (err) {
             throw new Error(err);
           }
@@ -191,13 +130,7 @@ class AsyncAirtable {
     }
   };
 
-  /**
-   * Finds a record on the specified table.
-   * @method
-   * @param {string} table - Table name
-   * @param {string} id - Airtable record ID
-   */
-  find = async (table, id) => {
+  find = async (table: string, id: string) => {
     try {
       this.checkArg(table, 'table', 'string', true);
       this.checkArg(id, 'id', 'string', true);
@@ -215,13 +148,7 @@ class AsyncAirtable {
     }
   };
 
-  /**
-   * Creates a new record on the specified table.
-   * @method
-   * @param {string} table - Table name
-   * @param {object} record - Record object, used to structure data for insert
-   */
-  createRecord = async (table, record) => {
+  createRecord = async (table: string, record: object) => {
     try {
       this.checkArg(table, 'table', 'string', true);
       this.checkArg(record, 'record', 'object', true);
@@ -245,20 +172,13 @@ class AsyncAirtable {
     }
   };
 
-  /**
-   * Updates a record on the specified table.
-   * @method
-   * @param {string} table - Table name
-   * @param {object} record - Record object, used to update data within a specific record
-   * @param {boolean} [destructive=false] - (Dis-)Allow a destructive update
-   */
-  updateRecord = async (table, record, destructive = false) => {
+  Record = async (table: string, record: Record, destructive: boolean= false) => {
     try {
       this.checkArg(table, 'table', 'string', true);
       this.checkArg(record, 'record', 'object', true);
       let url = `${baseURL}/${this.base}/${table}/${record.id}`;
-      const fields = {};
-      Object.keys(record).forEach((key) => {
+      const fields: object = {};
+      Object.keys(record).forEach((key: string) => {
         if (key !== 'id') fields[key] = record[key];
       });
       const res = await nodeFetch(url, {
@@ -279,13 +199,7 @@ class AsyncAirtable {
     }
   };
 
-  /**
-   * Deletes a record from the specified table.
-   * @method
-   * @param {string} table - Table name
-   * @param {string} id - Airtable record ID
-   */
-  deleteRecord = async (table, id) => {
+  deleteRecord = async (table: string, id: string) => {
     try {
       this.checkArg(table, 'table', 'string', true);
       this.checkArg(id, 'id', 'string', true);
@@ -306,19 +220,13 @@ class AsyncAirtable {
     }
   };
 
-  /**
-   * Creates multiple new records on the specified table.
-   * @method
-   * @param {string} table - Table name
-   * @param {Array<Record>} records - An array of Record objects
-   */
-  bulkCreate = async (table, records) => {
+  bulkCreate = async (table: string, records: Array<number>) => {
     try {
       this.checkArg(table, 'table', 'string', true);
       this.checkArg(records, 'records', 'object', true);
       let url = `${baseURL}/${this.base}/${table}`;
       const body = records.map((record) => ({
-        fields: record,
+        fields: record
       }));
       const res = await nodeFetch(url, {
         method: 'post',
@@ -338,21 +246,15 @@ class AsyncAirtable {
     }
   };
 
-  /**
-   * Updates multiple records on the specified table
-   * @method
-   * @param {string} table - Table name
-   * @param {Array<Record>} records - An array of Record objects
-   */
-  bulkUpdate = async (table, records) => {
+  bulkUpdate = async (table: string, records: Array<object>) => {
     try {
       this.checkArg(table, 'table', 'string', true);
       this.checkArg(records, 'records', 'object', true);
       let url = `${baseURL}/${this.base}/${table}`;
-      const body = records.map((record) => {
+      const body = records.map((record: Record) => {
         const id = record.id;
         const fields = {};
-        Object.keys(record).forEach((key) => {
+        Object.keys(record).forEach((key: string) => {
           if (key !== 'id') fields[key] = record[key];
         });
         return { id, fields };
@@ -375,13 +277,7 @@ class AsyncAirtable {
     }
   };
 
-  /**
-   * Deletes multiple records from the specified table
-   * @method
-   * @param {string} table - Table name
-   * @param {Array<string>} ids - Array of Airtable record IDs
-   */
-  bulkDelete = async (table, ids) => {
+  bulkDelete = async (table: string, ids: Array<string>) => {
     try {
       this.checkArg(table, 'table', 'string', true);
       this.checkArg(ids, 'ids', 'object', true);
@@ -411,4 +307,4 @@ class AsyncAirtable {
   };
 }
 
-module.exports = AsyncAirtable;
+export {AsyncAirtable}
