@@ -4,7 +4,8 @@
   "description": "A lightweight, promisified airtable client",
   "main": "/lib/asyncAirtable",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "doc": "jsdoc -c jsdoc.conf.json"
   },
   "repository": {
     "type": "git",
@@ -43,13 +44,14 @@
   "devDependencies": {
     "@types/jest": "^26.0.14",
     "babel-eslint": "^10.1.0",
+    "docdash": "^1.2.0",
     "dotenv": "^8.2.0",
     "eslint": "^7.10.0",
     "eslint-config-prettier": "^6.12.0",
     "eslint-plugin-jest": "^24.0.2",
     "husky": "^4.3.0",
     "jest": "^26.5.0",
-    "jest-html-reporter": "^3.2.0",
+    "jsdoc": "^3.6.6",
     "lint-staged": "^10.4.0",
     "prettier": "^2.1.2"
   },
