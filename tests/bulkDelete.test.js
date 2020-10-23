@@ -87,28 +87,32 @@ describe('.bulkDelete', () => {
     done();
   });
 
-  test('should retry after 30 seconds if rate limited', async (done) => {
-    let results = [];
-    for (let i = 0; i < 100; i++) {
-      results.push(
-        global.asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE, [
-          deleteTest[i].id,
-        ]),
-      );
-    }
-    const data = await Promise.all(results);
-    data.forEach((deleted, i) => {
-      expect(deleted).toBeDefined();
-      expect(Array.isArray(deleted)).toBe(true);
-      expect(deleted.length).toBeGreaterThan(0);
-      deleted.forEach((del) => {
-        expect(Object.keys(del).length).toBeGreaterThan(0);
-        expect(del.deleted).toBeDefined();
-        expect(del.deleted).toBe(true);
-        expect(del.id).toBeDefined();
-        expect(del.id).toEqual(deleteTest[i].id);
+  test(
+    'should retry after 30 seconds if rate limited',
+    async (done) => {
+      let results = [];
+      for (let i = 0; i < 100; i++) {
+        results.push(
+          global.asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE, [
+            deleteTest[i].id,
+          ]),
+        );
+      }
+      const data = await Promise.all(results);
+      data.forEach((deleted, i) => {
+        expect(deleted).toBeDefined();
+        expect(Array.isArray(deleted)).toBe(true);
+        expect(deleted.length).toBeGreaterThan(0);
+        deleted.forEach((del) => {
+          expect(Object.keys(del).length).toBeGreaterThan(0);
+          expect(del.deleted).toBeDefined();
+          expect(del.deleted).toBe(true);
+          expect(del.id).toBeDefined();
+          expect(del.id).toEqual(deleteTest[i].id);
+        });
       });
-    });
-    done();
-  }, 35000);
+      done();
+    },
+    process.env.RETRY_TIMEOUT,
+  );
 });

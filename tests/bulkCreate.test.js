@@ -86,28 +86,32 @@ describe('.bulkCreate', () => {
     done();
   });
 
-  test('should retry after 30 seconds if rate limited', async (done) => {
-    let results = [];
-    for (let i = 0; i < 100; i++) {
-      results.push(
-        global.asyncAirtable.bulkCreate(process.env.AIRTABLE_TABLE, [
-          JSON.parse(process.env.NEW_RECORD),
-          JSON.parse(process.env.NEW_RECORD),
-        ]),
-      );
-    }
-    const data = await Promise.all(results);
-    data.forEach((results) => {
-      expect(results).toBeDefined();
-      expect(Array.isArray(results)).toBe(true);
-      expect(results.length).toBeGreaterThan(0);
-      results.forEach((result) => {
-        expect(result.id).toBeDefined();
-        expect(result.fields).toBeDefined();
-        expect(Object.keys(result.fields).length).toBeGreaterThan(0);
-        expect(result.createdTime).toBeDefined();
+  test(
+    'should retry after 30 seconds if rate limited',
+    async (done) => {
+      let results = [];
+      for (let i = 0; i < 100; i++) {
+        results.push(
+          global.asyncAirtable.bulkCreate(process.env.AIRTABLE_TABLE, [
+            JSON.parse(process.env.NEW_RECORD),
+            JSON.parse(process.env.NEW_RECORD),
+          ]),
+        );
+      }
+      const data = await Promise.all(results);
+      data.forEach((results) => {
+        expect(results).toBeDefined();
+        expect(Array.isArray(results)).toBe(true);
+        expect(results.length).toBeGreaterThan(0);
+        results.forEach((result) => {
+          expect(result.id).toBeDefined();
+          expect(result.fields).toBeDefined();
+          expect(Object.keys(result.fields).length).toBeGreaterThan(0);
+          expect(result.createdTime).toBeDefined();
+        });
       });
-    });
-    done();
-  }, 35000);
+      done();
+    },
+    process.env.RETRY_TIMEOUT,
+  );
 });
