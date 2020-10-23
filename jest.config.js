@@ -8,4 +8,5 @@ module.exports = {
   coveragePathIgnorePatterns: ['/node_modules/'],
   globalSetup: './globalSetup.js',
   globalTeardown: './globalTeardown.js',
+  verbose: true,
 };
