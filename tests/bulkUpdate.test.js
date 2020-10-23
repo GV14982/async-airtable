@@ -96,33 +96,29 @@ describe('.bulkUpdate', () => {
     done();
   });
 
-  test(
-    'should retry after 30 seconds if rate limited',
-    async (done) => {
-      let results = [];
-      for (let i = 0; i < 100; i++) {
-        results.push(
-          global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE, [
-            { id: initResult[0].id, ...JSON.parse(process.env.UPDATE_RECORD) },
-            { id: initResult[1].id, ...JSON.parse(process.env.UPDATE_RECORD) },
-            { id: initResult[2].id, ...JSON.parse(process.env.UPDATE_RECORD) },
-          ]),
-        );
-      }
-      const data = await Promise.all(results);
-      data.forEach((results) => {
-        expect(results).toBeDefined();
-        expect(Array.isArray(results)).toBe(true);
-        expect(results.length).toBeGreaterThan(0);
-        results.forEach((result) => {
-          expect(result.id).toBeDefined();
-          expect(result.fields).toBeDefined();
-          expect(Object.keys(result.fields).length).toBeGreaterThan(0);
-          expect(result.createdTime).toBeDefined();
-        });
+  test('should retry after 30 seconds if rate limited', async (done) => {
+    let results = [];
+    for (let i = 0; i < 150; i++) {
+      results.push(
+        global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE, [
+          { id: initResult[0].id, ...JSON.parse(process.env.UPDATE_RECORD) },
+          { id: initResult[1].id, ...JSON.parse(process.env.UPDATE_RECORD) },
+          { id: initResult[2].id, ...JSON.parse(process.env.UPDATE_RECORD) },
+        ]),
+      );
+    }
+    const data = await Promise.all(results);
+    data.forEach((results) => {
+      expect(results).toBeDefined();
+      expect(Array.isArray(results)).toBe(true);
+      expect(results.length).toBeGreaterThan(0);
+      results.forEach((result) => {
+        expect(result.id).toBeDefined();
+        expect(result.fields).toBeDefined();
+        expect(Object.keys(result.fields).length).toBeGreaterThan(0);
+        expect(result.createdTime).toBeDefined();
       });
-      done();
-    },
-    process.env.RETRY_TIMEOUT,
-  );
+    });
+    done();
+  });
 });

@@ -20,6 +20,6 @@ module.exports = async () => {
   }
   if (created.length == data.length * 2) {
     //eslint-disable-next-line
-    console.log('Table seeded.');
+    console.log('\nTable seeded.🌱');
   }
 };

@@ -17,6 +17,6 @@ module.exports = async () => {
   }
   if (deleted.length === data.length) {
     //eslint-disable-next-line
-    console.log('Table cleared.');
+    console.log('Table cleared. 🧹');
   }
 };

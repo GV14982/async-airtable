@@ -3,6 +3,7 @@ describe('.updateRecord', () => {
   beforeAll(async (done) => {
     initResult = await global.asyncAirtable.select(process.env.AIRTABLE_TABLE, {
       maxRecords: 1,
+      sort: [{ field: 'value', direction: 'asc' }],
       view: 'Grid view',
     });
     done();
@@ -108,33 +109,27 @@ describe('.updateRecord', () => {
     done();
   });
 
-  test(
-    'should retry after 30 seconds if rate limited',
-    async (done) => {
-      let results = [];
-      for (let i = 0; i < 100; i++) {
-        results.push(
-          global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE, {
-            id: initResult[0].id,
-            ...JSON.parse(process.env.UPDATE_RECORD),
-          }),
-        );
-      }
-      const data = await Promise.all(results);
-      data.forEach((result) => {
-        expect(result).toBeDefined();
-        expect(typeof result).toBe('object');
-        expect(Object.keys(result).length).toBeGreaterThan(0);
-        expect(result.id).toBeDefined();
-        expect(result.fields).toBeDefined();
-        expect(result.createdTime).toBeDefined();
-        expect(Object.keys(result.fields).length).toBeGreaterThan(0);
-        expect(JSON.stringify(result)).not.toEqual(
-          JSON.stringify(initResult[0]),
-        );
-      });
-      done();
-    },
-    process.env.RETRY_TIMEOUT,
-  );
+  test('should retry after 30 seconds if rate limited', async (done) => {
+    let results = [];
+    for (let i = 0; i < 150; i++) {
+      results.push(
+        global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE, {
+          id: initResult[0].id,
+          ...JSON.parse(process.env.UPDATE_RECORD),
+        }),
+      );
+    }
+    const data = await Promise.all(results);
+    data.forEach((result) => {
+      expect(result).toBeDefined();
+      expect(typeof result).toBe('object');
+      expect(Object.keys(result).length).toBeGreaterThan(0);
+      expect(result.id).toBeDefined();
+      expect(result.fields).toBeDefined();
+      expect(result.createdTime).toBeDefined();
+      expect(Object.keys(result.fields).length).toBeGreaterThan(0);
+      expect(JSON.stringify(result)).not.toEqual(JSON.stringify(initResult[0]));
+    });
+    done();
+  });
 });

@@ -11,7 +11,7 @@ describe('.deleteRecord', () => {
     for (let i = 0; i < 10; i++) {
       records.push(JSON.parse(process.env.NEW_RECORD));
     }
-    for (let j = 0; j < 10; j++) {
+    for (let j = 0; j < 15; j++) {
       const values = await global.asyncAirtable.bulkCreate(
         process.env.AIRTABLE_TABLE,
         records,
@@ -81,30 +81,26 @@ describe('.deleteRecord', () => {
     done();
   });
 
-  test(
-    'should retry after 30 seconds if rate limited',
-    async (done) => {
-      let results = [];
-      for (let i = 0; i < 100; i++) {
-        results.push(
-          global.asyncAirtable.deleteRecord(
-            process.env.AIRTABLE_TABLE,
-            deleteTest[i].id,
-          ),
-        );
-      }
-      const data = await Promise.all(results);
-      data.forEach((deleted, i) => {
-        expect(deleted).toBeDefined();
-        expect(typeof deleted).toBe('object');
-        expect(Object.keys(deleted).length).toBeGreaterThan(0);
-        expect(deleted.deleted).toBeDefined();
-        expect(deleted.deleted).toBe(true);
-        expect(deleted.id).toBeDefined();
-        expect(deleted.id).toBe(deleteTest[i].id);
-      });
-      done();
-    },
-    process.env.RETRY_TIMEOUT,
-  );
+  test('should retry after 30 seconds if rate limited', async (done) => {
+    let results = [];
+    for (let i = 0; i < 150; i++) {
+      results.push(
+        global.asyncAirtable.deleteRecord(
+          process.env.AIRTABLE_TABLE,
+          deleteTest[i].id,
+        ),
+      );
+    }
+    const data = await Promise.all(results);
+    data.forEach((deleted, i) => {
+      expect(deleted).toBeDefined();
+      expect(typeof deleted).toBe('object');
+      expect(Object.keys(deleted).length).toBeGreaterThan(0);
+      expect(deleted.deleted).toBeDefined();
+      expect(deleted.deleted).toBe(true);
+      expect(deleted.id).toBeDefined();
+      expect(deleted.id).toBe(deleteTest[i].id);
+    });
+    done();
+  });
 });
