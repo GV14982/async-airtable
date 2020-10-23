@@ -61,6 +61,13 @@ asyncAirtable.bulkDelete(TABLE_NAME, [
 ]);
 ```
 
+## Documentation
+
+To setup documentation run:
+`npm run doc`
+
+This will generate a _docs_ folder. Just open or serve _index.html_ and you will have the docs!
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
