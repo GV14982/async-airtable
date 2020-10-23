@@ -10,3 +10,9 @@ coverage/
 .prettierrc.json
 jsconfig.json
 package-lock.json
+jsdoc.conf.json
+globalSetup.js
+globalTeardown.js
+docs/
+.github/
+.assets/
