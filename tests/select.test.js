@@ -142,28 +142,36 @@ describe('.select', () => {
     done();
   });
 
-  test('should retry after 30 seconds if rate limited', async (done) => {
-    let results = [];
-    for (let i = 0; i < 100; i++) {
-      results.push(
-        global.asyncAirtable.select(
-          process.env.AIRTABLE_TABLE,
-          { pageSize: 1 },
-          1,
-        ),
-      );
-    }
-    const data = await Promise.all(results);
-    data.forEach((result) => {
-      expect(result).toBeDefined();
-      expect(Array.isArray(result)).toBe(true);
-      expect(result).toHaveLength(1);
-      result.forEach((record) => {
-        expect(record).toHaveProperty('id');
-        expect(record).toHaveProperty('fields');
-        expect(record).toHaveProperty('createdTime');
+  test(
+    'should retry after 30 seconds if rate limited',
+    async (done) => {
+      let results = [];
+      for (let i = 0; i < 100; i++) {
+        results.push(
+          i % 2 === 0
+            ? global.asyncAirtable.select(process.env.AIRTABLE_TABLE, {
+                maxRecords: 1,
+              })
+            : global.asyncAirtable.select(
+                process.env.AIRTABLE_TABLE,
+                { pageSize: 1 },
+                1,
+              ),
+        );
+      }
+      const data = await Promise.all(results);
+      data.forEach((result) => {
+        expect(result).toBeDefined();
+        expect(Array.isArray(result)).toBe(true);
+        expect(result).toHaveLength(1);
+        result.forEach((record) => {
+          expect(record).toHaveProperty('id');
+          expect(record).toHaveProperty('fields');
+          expect(record).toHaveProperty('createdTime');
+        });
       });
-    });
-    done();
-  }, 35000);
+      done();
+    },
+    process.env.RETRY_TIMEOUT,
+  );
 });
