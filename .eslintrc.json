@@ -22,5 +22,6 @@
     ]
   },
   "plugins": ["jest"],
-  "extends": ["eslint:recommended", "prettier"]
+  "extends": ["eslint:recommended", "prettier"],
+  "ignorePatterns": ["/lib"]
 }

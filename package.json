@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "description": "A lightweight, promisified airtable client",
   "main": "/lib/asyncAirtable",
+  "types": "./@types/common/index.d.ts",
   "scripts": {
     "test": "jest -i",
     "doc": "jsdoc -c jsdoc.conf.json"
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.14",
+    "@types/node-fetch": "^2.5.7",
     "babel-eslint": "^10.1.0",
     "docdash": "^1.2.0",
     "dotenv": "^8.2.0",
