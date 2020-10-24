@@ -1,7 +1,6 @@
 # Async Airtable
 
 [![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/Tests?label=Tests&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
-
 [![Coverage](https://img.shields.io/coveralls/github/GV14982/async-airtable?logo=coveralls&logoColor=white&style=flat)](https://coveralls.io/github/GV14982/async-airtable?branch=master)
 [![MIT License](https://img.shields.io/github/license/GV14982/async-airtable?style=flat)](LICENSE.md)
 
