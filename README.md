@@ -65,6 +65,8 @@ To setup documentation run:
 
 This will generate a _docs_ folder. Just open or serve _index.html_ and you will have the docs!
 
+You can also view them [online](https://asyncairtable.com).
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
