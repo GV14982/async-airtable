@@ -34,7 +34,7 @@ Then you should be good to go!👍
 
 ```javascript
 const AsyncAirtable = require('async-airtable');
-const asyncAirtable = new AsyncAirtable(API_KEY, BASE_ID);
+const asyncAirtable = new AsyncAirtable(API_KEY, BASE_ID, { ...CONFIG });
 
 asyncAirtable.select(TABLE_NAME, { ...OPTS }, PAGE_NUM);
 asyncAirtable.find(TABLE_NAME, RECORD_ID);
