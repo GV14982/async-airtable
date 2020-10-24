@@ -1,8 +1,6 @@
 # Async Airtable
 
-[![Build: Linux](https://img.shields.io/github/workflow/status/GV14982/async-airtable/Linux?label=Build%3A%20Linux&logo=linux&logoColor=white&style=for-the-badge)](https://github.com/gv14982/async-airtable/actions)
-[![Build: MacOS](https://img.shields.io/github/workflow/status/GV14982/async-airtable/Mac?label=Build%3A%20MacOS&logo=apple&logoColor=white&style=for-the-badge)](https://github.com/gv14982/async-airtable/actions)
-[![Build: Windows](https://img.shields.io/github/workflow/status/GV14982/async-airtable/Windows?label=Build%3A%20Mac&logo=windows&logoColor=white&style=for-the-badge)](https://github.com/gv14982/async-airtable/actions)
+[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/Tests?label=Build%3A%20Linux&logo=linux&logoColor=white&style=for-the-badge)](https://github.com/gv14982/async-airtable/actions)
 
 [![Coverage](https://img.shields.io/coveralls/github/GV14982/async-airtable?style=for-the-badge)](https://coveralls.io/github/GV14982/async-airtable?branch=master)
 [![MIT License](https://img.shields.io/github/license/GV14982/async-airtable?style=for-the-badge)](LICENSE.md)

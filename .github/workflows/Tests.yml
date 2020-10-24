@@ -30,10 +30,8 @@ jobs:
       - name: Run tests
         run: npm test
         env:
-          AIRTABLE_KEY: 'keymRzaCWUKQ7Y2wf'
-          AIRTABLE_BASE: 'appwAUmHwnxdZgI6b'
-          # AIRTABLE_KEY: ${{secrets.AIRTABLE_KEY}}
-          # AIRTABLE_BASE: ${{secrets.AIRTABLE_BASE}}
+          AIRTABLE_KEY: ${{secrets.AIRTABLE_KEY}}
+          AIRTABLE_BASE: ${{secrets.AIRTABLE_BASE}}
           AIRTABLE_TABLE: 'tests'
           TEST_FILTER: "{email} = 'same@test.com'"
           NEW_RECORD: '{"title": "test-create", "value": 23, "email": "new@test.com"}'
