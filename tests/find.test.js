@@ -88,9 +88,9 @@ describe('.find', () => {
     done();
   });
 
-  test('should retry after 30 seconds if rate limited', async (done) => {
+  test('should retry if rate limited', async (done) => {
     let results = [];
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < parseInt(process.env.REQ_COUNT); i++) {
       results.push(
         global.asyncAirtable.find(process.env.AIRTABLE_TABLE, firstResult.id),
       );

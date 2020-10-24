@@ -15,7 +15,7 @@ describe('.bulkDelete', () => {
     for (let i = 0; i < 10; i++) {
       records.push(JSON.parse(process.env.NEW_RECORD));
     }
-    for (let j = 0; j < 15; j++) {
+    for (let j = 0; j < parseInt(process.env.REQ_COUNT) / 10; j++) {
       const values = await global.asyncAirtable.bulkCreate(
         process.env.AIRTABLE_TABLE,
         records,
@@ -87,9 +87,9 @@ describe('.bulkDelete', () => {
     done();
   });
 
-  test('should retry after 30 seconds if rate limited', async (done) => {
+  test('should retry if rate limited', async (done) => {
     let results = [];
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < parseInt(process.env.REQ_COUNT); i++) {
       results.push(
         global.asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE, [
           deleteTest[i].id,

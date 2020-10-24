@@ -96,9 +96,9 @@ describe('.bulkUpdate', () => {
     done();
   });
 
-  test('should retry after 30 seconds if rate limited', async (done) => {
+  test('should retry if rate limited', async (done) => {
     let results = [];
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < parseInt(process.env.REQ_COUNT); i++) {
       results.push(
         global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE, [
           { id: initResult[0].id, ...JSON.parse(process.env.UPDATE_RECORD) },
