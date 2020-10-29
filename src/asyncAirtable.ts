@@ -128,7 +128,7 @@ class AsyncAirtable {
    * @param {string} base - The base id from AirTable
    * @param {Config} config - The config to use for this instance of AsyncAirtable
    */
-  constructor(apiKey: string, base: string, config: Config) {
+  constructor(apiKey: string, base: string, config?: Config) {
     if (!apiKey) throw new Error('API Key is required.');
     if (!base) throw new Error('Base ID is required.');
     this.apiKey = apiKey;
@@ -599,4 +599,4 @@ class AsyncAirtable {
   };
 }
 
-module.exports = AsyncAirtable;
+export default AsyncAirtable;

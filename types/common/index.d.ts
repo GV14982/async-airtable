@@ -14,14 +14,9 @@ export interface Config {
   retryTimeout: number
 }
 
-export declare enum Direction {
-  Asc = 'asc',
-  desc = 'desc'
-}
-
 export interface SortObject {
   field: string,
-  direction?: Direction
+  direction?: 'asc' | 'desc'
 }
 
 export interface DeleteResponse {

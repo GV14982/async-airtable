@@ -55,7 +55,8 @@
     "jest": "^26.5.0",
     "jsdoc": "^3.6.6",
     "lint-staged": "^10.4.0",
-    "prettier": "^2.1.2"
+    "prettier": "^2.1.2",
+    "ts-jest": "^26.4.3"
   },
   "husky": {
     "hooks": {
