@@ -5,7 +5,9 @@
     "outDir": "./lib",
     "typeRoots": ["./types", "node_modules/@types"],
     "resolveJsonModule": true,
-    "inlineSourceMap": true
+    "sourceMap": true,
+    "strict": true,
+    "alwaysStrict": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

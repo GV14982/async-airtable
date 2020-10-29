@@ -1,7 +1,10 @@
-export default async (nodeFetch, url: string, opts , retryTimeout: number, maxRetry: number, key?: string): Promise<any> => {
+import nodeFetch, { RequestInit } from 'node-fetch';
+import '@types/node-fetch';
+
+export default async (url: string, opts: RequestInit , retryTimeout: number, maxRetry: number, key?: string): Promise<any> => {
   return new Promise((resolve, reject) => {
-    const retryRateLimit = (url: string, opts, retryTimeout: number, maxRetry: number, key?: string): void => {
-      if (maxRetry < 1) {
+    const retryRateLimit = (url: string, opts: RequestInit, retryTimeout: number, maxRetry: number, key?: string): void => {
+      if (maxRetry && maxRetry < 1) {
         reject('Max timeout exceeded');
       }
       setTimeout(async () => {

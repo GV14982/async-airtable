@@ -1,6 +1,6 @@
 import { SelectOptions } from "../types/common";
 
-type Arg = string | number | SelectOptions | object[] | string[]
+type Arg = string | number | SelectOptions | object[] | string[] | undefined
 
 export default (arg: Arg, name: string, type: string, required?: boolean) => {
   if (!arg && required) throw new Error(`Argument "${name}" is required.`);

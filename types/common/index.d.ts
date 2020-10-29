@@ -11,8 +11,10 @@ export interface SelectOptions {
 export interface Config {
   retryOnRateLimit?: boolean,
   maxRetry?: number,
-  retryTimeout?: number
+  retryTimeout?: number,
 }
+
+export type ConfigKey = keyof Config
 
 export interface SortObject {
   field: string,
@@ -26,6 +28,10 @@ export interface DeleteResponse {
 
 export interface AirtableRecord {
   id: string,
-  fields: object,
-  createdTime: string,
+  fields: Fields,
+  createdTime?: string,
+}
+
+export interface Fields {
+  [key: string]: any
 }

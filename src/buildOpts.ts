@@ -2,8 +2,8 @@ import { SelectOptions } from "../types/common";
 
 export default (opts: SelectOptions) => {
   const params = Object.keys(opts)
-    .map((key, i) => {
-      const opt = opts[key];
+    .map((key: string, i) => {
+      const opt: any = opts[key as keyof SelectOptions];
       let formatted;
       if (Array.isArray(opt)) {
         formatted = opt

@@ -3,7 +3,7 @@ import buildOpts from './buildOpts';
 import checkError from './checkError';
 import checkArg from './checkArg';
 import rateLimitHandler from './rateLimitHandler';
-import { AirtableRecord, Config, DeleteResponse, SelectOptions } from '../types/common';
+import { AirtableRecord, Config, DeleteResponse, SelectOptions, Fields } from '../types/common';
 const baseURL = 'https://api.airtable.com/v0';
 
 interface AirtableRecordResponse {
@@ -114,10 +114,10 @@ const validOptions: string[] = [
  * The main AsyncAirtable Library
  * @class
  */
-class AsyncAirtable {
-  retryOnRateLimit: boolean = true;
-  maxRetry: number = 60000;
-  retryTimeout: number = 5000;
+export default class AsyncAirtable {
+  retryOnRateLimit: boolean;
+  maxRetry: number;
+  retryTimeout: number;
   apiKey: string;
   base: string;
 
@@ -133,11 +133,9 @@ class AsyncAirtable {
     if (!base) throw new Error('Base ID is required.');
     this.apiKey = apiKey;
     this.base = base;
-    if (config) {
-      Object.keys(config).forEach((key) => {
-        this[key] = config[key];
-      });
-    }
+    this.retryOnRateLimit = config?.retryOnRateLimit || true;
+    this.retryTimeout = config?.retryTimeout || 5000;
+    this.maxRetry = config?.maxRetry || 60000;
   }
 
   /**
@@ -148,7 +146,7 @@ class AsyncAirtable {
    * @param {number} [page] - Used to get a specific page of records
    * @returns {Promise<Record[]>}
    */
-  select = async (table: string, options?: SelectOptions, page?: number): Promise<AirtableRecord[]> => {
+  select = async (table: string, options?: SelectOptions, page?: number): Promise<AirtableRecord[] | undefined> => {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(options, 'options', 'object');
@@ -160,7 +158,7 @@ class AsyncAirtable {
           throw new Error(`Invalid option: ${option}`);
         }
       });
-      let offset: string;
+      let offset: string | undefined = '';
       if (page) {
         for (let i = 0; i < page; i++) {
           if (offset) {
@@ -179,7 +177,6 @@ class AsyncAirtable {
               if (this.retryOnRateLimit) {
                 if (i + 1 === page) {
                   return await rateLimitHandler(
-                    nodeFetch,
                     `${url}?${buildOpts(opts)}`,
                     {
                       headers: { Authorization: `Bearer ${this.apiKey}` },
@@ -218,7 +215,6 @@ class AsyncAirtable {
 
               if (this.retryOnRateLimit) {
                 return await rateLimitHandler(
-                  nodeFetch,
                   `${url}?${buildOpts(opts)}`,
                   {
                     headers: { Authorization: `Bearer ${this.apiKey}` },
@@ -268,7 +264,6 @@ class AsyncAirtable {
 
         if (this.retryOnRateLimit) {
           return await rateLimitHandler(
-            nodeFetch,
             url,
             {
               headers: { Authorization: `Bearer ${this.apiKey}` },
@@ -291,7 +286,7 @@ class AsyncAirtable {
    * @param {object} record - Record object, used to structure data for insert
    * @returns {Promise<Record>}
    */
-  createRecord = async (table: string, record: object): Promise<AirtableRecord> => {
+  createRecord = async (table: string, record: Fields): Promise<AirtableRecord> => {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(record, 'record', 'object', true);
@@ -313,7 +308,6 @@ class AsyncAirtable {
 
         if (this.retryOnRateLimit) {
           return await rateLimitHandler(
-            nodeFetch,
             url,
             {
               method: 'post',
@@ -342,12 +336,12 @@ class AsyncAirtable {
    * @param {boolean} [destructive=false] - (Dis-)Allow a destructive update
    * @returns {Promise<Record>}
    */
-  updateRecord = async (table: string, record: any, destructive = false): Promise<AirtableRecord> => {
+  updateRecord = async (table: string, record: Fields, destructive = false): Promise<AirtableRecord> => {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(record, 'record', 'object', true);
       let url = `${baseURL}/${this.base}/${table}/${record.id}`;
-      const fields = {};
+      const fields: Fields = {};
       Object.keys(record).forEach((key) => {
         if (key !== 'id') fields[key] = record[key];
       });
@@ -367,7 +361,6 @@ class AsyncAirtable {
 
         if (this.retryOnRateLimit) {
           return await rateLimitHandler(
-            nodeFetch,
             url,
             {
               method: destructive ? 'put' : 'patch',
@@ -414,7 +407,6 @@ class AsyncAirtable {
 
         if (this.retryOnRateLimit) {
           return await rateLimitHandler(
-            nodeFetch,
             url,
             {
               method: 'delete',
@@ -440,7 +432,7 @@ class AsyncAirtable {
    * @param {Array<Record>} records - An array of Record objects
    * @returns {Promise<Record[]>}
    */
-  bulkCreate = async (table: string, records: object[]): Promise<AirtableRecord[]> => {
+  bulkCreate = async (table: string, records: Fields[]): Promise<AirtableRecord[]> => {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(records, 'records', 'object', true);
@@ -464,7 +456,6 @@ class AsyncAirtable {
 
         if (this.retryOnRateLimit) {
           return await rateLimitHandler(
-            nodeFetch,
             url,
             {
               method: 'post',
@@ -493,14 +484,14 @@ class AsyncAirtable {
    * @param {Array<Record>} records - An array of Record objects
    * @returns {Promise<Record[]>}
    */
-  bulkUpdate = async (table: string, records: any[]): Promise<AirtableRecord[]> => {
+  bulkUpdate = async (table: string, records: Fields[]): Promise<AirtableRecord[]> => {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(records, 'records', 'object', true);
       let url = `${baseURL}/${this.base}/${table}`;
       const body = records.map((record) => {
         const id = record.id;
-        const fields = {};
+        const fields: Fields = {};
         Object.keys(record).forEach((key) => {
           if (key !== 'id') fields[key] = record[key];
         });
@@ -522,7 +513,6 @@ class AsyncAirtable {
 
         if (this.retryOnRateLimit) {
           return await rateLimitHandler(
-            nodeFetch,
             url,
             {
               method: 'patch',
@@ -578,7 +568,6 @@ class AsyncAirtable {
 
         if (this.retryOnRateLimit) {
           return await rateLimitHandler(
-            nodeFetch,
             url,
             {
               method: 'delete',
@@ -598,5 +587,3 @@ class AsyncAirtable {
     }
   };
 }
-
-export default AsyncAirtable;
