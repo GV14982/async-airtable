@@ -1,6 +1,6 @@
-require('dotenv').config();
-const AsyncAirtable = require('../lib/asyncAirtable');
-
+import {config} from 'dotenv';
+config();
+import AsyncAirtable from '../src/asyncAirtable';
 const requiredMethods = [
   'select',
   'find',
@@ -13,35 +13,31 @@ const requiredMethods = [
 ];
 
 describe('asyncAirtable', () => {
-  test('should have all required methods', () => {
-    const methods = Object.keys(global.asyncAirtable);
-    requiredMethods.forEach((method) => {
-      expect(methods.includes(method)).toBe(true);
-    });
-  });
-
-  test('should throw an error if you instatiate without an API key', () => {
-    expect(() => {
-      new global.AsyncAirtable();
-    }).toThrowError('API Key is required.');
-  });
-
-  test('should throw an error if you instatiate without a base ID', () => {
-    expect(() => {
-      new global.AsyncAirtable(process.env.AIRTABLE_KEY);
-    }).toThrowError('Base ID is required.');
-  });
-
-  test('should instantiate a new AsyncAirtable instance with the opts object as well', () => {
+  test('should instantiate a new AsyncAirtable instance with all required methods', () => {
     const asyncAirtable = new AsyncAirtable(
       process.env.AIRTABLE_KEY,
       process.env.AIRTABLE_BASE,
       { retryOnRateLimit: true },
     );
-
+  
     const methods = Object.keys(asyncAirtable);
     requiredMethods.forEach((method) => {
       expect(methods.includes(method)).toBe(true);
     });
   });
+  
+  test('should throw an error if you instatiate without an API key', () => {
+    expect(() => {
+      // @ts-ignore
+      new AsyncAirtable();
+    }).toThrowError('API Key is required.');
+  });
+
+  test('should throw an error if you instatiate without a base ID', () => {
+    expect(() => {
+      // @ts-ignore
+      new AsyncAirtable(process.env.AIRTABLE_KEY);
+    }).toThrowError('Base ID is required.');
+  });
+
 });

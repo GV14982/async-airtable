@@ -9,9 +9,9 @@ export interface SelectOptions {
 }
 
 export interface Config {
-  retryOnRateLimit: boolean,
-  maxRetry: number,
-  retryTimeout: number
+  retryOnRateLimit?: boolean,
+  maxRetry?: number,
+  retryTimeout?: number
 }
 
 export interface SortObject {
