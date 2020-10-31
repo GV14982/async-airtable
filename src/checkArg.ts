@@ -1,8 +1,19 @@
-import { SelectOptions } from "../types/common";
+import { SelectOptions } from './asyncAirtable';
 
-type Arg = string | number | SelectOptions | object[] | string[] | undefined
+type Arg =
+  | string
+  | number
+  | SelectOptions
+  | Record<string, unknown>[]
+  | string[]
+  | undefined;
 
-export default (arg: Arg, name: string, type: string, required?: boolean) => {
+export default (
+  arg: Arg,
+  name: string,
+  type: string,
+  required?: boolean,
+): void => {
   if (!arg && required) throw new Error(`Argument "${name}" is required.`);
   if (arg && typeof arg !== type)
     throw new Error(

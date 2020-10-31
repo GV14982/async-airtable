@@ -1,9 +1,21 @@
 import nodeFetch, { RequestInit } from 'node-fetch';
-import '@types/node-fetch';
+import { AirtableRecord, DeleteResponse } from './asyncAirtable';
 
-export default async (url: string, opts: RequestInit , retryTimeout: number, maxRetry: number, key?: string): Promise<any> => {
+export default async (
+  url: string,
+  opts: RequestInit,
+  retryTimeout: number,
+  maxRetry: number,
+  key?: string,
+): Promise<any> => {
   return new Promise((resolve, reject) => {
-    const retryRateLimit = (url: string, opts: RequestInit, retryTimeout: number, maxRetry: number, key?: string): void => {
+    const retryRateLimit = (
+      url: string,
+      opts: RequestInit,
+      retryTimeout: number,
+      maxRetry: number,
+      key?: string,
+    ): void => {
       if (maxRetry && maxRetry < 1) {
         reject('Max timeout exceeded');
       }

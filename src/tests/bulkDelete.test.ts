@@ -1,10 +1,10 @@
-export {}
+import { AirtableRecord, DeleteResponse } from '../asyncAirtable';
 let deleteGroup: string[];
-let deleteTest = [];
+let deleteTest: AirtableRecord[] = [];
 describe('.bulkDelete', () => {
   beforeAll(async (done) => {
     const results = await global.asyncAirtable.select(
-      process.env.AIRTABLE_TABLE,
+      process.env.AIRTABLE_TABLE || '',
       { view: 'Grid view' },
     );
 
@@ -14,11 +14,11 @@ describe('.bulkDelete', () => {
 
     const records = [];
     for (let i = 0; i < 10; i++) {
-      records.push(JSON.parse(process.env.NEW_RECORD));
+      records.push(JSON.parse(process.env.NEW_RECORD || ''));
     }
-    for (let j = 0; j < parseInt(process.env.REQ_COUNT) / 10; j++) {
+    for (let j = 0; j < parseInt(process.env.REQ_COUNT || '') / 10; j++) {
       const values = await global.asyncAirtable.bulkCreate(
-        process.env.AIRTABLE_TABLE,
+        process.env.AIRTABLE_TABLE || '',
         records,
       );
       deleteTest = [...deleteTest, ...values];
@@ -28,7 +28,7 @@ describe('.bulkDelete', () => {
 
   test('should delete a record with the given id', async (done) => {
     const deleted = await global.asyncAirtable.bulkDelete(
-      process.env.AIRTABLE_TABLE,
+      process.env.AIRTABLE_TABLE || '',
       deleteGroup,
     );
     expect(deleted).toBeDefined();
@@ -55,14 +55,14 @@ describe('.bulkDelete', () => {
   test('should throw an error if you do not pass an id', async (done) => {
     await expect(
       // @ts-ignore
-      global.asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE),
+      global.asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE || ''),
     ).rejects.toThrowError('Argument "ids" is required');
     done();
   });
 
   test('should throw an error if the id does not exist', async (done) => {
     await expect(
-      global.asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE, [
+      global.asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE || '', [
         'doesnotexist',
       ]),
     ).rejects.toThrowError(/"INVALID_RECORDS"/g);
@@ -71,7 +71,10 @@ describe('.bulkDelete', () => {
 
   test('should throw an error if the id has already been deleted', async (done) => {
     await expect(
-      global.asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE, deleteGroup),
+      global.asyncAirtable.bulkDelete(
+        process.env.AIRTABLE_TABLE || '',
+        deleteGroup,
+      ),
     ).rejects.toThrowError(/"NOT_FOUND"/g);
     done();
   });
@@ -87,21 +90,21 @@ describe('.bulkDelete', () => {
   test('should throw an error if pass the id argument with an incorrect data type', async (done) => {
     await expect(
       // @ts-ignore
-      global.asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE, 10),
+      global.asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE || '', 10),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
 
   test('should retry if rate limited', async (done) => {
     let results = [];
-    for (let i = 0; i < parseInt(process.env.REQ_COUNT); i++) {
+    for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
       results.push(
-        global.asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE, [
+        global.asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE || '', [
           deleteTest[i].id,
         ]),
       );
     }
-    const data = await Promise.all(results);
+    const data: Array<DeleteResponse[]> = await Promise.all(results);
     data.forEach((deleted, i) => {
       expect(deleted).toBeDefined();
       expect(Array.isArray(deleted)).toBe(true);

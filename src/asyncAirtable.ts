@@ -1,18 +1,55 @@
-import nodeFetch, {Response} from 'node-fetch';
+import nodeFetch, { Response } from 'node-fetch';
 import buildOpts from './buildOpts';
 import checkError from './checkError';
 import checkArg from './checkArg';
 import rateLimitHandler from './rateLimitHandler';
-import { AirtableRecord, Config, DeleteResponse, SelectOptions, Fields } from '../types/common';
 const baseURL = 'https://api.airtable.com/v0';
 
+export interface SelectOptions {
+  fields?: string[];
+  filterByFormula?: string;
+  maxRecords?: number;
+  pageSize?: number;
+  view?: string;
+  sort?: SortObject[];
+  offset?: string;
+}
+
+export interface Config {
+  retryOnRateLimit?: boolean;
+  maxRetry?: number;
+  retryTimeout?: number;
+}
+
+export type ConfigKey = keyof Config;
+
+export interface SortObject {
+  field: string;
+  direction?: 'asc' | 'desc';
+}
+
+export interface DeleteResponse {
+  id?: string;
+  deleted: boolean;
+}
+
+export interface AirtableRecord {
+  id: string;
+  fields: Fields;
+  createdTime?: string;
+}
+
+export interface Fields {
+  [key: string]: unknown;
+}
+
 interface AirtableRecordResponse {
-  records: AirtableRecord[],
-  offset?: string
+  records: AirtableRecord[];
+  offset?: string;
 }
 
 interface AirtableDeletedResponse {
-  records: DeleteResponse[]
+  records: DeleteResponse[];
 }
 
 /**
@@ -146,12 +183,16 @@ export default class AsyncAirtable {
    * @param {number} [page] - Used to get a specific page of records
    * @returns {Promise<Record[]>}
    */
-  select = async (table: string, options?: SelectOptions, page?: number): Promise<AirtableRecord[] | undefined> => {
+  select = async (
+    table: string,
+    options?: SelectOptions,
+    page?: number,
+  ): Promise<AirtableRecord[]> => {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(options, 'options', 'object');
       checkArg(page, 'page', 'number');
-      let url = `${baseURL}/${this.base}/${table}`;
+      const url = `${baseURL}/${this.base}/${table}`;
       const opts: SelectOptions = options ? { ...options } : {};
       Object.keys(opts).forEach((option) => {
         if (!validOptions.includes(option)) {
@@ -159,6 +200,7 @@ export default class AsyncAirtable {
         }
       });
       let offset: string | undefined = '';
+      let data: AirtableRecord[] = [];
       if (page) {
         for (let i = 0; i < page; i++) {
           if (offset) {
@@ -198,7 +240,6 @@ export default class AsyncAirtable {
         }
       } else {
         let done = false;
-        let data: AirtableRecord[] = [];
         while (!done) {
           if (offset) {
             opts.offset = offset;
@@ -234,8 +275,8 @@ export default class AsyncAirtable {
             throw new Error(err);
           }
         }
-        return data;
       }
+      return data;
     } catch (err) {
       throw new Error(err);
     }
@@ -252,7 +293,7 @@ export default class AsyncAirtable {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(id, 'id', 'string', true);
-      let url = `${baseURL}/${this.base}/${table}/${id}`;
+      const url = `${baseURL}/${this.base}/${table}/${id}`;
       const res: Response = await nodeFetch(url, {
         headers: { Authorization: `Bearer ${this.apiKey}` },
       });
@@ -286,11 +327,14 @@ export default class AsyncAirtable {
    * @param {object} record - Record object, used to structure data for insert
    * @returns {Promise<Record>}
    */
-  createRecord = async (table: string, record: Fields): Promise<AirtableRecord> => {
+  createRecord = async (
+    table: string,
+    record: Fields,
+  ): Promise<AirtableRecord> => {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(record, 'record', 'object', true);
-      let url = `${baseURL}/${this.base}/${table}`;
+      const url = `${baseURL}/${this.base}/${table}`;
       const body = { fields: record };
       const res: Response = await nodeFetch(url, {
         method: 'post',
@@ -336,11 +380,15 @@ export default class AsyncAirtable {
    * @param {boolean} [destructive=false] - (Dis-)Allow a destructive update
    * @returns {Promise<Record>}
    */
-  updateRecord = async (table: string, record: Fields, destructive = false): Promise<AirtableRecord> => {
+  updateRecord = async (
+    table: string,
+    record: Fields,
+    destructive = false,
+  ): Promise<AirtableRecord> => {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(record, 'record', 'object', true);
-      let url = `${baseURL}/${this.base}/${table}/${record.id}`;
+      const url = `${baseURL}/${this.base}/${table}/${record.id}`;
       const fields: Fields = {};
       Object.keys(record).forEach((key) => {
         if (key !== 'id') fields[key] = record[key];
@@ -392,7 +440,7 @@ export default class AsyncAirtable {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(id, 'id', 'string', true);
-      let url = `${baseURL}/${this.base}/${table}/${id}`;
+      const url = `${baseURL}/${this.base}/${table}/${id}`;
       const res: Response = await nodeFetch(url, {
         method: 'delete',
         headers: {
@@ -432,11 +480,14 @@ export default class AsyncAirtable {
    * @param {Array<Record>} records - An array of Record objects
    * @returns {Promise<Record[]>}
    */
-  bulkCreate = async (table: string, records: Fields[]): Promise<AirtableRecord[]> => {
+  bulkCreate = async (
+    table: string,
+    records: Fields[],
+  ): Promise<AirtableRecord[]> => {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(records, 'records', 'object', true);
-      let url = `${baseURL}/${this.base}/${table}`;
+      const url = `${baseURL}/${this.base}/${table}`;
       const body = records.map((record) => ({
         fields: record,
       }));
@@ -484,11 +535,14 @@ export default class AsyncAirtable {
    * @param {Array<Record>} records - An array of Record objects
    * @returns {Promise<Record[]>}
    */
-  bulkUpdate = async (table: string, records: Fields[]): Promise<AirtableRecord[]> => {
+  bulkUpdate = async (
+    table: string,
+    records: Fields[],
+  ): Promise<AirtableRecord[]> => {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(records, 'records', 'object', true);
-      let url = `${baseURL}/${this.base}/${table}`;
+      const url = `${baseURL}/${this.base}/${table}`;
       const body = records.map((record) => {
         const id = record.id;
         const fields: Fields = {};
@@ -541,7 +595,10 @@ export default class AsyncAirtable {
    * @param {Array<string>} ids - Array of Airtable record IDs
    * @returns {Promise<DeleteResponse[]>}
    */
-  bulkDelete = async (table: string, ids: string[]): Promise<DeleteResponse[]> => {
+  bulkDelete = async (
+    table: string,
+    ids: string[],
+  ): Promise<DeleteResponse[]> => {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(ids, 'ids', 'object', true);
@@ -553,7 +610,7 @@ export default class AsyncAirtable {
           query = `records[]=${id}`;
         }
       });
-      let url = `${baseURL}/${this.base}/${table}?${encodeURI(query)}`;
+      const url = `${baseURL}/${this.base}/${table}?${encodeURI(query)}`;
       const res: Response = await nodeFetch(url, {
         method: 'delete',
         headers: {

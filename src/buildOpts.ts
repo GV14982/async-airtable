@@ -1,9 +1,9 @@
-import { SelectOptions } from "../types/common";
+import { SelectOptions } from './asyncAirtable';
 
-export default (opts: SelectOptions) => {
+export default (opts: SelectOptions): string => {
   const params = Object.keys(opts)
     .map((key: string, i) => {
-      const opt: any = opts[key as keyof SelectOptions];
+      const opt: unknown = opts[key as keyof SelectOptions];
       let formatted;
       if (Array.isArray(opt)) {
         formatted = opt

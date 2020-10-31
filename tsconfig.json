@@ -1,14 +1,12 @@
 {
   "compilerOptions": {
     "module": "CommonJS",
-    "removeComments": true,
+    "target": "ES6",
+    "declaration": true,
     "outDir": "./lib",
-    "typeRoots": ["./types", "node_modules/@types"],
     "resolveJsonModule": true,
-    "sourceMap": true,
-    "strict": true,
-    "alwaysStrict": true
+    "strict": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "**/tests/*"]
 }

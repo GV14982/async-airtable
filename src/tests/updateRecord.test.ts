@@ -1,18 +1,23 @@
-let initResult;
+import { AirtableRecord } from '../asyncAirtable';
+
+let initResult: AirtableRecord[];
 describe('.updateRecord', () => {
   beforeAll(async (done) => {
-    initResult = await global.asyncAirtable.select(process.env.AIRTABLE_TABLE, {
-      maxRecords: 1,
-      sort: [{ field: 'value', direction: 'asc' }],
-      view: 'Grid view',
-    });
+    initResult = await global.asyncAirtable.select(
+      process.env.AIRTABLE_TABLE || '',
+      {
+        maxRecords: 1,
+        sort: [{ field: 'value', direction: 'asc' }],
+        view: 'Grid view',
+      },
+    );
     done();
   });
 
   test('should update a record with provided data', async (done) => {
     const result = await global.asyncAirtable.updateRecord(
-      process.env.AIRTABLE_TABLE,
-      { id: initResult[0].id, ...JSON.parse(process.env.UPDATE_RECORD) },
+      process.env.AIRTABLE_TABLE || '',
+      { id: initResult[0].id, ...JSON.parse(process.env.UPDATE_RECORD || '') },
     );
     expect(result).toBeDefined();
     expect(typeof result).toBe('object');
@@ -28,10 +33,10 @@ describe('.updateRecord', () => {
 
   test('should update a record and set unprovided field to null if you pass in the destructive arg', async (done) => {
     const result = await global.asyncAirtable.updateRecord(
-      process.env.AIRTABLE_TABLE,
+      process.env.AIRTABLE_TABLE || '',
       {
         id: initResult[0].id,
-        ...JSON.parse(process.env.DESTRUCTIVE_UPDATE_RECORD),
+        ...JSON.parse(process.env.DESTRUCTIVE_UPDATE_RECORD || ''),
       },
       true,
     );
@@ -58,14 +63,14 @@ describe('.updateRecord', () => {
   test('should throw an error if you do not pass a record', async (done) => {
     await expect(
       // @ts-ignore
-      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE),
+      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE || ''),
     ).rejects.toThrowError('Argument "record" is required');
     done();
   });
 
   test('should throw an error if you pass a field that does not exist', async (done) => {
     await expect(
-      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE, {
+      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE || '', {
         id: initResult[0].id,
         gringle: 'grangle',
       }),
@@ -75,9 +80,9 @@ describe('.updateRecord', () => {
 
   test('should throw an error if you send an incorrect id', async (done) => {
     await expect(
-      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE, {
+      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE || '', {
         id: 'doesnotexist',
-        ...JSON.parse(process.env.UPDATE_RECORD),
+        ...JSON.parse(process.env.UPDATE_RECORD || ''),
       }),
     ).rejects.toThrowError(/NOT_FOUND/g);
     done();
@@ -85,10 +90,10 @@ describe('.updateRecord', () => {
 
   test('should throw an error if pass a field with the incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE, {
+      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE || '', {
         id: initResult[0].id,
         value: 'nope',
-        ...JSON.parse(process.env.UPDATE_RECORD),
+        ...JSON.parse(process.env.UPDATE_RECORD || ''),
       }),
     ).rejects.toThrowError(/INVALID_VALUE_FOR_COLUMN/g);
     done();
@@ -99,7 +104,7 @@ describe('.updateRecord', () => {
       // @ts-ignore
       global.asyncAirtable.updateRecord(10, {
         id: initResult[0].id,
-        ...JSON.parse(process.env.UPDATE_RECORD),
+        ...JSON.parse(process.env.UPDATE_RECORD || ''),
       }),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
@@ -107,22 +112,23 @@ describe('.updateRecord', () => {
 
   test('should throw an error if pass the record argument with an incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE, 10),
+      //@ts-ignore
+      global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE || '', 10),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
 
   test('should if rate limited', async (done) => {
     let results = [];
-    for (let i = 0; i < parseInt(process.env.REQ_COUNT); i++) {
+    for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
       results.push(
-        global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE, {
+        global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE || '', {
           id: initResult[0].id,
-          ...JSON.parse(process.env.UPDATE_RECORD),
+          ...JSON.parse(process.env.UPDATE_RECORD || ''),
         }),
       );
     }
-    const data = await Promise.all(results);
+    const data: AirtableRecord[] = await Promise.all(results);
     data.forEach((result) => {
       expect(result).toBeDefined();
       expect(typeof result).toBe('object');

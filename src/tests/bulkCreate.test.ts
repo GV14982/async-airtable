@@ -1,11 +1,14 @@
-import { AirtableRecord } from "../types/common";
+import { AirtableRecord } from '../asyncAirtable';
 let created: AirtableRecord;
 let deleteGroup: string[] = [];
 describe('.bulkCreate', () => {
   test('should create a new entry in the table with the given fields', async (done) => {
     const results = await global.asyncAirtable.bulkCreate(
-      process.env.AIRTABLE_TABLE,
-      [JSON.parse(process.env.NEW_RECORD), JSON.parse(process.env.NEW_RECORD)],
+      process.env.AIRTABLE_TABLE || '',
+      [
+        JSON.parse(process.env.NEW_RECORD || ''),
+        JSON.parse(process.env.NEW_RECORD || ''),
+      ],
     );
     expect(results).toBeDefined();
     expect(Array.isArray(results)).toBe(true);
@@ -25,7 +28,7 @@ describe('.bulkCreate', () => {
 
   test('should be able to find the record by the id after creation', async (done) => {
     const result = await global.asyncAirtable.find(
-      process.env.AIRTABLE_TABLE,
+      process.env.AIRTABLE_TABLE || '',
       created.id,
     );
     expect(result).toBeDefined();
@@ -57,7 +60,7 @@ describe('.bulkCreate', () => {
 
   test('should throw an error if pass a field that does not exist', async (done) => {
     await expect(
-      global.asyncAirtable.bulkCreate(process.env.AIRTABLE_TABLE, [
+      global.asyncAirtable.bulkCreate(process.env.AIRTABLE_TABLE || '', [
         {
           gringle: 'grangle',
         },
@@ -68,8 +71,8 @@ describe('.bulkCreate', () => {
 
   test('should throw an error if pass a field with the incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.bulkCreate(process.env.AIRTABLE_TABLE, [
-        { ...JSON.parse(process.env.NEW_RECORD), value: 'nope' },
+      global.asyncAirtable.bulkCreate(process.env.AIRTABLE_TABLE || '', [
+        { ...JSON.parse(process.env.NEW_RECORD || ''), value: 'nope' },
       ]),
     ).rejects.toThrowError(/INVALID_VALUE_FOR_COLUMN/g);
     done();
@@ -93,15 +96,15 @@ describe('.bulkCreate', () => {
 
   test('should retry if rate limited', async (done) => {
     let results = [];
-    for (let i = 0; i < parseInt(process.env.REQ_COUNT); i++) {
+    for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
       results.push(
-        global.asyncAirtable.bulkCreate(process.env.AIRTABLE_TABLE, [
-          JSON.parse(process.env.NEW_RECORD),
-          JSON.parse(process.env.NEW_RECORD),
+        global.asyncAirtable.bulkCreate(process.env.AIRTABLE_TABLE || '', [
+          JSON.parse(process.env.NEW_RECORD || ''),
+          JSON.parse(process.env.NEW_RECORD || ''),
         ]),
       );
     }
-    const data = await Promise.all(results);
+    const data: Array<AirtableRecord[]> = await Promise.all(results);
     data.forEach((results) => {
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);

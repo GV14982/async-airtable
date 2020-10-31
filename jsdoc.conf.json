@@ -6,18 +6,12 @@
   "source": {
     "include": ["lib"],
     "includePattern": ".+\\.js(doc|x)?$",
-    "excludePattern": "(^|\\/|\\\\)_"
+    "excludePattern": ".+\\.(test|spec).ts"
   },
-  "plugins": ["plugins/markdown"],
+  "plugins": ["plugins/markdown", "typescript"],
   "templates": {
     "cleverLinks": true,
     "monospaceLinks": true,
-    "logo": {
-      "url": "../.assets/logo_white.png",
-      "width": "150px",
-      "height": "63px",
-      "link": "https://github.com/GV14982/async-airtable"
-    },
     "footerText": "My awesome footer text"
   },
   "opts": {
