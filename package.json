@@ -2,8 +2,13 @@
   "name": "asyncairtable",
   "version": "0.2.0",
   "description": "A lightweight, promisified airtable client",
-  "main": "/lib/asyncAirtable",
+  "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
+  "files": [
+    "lib/**/*",
+    "LICENSE.md",
+    "README.md"
+  ],
   "scripts": {
     "test": "jest -i --no-cache --coverage",
     "doc": "jsdoc -c jsdoc.conf.json",
@@ -64,9 +69,6 @@
     "ts-node": "^9.0.0",
     "typescript": "^4.0.5"
   },
-  "files": [
-    "lib/**/*"
-  ],
   "husky": {
     "hooks": {
       "pre-commit": "npx lint-staged"
