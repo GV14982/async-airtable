@@ -6,15 +6,19 @@
   "types": "./lib/index.d.ts",
   "files": [
     "lib/**/*",
-    "LICENSE.md",
-    "README.md"
+    "LICENSE.md"
   ],
   "scripts": {
     "test": "jest -i --no-cache --coverage",
     "doc": "jsdoc -c jsdoc.conf.json",
     "build": "tsc",
     "lint": "eslint ./ --fix --cache",
-    "format": "prettier ./ --write"
+    "format": "prettier ./ --write",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run lint && npm t",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tag"
   },
   "repository": {
     "type": "git",
