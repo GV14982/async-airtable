@@ -1,17 +1,12 @@
 import AsyncAirtable, { AirtableRecord } from '../asyncAirtable';
+import { config } from 'dotenv';
+config();
+const asyncAirtable = new AsyncAirtable(
+  process.env.AIRTABLE_KEY || '',
+  process.env.AIRTABLE_BASE || '',
+);
 let firstPage: AirtableRecord[];
 
-declare global {
-  namespace NodeJS {
-    interface Global {
-      document: Document;
-      window: Window;
-      navigator: Navigator;
-      AsyncAirtable: any;
-      asyncAirtable: AsyncAirtable;
-    }
-  }
-}
 const checkResult = (
   result: AirtableRecord[],
   length?: number,
@@ -28,15 +23,13 @@ const checkResult = (
 
 describe('.select', () => {
   test('should respond with all entries without any options', async (done) => {
-    const items = await global.asyncAirtable.select(
-      process.env.AIRTABLE_TABLE || '',
-    );
+    const items = await asyncAirtable.select(process.env.AIRTABLE_TABLE || '');
     checkResult(items);
     done();
   });
 
   test('should respond with the first page of results using the pageSize option and adding a page argument', async (done) => {
-    const items = await global.asyncAirtable.select(
+    const items = await asyncAirtable.select(
       process.env.AIRTABLE_TABLE || '',
       { pageSize: 20 },
       1,
@@ -47,7 +40,7 @@ describe('.select', () => {
   });
 
   test('should respond with the second page by incrementing the page argument', async (done) => {
-    const items = await global.asyncAirtable.select(
+    const items = await asyncAirtable.select(
       process.env.AIRTABLE_TABLE || '',
       { pageSize: 20 },
       2,
@@ -58,78 +51,63 @@ describe('.select', () => {
   });
 
   test('should respond with a subset of records using the maxRecords option', async (done) => {
-    const items = await global.asyncAirtable.select(
-      process.env.AIRTABLE_TABLE || '',
-      {
-        maxRecords: 30,
-      },
-    );
+    const items = await asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
+      maxRecords: 30,
+    });
     checkResult(items, 30);
     done();
   });
 
   test('should respond with a sorted array when using the sort option', async (done) => {
-    const items = await global.asyncAirtable.select(
-      process.env.AIRTABLE_TABLE || '',
-      {
-        sort: [{ field: 'title' }],
-      },
-    );
+    const items = await asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
+      sort: [{ field: 'title' }],
+    });
     checkResult(items);
     done();
   });
 
   test('should respond with only specific fields when using the fields option', async (done) => {
-    const items = await global.asyncAirtable.select(
-      process.env.AIRTABLE_TABLE || '',
-      {
-        fields: ['title'],
-      },
-    );
+    const items = await asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
+      fields: ['title'],
+    });
     checkResult(items, parseInt(process.env.NUM_RECORDS || ''), true);
     done();
   });
 
   test('should respond with only specific records when using the filterByFormula option', async (done) => {
-    const items = await global.asyncAirtable.select(
-      process.env.AIRTABLE_TABLE || '',
-      {
-        filterByFormula: process.env.TEST_FILTER || '',
-      },
-    );
+    const items = await asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
+      filterByFormula: process.env.TEST_FILTER || '',
+    });
     checkResult(items);
     done();
   });
 
   test('should respond with records in the format of the view specified.', async (done) => {
-    const items = await global.asyncAirtable.select(
-      process.env.AIRTABLE_TABLE || '',
-      {
-        view: 'Kanban',
-      },
-    );
+    const items = await asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
+      view: 'Kanban',
+    });
     checkResult(items);
     done();
   });
 
   test('should throw an error if you do not pass a table', async (done) => {
     // @ts-ignore
-    await expect(global.asyncAirtable.select()).rejects.toThrowError(
+    await expect(asyncAirtable.select()).rejects.toThrowError(
       'Argument "table" is required',
     );
     done();
   });
 
   test('should throw an error if the table does not exist', async (done) => {
-    await expect(
-      global.asyncAirtable.select('doesnotexist'),
-    ).rejects.toThrowError(/"TABLE_NOT_FOUND"/g);
+    await expect(asyncAirtable.select('doesnotexist')).rejects.toThrowError(
+      /"TABLE_NOT_FOUND"/g,
+    );
     done();
   });
 
   test('should throw an error if you pass an incorrect data type for table', async (done) => {
     // @ts-ignore
-    await expect(global.asyncAirtable.select(10)).rejects.toThrowError(
+    await expect(asyncAirtable.select(10)).rejects.toThrowError(
       /Incorrect data type/g,
     );
     done();
@@ -138,14 +116,14 @@ describe('.select', () => {
   test('should throw an error if you pass an incorrect data type for options', async (done) => {
     await expect(
       // @ts-ignore
-      global.asyncAirtable.select(process.env.AIRTABLE_TABLE || '', 10),
+      asyncAirtable.select(process.env.AIRTABLE_TABLE || '', 10),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
 
   test('should throw an error if you pass in an invalid option', async (done) => {
     await expect(
-      global.asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
+      asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
         // @ts-ignore
         test: 'test',
       }),
@@ -156,13 +134,13 @@ describe('.select', () => {
   test('should throw an error if you pass an incorrect data type for page', async (done) => {
     await expect(
       // @ts-ignore
-      global.asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {}, [10]),
+      asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {}, [10]),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
   test('should throw an error if you pass a table name that does not exist with a page as well', async (done) => {
     await expect(
-      global.asyncAirtable.select('doesnotexist' || '', {}, 1),
+      asyncAirtable.select('doesnotexist' || '', {}, 1),
     ).rejects.toThrowError(/NOT_FOUND/g);
     done();
   });
@@ -172,10 +150,10 @@ describe('.select', () => {
     for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
       results.push(
         i % 2 === 0
-          ? global.asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
+          ? asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
               maxRecords: 1,
             })
-          : global.asyncAirtable.select(
+          : asyncAirtable.select(
               process.env.AIRTABLE_TABLE || '',
               { pageSize: 1 },
               1,

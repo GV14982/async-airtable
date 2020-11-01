@@ -671,4 +671,31 @@ export default class AsyncAirtable {
       throw new Error(err);
     }
   };
+
+  /**
+   * Checks if a record exists, and if it does updates it, if not creates a new record.
+   * @method
+   * @param {string} table - Table name
+   * @param {string} filterString - The filter formula string used to check for a record
+   * @param {Record} record - Record object used to either update or create a record
+   * @returns {Promise<AirtableRecord>}
+   */
+  upsertRecord = async (
+    table: string,
+    filterString: string,
+    record: Fields,
+  ): Promise<AirtableRecord> => {
+    checkArg(table, 'table', 'string', true);
+    checkArg(filterString, 'filterString', 'string', true);
+    checkArg(record, 'record', 'object', true);
+    const exists = await this.select(table, { filterByFormula: filterString });
+    if (!exists[0]) {
+      return await this.createRecord(table, record);
+    } else {
+      return await this.updateRecord(table, {
+        id: exists[0].id,
+        fields: record,
+      });
+    }
+  };
 }

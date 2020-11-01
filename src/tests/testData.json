@@ -466,5 +466,23 @@
       "title": "test-find-2"
     },
     "createdTime": "2020-10-09T06:40:50.000Z"
+  },
+  {
+    "id": "recyP4FF1r4zWPWUi",
+    "fields": {
+      "email": "upsert@test.com",
+      "value": 13,
+      "title": "test-upsert"
+    },
+    "createdTime": "2020-10-09T06:40:50.000Z"
+  },
+  {
+    "id": "recyP4FF1r4zWPWUi",
+    "fields": {
+      "email": "upsert@test.com",
+      "value": 13,
+      "title": "test-upsert-2"
+    },
+    "createdTime": "2020-10-09T06:40:50.000Z"
   }
 ]

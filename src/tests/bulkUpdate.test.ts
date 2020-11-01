@@ -1,19 +1,23 @@
-import { AirtableRecord } from '../asyncAirtable';
+import AsyncAirtable, { AirtableRecord } from '../asyncAirtable';
+import { config } from 'dotenv';
+config();
+const asyncAirtable = new AsyncAirtable(
+  process.env.AIRTABLE_KEY || '',
+  process.env.AIRTABLE_BASE || '',
+);
 let initResult: AirtableRecord[];
 describe('.bulkUpdate', () => {
   beforeAll(async (done) => {
-    initResult = await global.asyncAirtable.select(
-      process.env.AIRTABLE_TABLE || '',
-      {
-        view: 'Grid view',
-      },
-    );
+    initResult = await asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
+      sort: [{ field: 'value', direction: 'asc' }],
+      view: 'Grid view',
+    });
     initResult = initResult.slice(initResult.length - 7, initResult.length - 4);
     done();
   });
 
   test('should update a record with provided data', async (done) => {
-    const results = await global.asyncAirtable.bulkUpdate(
+    const results = await asyncAirtable.bulkUpdate(
       process.env.AIRTABLE_TABLE || '',
       [
         {
@@ -47,7 +51,7 @@ describe('.bulkUpdate', () => {
 
   test('should throw an error if you do not pass a table', async (done) => {
     // @ts-ignore
-    await expect(global.asyncAirtable.bulkUpdate()).rejects.toThrowError(
+    await expect(asyncAirtable.bulkUpdate()).rejects.toThrowError(
       'Argument "table" is required',
     );
     done();
@@ -56,14 +60,14 @@ describe('.bulkUpdate', () => {
   test('should throw an error if you do not pass a record', async (done) => {
     await expect(
       // @ts-ignore
-      global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || ''),
+      asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || ''),
     ).rejects.toThrowError('Argument "records" is required');
     done();
   });
 
   test('should throw an error if pass a field that does not exist', async (done) => {
     await expect(
-      global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
+      asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
         {
           id: initResult[0].id,
           fields: { gringle: 'grangle' },
@@ -75,7 +79,7 @@ describe('.bulkUpdate', () => {
 
   test('should throw an error if you send an incorrect id', async (done) => {
     await expect(
-      global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
+      asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
         { id: 'doesnotexist', ...JSON.parse(process.env.UPDATE_RECORD || '') },
       ]),
     ).rejects.toThrowError(/INVALID_RECORDS/g);
@@ -84,7 +88,7 @@ describe('.bulkUpdate', () => {
 
   test('should throw an error if pass a field with the incorrect data type', async (done) => {
     await expect(
-      global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
+      asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
         {
           id: initResult[0].id,
           fields: {
@@ -100,7 +104,7 @@ describe('.bulkUpdate', () => {
   test('should throw an error if pass the table argument with an incorrect data type', async (done) => {
     await expect(
       // @ts-ignore
-      global.asyncAirtable.bulkUpdate(10, [
+      asyncAirtable.bulkUpdate(10, [
         {
           id: initResult[0].id,
           fields: JSON.parse(process.env.UPDATE_RECORD || ''),
@@ -113,7 +117,7 @@ describe('.bulkUpdate', () => {
   test('should throw an error if pass the record argument with an incorrect data type', async (done) => {
     await expect(
       // @ts-ignore
-      global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', 10),
+      asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', 10),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
@@ -122,7 +126,7 @@ describe('.bulkUpdate', () => {
   //   let results = [];
   //   for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
   //     results.push(
-  //       global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
+  //       asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
   //         {
   //           id: initResult[0].id,
   //           fields: JSON.parse(process.env.UPDATE_RECORD || ''),

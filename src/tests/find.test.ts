@@ -1,10 +1,16 @@
-import { AirtableRecord } from '../asyncAirtable';
+import AsyncAirtable, { AirtableRecord } from '../asyncAirtable';
+import { config } from 'dotenv';
+config();
+const asyncAirtable = new AsyncAirtable(
+  process.env.AIRTABLE_KEY || '',
+  process.env.AIRTABLE_BASE || '',
+);
 let firstResult: AirtableRecord;
 let secondResult: AirtableRecord;
 let compare: AirtableRecord;
 describe('.find', () => {
   beforeAll(async (done) => {
-    const testResult = await global.asyncAirtable.select(
+    const testResult = await asyncAirtable.select(
       process.env.AIRTABLE_TABLE || '',
       {
         maxRecords: 2,
@@ -16,7 +22,7 @@ describe('.find', () => {
   });
 
   test('should find a specific record by Airtable ID', async (done) => {
-    const result = await global.asyncAirtable.find(
+    const result = await asyncAirtable.find(
       process.env.AIRTABLE_TABLE || '',
       firstResult.id,
     );
@@ -32,7 +38,7 @@ describe('.find', () => {
   });
 
   test('should find a different specific record by Airtable ID', async (done) => {
-    const result = await global.asyncAirtable.find(
+    const result = await asyncAirtable.find(
       process.env.AIRTABLE_TABLE || '',
       secondResult.id,
     );
@@ -49,7 +55,7 @@ describe('.find', () => {
 
   test('should throw an error if you do not pass a table', async (done) => {
     // @ts-ignore
-    await expect(global.asyncAirtable.find()).rejects.toThrowError(
+    await expect(asyncAirtable.find()).rejects.toThrowError(
       'Argument "table" is required',
     );
     done();
@@ -57,14 +63,14 @@ describe('.find', () => {
 
   test('should throw an error if the table does not exist', async (done) => {
     await expect(
-      global.asyncAirtable.find('doesnotexist', firstResult.id),
+      asyncAirtable.find('doesnotexist', firstResult.id),
     ).rejects.toThrowError(/"TABLE_NOT_FOUND"/g);
     done();
   });
 
   test('should throw an error if you pass an incorrect data type for table', async (done) => {
     // @ts-ignore
-    await expect(global.asyncAirtable.find(10)).rejects.toThrowError(
+    await expect(asyncAirtable.find(10)).rejects.toThrowError(
       /Incorrect data type/g,
     );
     done();
@@ -73,17 +79,14 @@ describe('.find', () => {
   test('should throw an error if you do not pass an id', async (done) => {
     await expect(
       // @ts-ignore
-      global.asyncAirtable.find(process.env.AIRTABLE_TABLE || ''),
+      asyncAirtable.find(process.env.AIRTABLE_TABLE || ''),
     ).rejects.toThrowError('Argument "id" is required');
     done();
   });
 
   test('should throw an error if the id does not exist', async (done) => {
     await expect(
-      global.asyncAirtable.find(
-        process.env.AIRTABLE_TABLE || '',
-        'doesnotexist',
-      ),
+      asyncAirtable.find(process.env.AIRTABLE_TABLE || '', 'doesnotexist'),
     ).rejects.toThrowError(/"NOT_FOUND"/g);
     done();
   });
@@ -91,7 +94,7 @@ describe('.find', () => {
   test('should throw an error if you pass an incorrect data type for table', async (done) => {
     await expect(
       // @ts-ignore
-      global.asyncAirtable.find(process.env.AIRTABLE_TABLE || '', 10),
+      asyncAirtable.find(process.env.AIRTABLE_TABLE || '', 10),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
@@ -100,10 +103,7 @@ describe('.find', () => {
     let results = [];
     for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
       results.push(
-        global.asyncAirtable.find(
-          process.env.AIRTABLE_TABLE || '',
-          firstResult.id,
-        ),
+        asyncAirtable.find(process.env.AIRTABLE_TABLE || '', firstResult.id),
       );
     }
     const data: AirtableRecord[] = await Promise.all(results);

@@ -3,7 +3,6 @@
 require('dotenv').config();
 
 module.exports = {
-  setupFiles: ['./src/tests/setupFile.ts'],
   globalSetup: './src/tests/globalSetup.ts',
   globalTeardown: './src/tests/globalTeardown.ts',
   verbose: true,
