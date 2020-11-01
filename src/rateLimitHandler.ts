@@ -5,6 +5,7 @@ export default async (
   retryTimeout: number,
   maxRetry: number,
   key?: string,
+  //TODO, figure out a better type for this.
 ): Promise<any> => {
   return new Promise((resolve, reject) => {
     const retryRateLimit = (

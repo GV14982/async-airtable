@@ -10,7 +10,7 @@ on:
       - master
 
 jobs:
-  testLinux:
+  test:
     strategy:
       max-parallel: 1
       matrix:
@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 12
       - name: Install
         run: npm install
       - name: Run tests

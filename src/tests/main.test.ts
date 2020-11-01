@@ -10,6 +10,7 @@ const requiredMethods = [
   'bulkCreate',
   'bulkUpdate',
   'bulkDelete',
+  'upsertRecord',
 ];
 
 describe('asyncAirtable', () => {
