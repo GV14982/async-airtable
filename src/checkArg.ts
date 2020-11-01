@@ -1,4 +1,4 @@
-import { SelectOptions } from './asyncAirtable';
+import { SelectOptions, AirtableUpdateRecord } from './asyncAirtable';
 
 type Arg =
   | string
@@ -6,6 +6,8 @@ type Arg =
   | SelectOptions
   | Record<string, unknown>[]
   | string[]
+  | AirtableUpdateRecord
+  | AirtableUpdateRecord[]
   | undefined;
 
 export default (

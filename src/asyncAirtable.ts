@@ -43,13 +43,18 @@ export interface Fields {
   [key: string]: unknown;
 }
 
-interface AirtableRecordResponse {
+export interface AirtableRecordResponse {
   records: AirtableRecord[];
   offset?: string;
 }
 
-interface AirtableDeletedResponse {
+export interface AirtableDeletedResponse {
   records: DeleteResponse[];
+}
+
+export interface AirtableUpdateRecord {
+  id: string;
+  fields: Fields;
 }
 
 /**
@@ -121,15 +126,49 @@ const validOptions: string[] = [
  * @typedef Record
  * @type {Object}
  * @name Record
- * @description  An object of the properties. This object cannot be initialized, it is for reference only.
+ * @description The record passed into the createRecord and bulkCreate methods
  * @example
  * {
- *   id: "recABCDEFGHIJK",
  *   title: "hello",
  *   description: "world"
  * }
- * @property {string} [id] - Airtable Record ID (only needed for updates)
- * @property {any} ...fields - Add a separate property for each field
+ * @property {object} ...fields - Add a separate property for each field
+ */
+
+/**
+ * @typedef UpdateRecord
+ * @type {Object}
+ * @name UpdateRecord
+ * @description The record passed into the updateRecord and bulkUpdate methods
+ * @example
+ * {
+ *   id: "recABCDEFGHIJK",
+ *   fields: {
+ *     title: "hello",
+ *     description: "world"
+ *   }
+ * }
+ * @property {string} id - Airtable Record ID (only needed for updates)
+ * @property {object} fields - Add a separate property for each field
+ */
+
+/**
+ * @typedef AirtableRecord
+ * @type {Object}
+ * @name AirtableRecord
+ * @description The record returned by AsyncAirtable
+ * @example
+ * {
+ *   id: "recABCDEFGHIJK",
+ *   fields: {
+ *     title: "hello",
+ *     description: "world"
+ *   },
+ *   createdTime: 'timestamp'
+ * }
+ * @property {string} id - Airtable Record ID
+ * @property {object} fields - Object of fields in the record
+ * @property {string} createdTime - Created timestamp
  */
 
 /**
@@ -181,7 +220,7 @@ export default class AsyncAirtable {
    * @param {string} table - Table name
    * @param {Options} [options] - Options object, used to filter records
    * @param {number} [page] - Used to get a specific page of records
-   * @returns {Promise<Record[]>}
+   * @returns {Promise<AirtableRecord[]>}
    */
   select = async (
     table: string,
@@ -287,7 +326,7 @@ export default class AsyncAirtable {
    * @method
    * @param {string} table - Table name
    * @param {string} id - Airtable record ID
-   * @returns {Promise<Record>}
+   * @returns {Promise<AirtableRecord>}
    */
   find = async (table: string, id: string): Promise<AirtableRecord> => {
     try {
@@ -324,8 +363,8 @@ export default class AsyncAirtable {
    * Creates a new record on the specified table.
    * @method
    * @param {string} table - Table name
-   * @param {object} record - Record object, used to structure data for insert
-   * @returns {Promise<Record>}
+   * @param {Record} record - Record object, used to structure data for insert
+   * @returns {Promise<AirtableRecord>}
    */
   createRecord = async (
     table: string,
@@ -376,23 +415,20 @@ export default class AsyncAirtable {
    * Updates a record on the specified table.
    * @method
    * @param {string} table - Table name
-   * @param {object} record - Record object, used to update data within a specific record
+   * @param {UpdateRecord} record - Record object, used to update data within a specific record
    * @param {boolean} [destructive=false] - (Dis-)Allow a destructive update
-   * @returns {Promise<Record>}
+   * @returns {Promise<AirtableRecord>}
    */
   updateRecord = async (
     table: string,
-    record: Fields,
+    record: AirtableUpdateRecord,
     destructive = false,
   ): Promise<AirtableRecord> => {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(record, 'record', 'object', true);
       const url = `${baseURL}/${this.base}/${table}/${record.id}`;
-      const fields: Fields = {};
-      Object.keys(record).forEach((key) => {
-        if (key !== 'id') fields[key] = record[key];
-      });
+      const { fields } = record;
       const res: Response = await nodeFetch(url, {
         method: destructive ? 'put' : 'patch',
         body: JSON.stringify({ fields }),
@@ -478,7 +514,7 @@ export default class AsyncAirtable {
    * @method
    * @param {string} table - Table name
    * @param {Array<Record>} records - An array of Record objects
-   * @returns {Promise<Record[]>}
+   * @returns {Promise<AirtableRecord[]>}
    */
   bulkCreate = async (
     table: string,
@@ -532,28 +568,20 @@ export default class AsyncAirtable {
    * Updates multiple records on the specified table
    * @method
    * @param {string} table - Table name
-   * @param {Array<Record>} records - An array of Record objects
-   * @returns {Promise<Record[]>}
+   * @param {Array<UpdateRecord>} records - An array of Record objects
+   * @returns {Promise<AirtableRecord[]>}
    */
   bulkUpdate = async (
     table: string,
-    records: Fields[],
+    records: AirtableUpdateRecord[],
   ): Promise<AirtableRecord[]> => {
     try {
       checkArg(table, 'table', 'string', true);
       checkArg(records, 'records', 'object', true);
       const url = `${baseURL}/${this.base}/${table}`;
-      const body = records.map((record) => {
-        const id = record.id;
-        const fields: Fields = {};
-        Object.keys(record).forEach((key) => {
-          if (key !== 'id') fields[key] = record[key];
-        });
-        return { id, fields };
-      });
       const res: Response = await nodeFetch(url, {
         method: 'patch',
-        body: JSON.stringify({ records: body }),
+        body: JSON.stringify({ records }),
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
@@ -570,7 +598,7 @@ export default class AsyncAirtable {
             url,
             {
               method: 'patch',
-              body: JSON.stringify({ records: body }),
+              body: JSON.stringify({ records }),
               headers: {
                 Authorization: `Bearer ${this.apiKey}`,
                 'Content-Type': 'application/json',

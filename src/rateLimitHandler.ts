@@ -1,6 +1,4 @@
 import nodeFetch, { RequestInit } from 'node-fetch';
-import { AirtableRecord, DeleteResponse } from './asyncAirtable';
-
 export default async (
   url: string,
   opts: RequestInit,

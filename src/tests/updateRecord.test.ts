@@ -17,7 +17,10 @@ describe('.updateRecord', () => {
   test('should update a record with provided data', async (done) => {
     const result = await global.asyncAirtable.updateRecord(
       process.env.AIRTABLE_TABLE || '',
-      { id: initResult[0].id, ...JSON.parse(process.env.UPDATE_RECORD || '') },
+      {
+        id: initResult[0].id,
+        fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+      },
     );
     expect(result).toBeDefined();
     expect(typeof result).toBe('object');
@@ -36,7 +39,7 @@ describe('.updateRecord', () => {
       process.env.AIRTABLE_TABLE || '',
       {
         id: initResult[0].id,
-        ...JSON.parse(process.env.DESTRUCTIVE_UPDATE_RECORD || ''),
+        fields: JSON.parse(process.env.DESTRUCTIVE_UPDATE_RECORD || ''),
       },
       true,
     );
@@ -72,7 +75,8 @@ describe('.updateRecord', () => {
     await expect(
       global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE || '', {
         id: initResult[0].id,
-        gringle: 'grangle',
+        //@ts-ignore
+        fields: { gringle: 'grangle' },
       }),
     ).rejects.toThrowError(/UNKNOWN_FIELD_NAME/g);
     done();
@@ -82,7 +86,7 @@ describe('.updateRecord', () => {
     await expect(
       global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE || '', {
         id: 'doesnotexist',
-        ...JSON.parse(process.env.UPDATE_RECORD || ''),
+        fields: JSON.parse(process.env.UPDATE_RECORD || ''),
       }),
     ).rejects.toThrowError(/NOT_FOUND/g);
     done();
@@ -92,8 +96,10 @@ describe('.updateRecord', () => {
     await expect(
       global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE || '', {
         id: initResult[0].id,
-        value: 'nope',
-        ...JSON.parse(process.env.UPDATE_RECORD || ''),
+        fields: {
+          ...JSON.parse(process.env.UPDATE_RECORD || ''),
+          value: 'nope',
+        },
       }),
     ).rejects.toThrowError(/INVALID_VALUE_FOR_COLUMN/g);
     done();
@@ -104,7 +110,7 @@ describe('.updateRecord', () => {
       // @ts-ignore
       global.asyncAirtable.updateRecord(10, {
         id: initResult[0].id,
-        ...JSON.parse(process.env.UPDATE_RECORD || ''),
+        fields: JSON.parse(process.env.UPDATE_RECORD || ''),
       }),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
@@ -124,7 +130,7 @@ describe('.updateRecord', () => {
       results.push(
         global.asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE || '', {
           id: initResult[0].id,
-          ...JSON.parse(process.env.UPDATE_RECORD || ''),
+          fields: JSON.parse(process.env.UPDATE_RECORD || ''),
         }),
       );
     }

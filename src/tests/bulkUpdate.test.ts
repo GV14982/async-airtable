@@ -18,15 +18,15 @@ describe('.bulkUpdate', () => {
       [
         {
           id: initResult[0].id,
-          ...JSON.parse(process.env.UPDATE_RECORD || ''),
+          fields: JSON.parse(process.env.UPDATE_RECORD || ''),
         },
         {
           id: initResult[1].id,
-          ...JSON.parse(process.env.UPDATE_RECORD || ''),
+          fields: JSON.parse(process.env.UPDATE_RECORD || ''),
         },
         {
           id: initResult[2].id,
-          ...JSON.parse(process.env.UPDATE_RECORD || ''),
+          fields: JSON.parse(process.env.UPDATE_RECORD || ''),
         },
       ],
     );
@@ -66,7 +66,7 @@ describe('.bulkUpdate', () => {
       global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
         {
           id: initResult[0].id,
-          gringle: 'grangle',
+          fields: { gringle: 'grangle' },
         },
       ]),
     ).rejects.toThrowError(/UNKNOWN_FIELD_NAME/g);
@@ -87,8 +87,10 @@ describe('.bulkUpdate', () => {
       global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
         {
           id: initResult[0].id,
-          ...JSON.parse(process.env.UPDATE_RECORD || ''),
-          value: 'nope',
+          fields: {
+            ...JSON.parse(process.env.UPDATE_RECORD || ''),
+            value: 'nope',
+          },
         },
       ]),
     ).rejects.toThrowError(/INVALID_VALUE_FOR_COLUMN/g);
@@ -99,7 +101,10 @@ describe('.bulkUpdate', () => {
     await expect(
       // @ts-ignore
       global.asyncAirtable.bulkUpdate(10, [
-        JSON.parse(process.env.UPDATE_RECORD || ''),
+        {
+          id: initResult[0].id,
+          fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+        },
       ]),
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
@@ -113,38 +118,38 @@ describe('.bulkUpdate', () => {
     done();
   });
 
-  test('should retry if rate limited', async (done) => {
-    let results = [];
-    for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
-      results.push(
-        global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
-          {
-            id: initResult[0].id,
-            ...JSON.parse(process.env.UPDATE_RECORD || ''),
-          },
-          {
-            id: initResult[1].id,
-            ...JSON.parse(process.env.UPDATE_RECORD || ''),
-          },
-          {
-            id: initResult[2].id,
-            ...JSON.parse(process.env.UPDATE_RECORD || ''),
-          },
-        ]),
-      );
-    }
-    const data: Array<AirtableRecord[]> = await Promise.all(results);
-    data.forEach((results) => {
-      expect(results).toBeDefined();
-      expect(Array.isArray(results)).toBe(true);
-      expect(results.length).toBeGreaterThan(0);
-      results.forEach((result) => {
-        expect(result.id).toBeDefined();
-        expect(result.fields).toBeDefined();
-        expect(Object.keys(result.fields).length).toBeGreaterThan(0);
-        expect(result.createdTime).toBeDefined();
-      });
-    });
-    done();
-  });
+  // test('should retry if rate limited', async (done) => {
+  //   let results = [];
+  //   for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
+  //     results.push(
+  //       global.asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
+  //         {
+  //           id: initResult[0].id,
+  //           fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+  //         },
+  //         {
+  //           id: initResult[1].id,
+  //           fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+  //         },
+  //         {
+  //           id: initResult[2].id,
+  //           fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+  //         },
+  //       ]),
+  //     );
+  //   }
+  //   const data: Array<AirtableRecord[]> = await Promise.all(results);
+  //   data.forEach((results) => {
+  //     expect(results).toBeDefined();
+  //     expect(Array.isArray(results)).toBe(true);
+  //     expect(results.length).toBeGreaterThan(0);
+  //     results.forEach((result) => {
+  //       expect(result.id).toBeDefined();
+  //       expect(result.fields).toBeDefined();
+  //       expect(Object.keys(result.fields).length).toBeGreaterThan(0);
+  //       expect(result.createdTime).toBeDefined();
+  //     });
+  //   });
+  //   done();
+  // });
 });
