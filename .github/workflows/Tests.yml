@@ -1,4 +1,4 @@
-name: Test and upload to Coveralls
+name: Test
 
 on:
   push:
@@ -38,8 +38,3 @@ jobs:
           DESTRUCTIVE_UPDATE_RECORD: '{"title": "test-UPDATED-destructive", "value": 23}'
           RETRY_TIMEOUT: 60000
           REQ_COUNT: 100
-      - name: Upload to coveralls
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./coverage/lcov.info
