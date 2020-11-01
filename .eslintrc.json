@@ -1,18 +1,6 @@
 {
-  "parser": "babel-eslint",
-  "parserOptions": {
-    "ecmaVersion": 6,
-    "ecmaFeatures": {
-      "impliedStrict": true
-    },
-    "sourceType": "module"
-  },
-  "env": {
-    "es6": true,
-    "node": true,
-    "commonjs": true,
-    "jest/globals": true
-  },
+  "root": true,
+  "parser": "@typescript-eslint/parser",
   "rules": {
     "no-console": [
       "error",
@@ -21,6 +9,17 @@
       }
     ]
   },
-  "plugins": ["jest"],
-  "extends": ["eslint:recommended", "prettier"]
+  "plugins": ["jest", "@typescript-eslint/eslint-plugin"],
+  "extends": [
+    "eslint:recommended",
+    "prettier",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "ignorePatterns": [
+    "/lib",
+    "src/tests",
+    "jest.config.js",
+    "/docs",
+    "/coverage"
+  ]
 }

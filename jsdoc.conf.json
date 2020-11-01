@@ -1,0 +1,24 @@
+{
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc", "closure"]
+  },
+  "source": {
+    "include": ["lib"],
+    "includePattern": ".+\\.js(doc|x)?$",
+    "excludePattern": ".+\\.(test|spec).ts"
+  },
+  "plugins": ["plugins/markdown", "typescript"],
+  "templates": {
+    "cleverLinks": true,
+    "monospaceLinks": true,
+    "footerText": "My awesome footer text"
+  },
+  "opts": {
+    "destination": "docs",
+    "recurse": true,
+    "readme": "README.md",
+    "template": "node_modules/docdash"
+  },
+  "docdash": {}
+}
