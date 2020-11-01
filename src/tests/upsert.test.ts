@@ -108,8 +108,8 @@ describe('.upsertRecord', () => {
 
   test('should throw an error if pass the table argument with an incorrect data type', async (done) => {
     await expect(
-      // @ts-ignore
       asyncAirtable.upsertRecord(
+        // @ts-ignore
         10,
         "{title} = 'test-create'",
         JSON.parse(process.env.UPDATE_RECORD || ''),
@@ -120,9 +120,9 @@ describe('.upsertRecord', () => {
 
   test('should throw an error if pass the filterString argument with an incorrect data type', async (done) => {
     await expect(
-      //@ts-ignore
       asyncAirtable.upsertRecord(
         process.env.AIRTABLE_TABLE || '',
+        //@ts-ignore
         10,
         JSON.parse(process.env.UPDATE_RECORD || ''),
       ),
@@ -132,10 +132,10 @@ describe('.upsertRecord', () => {
 
   test('should throw an error if pass the record argument with an incorrect data type', async (done) => {
     await expect(
-      //@ts-ignore
       asyncAirtable.upsertRecord(
         process.env.AIRTABLE_TABLE || '',
         "{title} = 'test-create'",
+        //@ts-ignore
         10,
       ),
     ).rejects.toThrowError(/Incorrect data type/g);
