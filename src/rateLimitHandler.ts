@@ -1,9 +1,20 @@
-const nodeFetch = require('node-fetch');
-
-module.exports = async (url, opts, retryTimeout, maxRetry, key) => {
+import nodeFetch, { RequestInit } from 'node-fetch';
+export default async (
+  url: string,
+  opts: RequestInit,
+  retryTimeout: number,
+  maxRetry: number,
+  key?: string,
+): Promise<any> => {
   return new Promise((resolve, reject) => {
-    const retryRateLimit = (url, opts, retryTimeout, maxRetry, key) => {
-      if (maxRetry < 1) {
+    const retryRateLimit = (
+      url: string,
+      opts: RequestInit,
+      retryTimeout: number,
+      maxRetry: number,
+      key?: string,
+    ): void => {
+      if (maxRetry && maxRetry < 1) {
         reject('Max timeout exceeded');
       }
       setTimeout(async () => {

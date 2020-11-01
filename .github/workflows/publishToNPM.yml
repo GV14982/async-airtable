@@ -13,10 +13,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 14
+      - name: Set NPM version
+        run: npm version ${github.event.release.tag_name}
       - name: NPM Publish
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{secrets.NPM_AUTH_TOKEN}}
+      - uses: EndBug/add-and-commit@v5
+        with:
+          add: 'package*.json'
+          branch: master
+          message: 'Auto bumping the NPM version'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload to coveralls
         uses: coverallsapp/github-action@master
         with:
