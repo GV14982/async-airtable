@@ -5,6 +5,7 @@ on:
     type: [published]
 
 jobs:
+<<<<<<< HEAD
   test:
     strategy:
       max-parallel: 1
@@ -39,6 +40,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+=======
+  publish-npm:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+>>>>>>> Made small change to NPM publish file
       - uses: actions/setup-node@v1
         with:
           node-version: 12
