@@ -2,8 +2,8 @@
   "name": "asyncairtable",
   "version": "1.0.0",
   "description": "A lightweight, promisified airtable client",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
+  "main": "./lib/asyncAirtable.js",
+  "types": "./lib/asyncAirtable.d.ts",
   "files": [
     "lib/**/*",
     "LICENSE.md"
@@ -11,7 +11,10 @@
   "scripts": {
     "test": "jest -i --no-cache --coverage",
     "doc": "jsdoc -c jsdoc.conf.json",
-    "build": "tsc",
+    "build": "npm run build:js && npm run build:browser && npm run build:browser-min",
+    "build:js": "tsc",
+    "build:browser": "webpack -c ./webpack.config.js",
+    "build:browser-min": "webpack -c ./webpack.config.min.js",
     "lint": "eslint ./ --fix --cache",
     "format": "prettier ./ --write",
     "prepare": "npm run build",
@@ -71,7 +74,9 @@
     "prettier": "^2.1.2",
     "ts-jest": "^26.4.3",
     "ts-node": "^9.0.0",
-    "typescript": "^4.0.5"
+    "typescript": "^4.0.5",
+    "webpack": "^5.3.2",
+    "webpack-cli": "^4.1.0"
   },
   "husky": {
     "hooks": {
