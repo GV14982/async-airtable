@@ -29,6 +29,15 @@ npm install asyncairtable
 
 Then you should be good to go!👍
 
+## Browser
+
+If you want to use AsyncAirtable in a browser, please use the files in the `./dist` folder. There is a regular and a minified version.
+
+They are also available via [unpkg.com](https://unpkg.com/):
+
+- [Regular](https://unpkg.com/asyncairtable/dist/asyncAirtable.js)
+- [Minified](https://unpkg.com/asyncairtable/dist/asyncAirtable.min.js)
+
 ## Usage
 
 ```javascript
