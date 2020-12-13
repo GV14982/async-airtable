@@ -1,6 +1,7 @@
 # Async Airtable
 
-[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/Tests?label=Tests&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
+[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/testsDevelop?label=Develop&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
+[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/testsMaster?label=Master&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
 [![MIT License](https://img.shields.io/github/license/GV14982/async-airtable?style=flat)](LICENSE.md)
 
 AsyncAirtable is a lightweight npm package to handle working with the [Airtable API](https://airtable.com/api).
