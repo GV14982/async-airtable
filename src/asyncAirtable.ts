@@ -706,6 +706,10 @@ export default class AsyncAirtable {
   };
 }
 
+if (module) {
+  module.exports = AsyncAirtable;
+}
+
 if (typeof window !== 'undefined') {
   window.AsyncAirtable = AsyncAirtable;
 }
