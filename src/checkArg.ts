@@ -1,4 +1,4 @@
-import { SelectOptions, AirtableUpdateRecord } from './asyncAirtable';
+import { SelectOptions, AirtableUpdateRecord } from './@types';
 
 type Arg =
   | string

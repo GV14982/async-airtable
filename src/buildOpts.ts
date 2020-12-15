@@ -1,4 +1,4 @@
-import { SelectOptions } from './asyncAirtable';
+import { SelectOptions } from './@types';
 
 export default (opts: SelectOptions): string => {
   const params = Object.keys(opts)

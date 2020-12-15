@@ -4,63 +4,21 @@ import checkError from './checkError';
 import checkArg from './checkArg';
 import rateLimitHandler from './rateLimitHandler';
 const baseURL = 'https://api.airtable.com/v0';
+import {
+  SelectOptions,
+  AirtableDeletedResponse,
+  AirtableRecord,
+  AirtableRecordResponse,
+  AirtableUpdateRecord,
+  DeleteResponse,
+  Fields,
+  Config,
+} from './@types';
 
 declare global {
   interface Window {
     AsyncAirtable: typeof AsyncAirtable;
   }
-}
-
-export interface SelectOptions {
-  fields?: string[];
-  filterByFormula?: string;
-  maxRecords?: number;
-  pageSize?: number;
-  view?: string;
-  sort?: SortObject[];
-  offset?: string;
-}
-
-export interface Config {
-  retryOnRateLimit?: boolean;
-  maxRetry?: number;
-  retryTimeout?: number;
-}
-
-export type ConfigKey = keyof Config;
-
-export interface SortObject {
-  field: string;
-  direction?: 'asc' | 'desc';
-}
-
-export interface DeleteResponse {
-  id?: string;
-  deleted: boolean;
-}
-
-export interface AirtableRecord {
-  id: string;
-  fields: Fields;
-  createdTime?: string;
-}
-
-export interface Fields {
-  [key: string]: unknown;
-}
-
-export interface AirtableRecordResponse {
-  records: AirtableRecord[];
-  offset?: string;
-}
-
-export interface AirtableDeletedResponse {
-  records: DeleteResponse[];
-}
-
-export interface AirtableUpdateRecord {
-  id: string;
-  fields: Fields;
 }
 
 /**
@@ -196,7 +154,7 @@ const validOptions: string[] = [
  * The main AsyncAirtable Library
  * @class
  */
-export default class AsyncAirtable {
+class AsyncAirtable {
   retryOnRateLimit: boolean;
   maxRetry: number;
   retryTimeout: number;
@@ -705,6 +663,8 @@ export default class AsyncAirtable {
     }
   };
 }
+
+export = AsyncAirtable;
 
 if (typeof window !== 'undefined') {
   window.AsyncAirtable = AsyncAirtable;
