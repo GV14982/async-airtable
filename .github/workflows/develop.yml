@@ -40,6 +40,7 @@ jobs:
   publish-npm:
     needs: test
     if: github.ref == 'refs/heads/develop'
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
