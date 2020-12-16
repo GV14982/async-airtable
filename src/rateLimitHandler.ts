@@ -1,4 +1,4 @@
-import nodeFetch, { RequestInit } from 'node-fetch';
+import fetch from './fetch';
 export default async (
   url: string,
   opts: RequestInit,
@@ -20,7 +20,7 @@ export default async (
       }
       setTimeout(async () => {
         try {
-          const res = await nodeFetch(url, opts);
+          const res = await fetch(url, opts);
           const data = await res.json();
           if (res.status === 429) {
             return retryRateLimit(

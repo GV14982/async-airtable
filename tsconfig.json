@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "module": "amd",
-    "moduleResolution": "node",
-    "target": "ES6",
+    "module": "commonJS",
+    "target": "ES5",
     "declaration": true,
-    "outFile": "./lib/index.js",
+    "outDir": "./lib",
     "resolveJsonModule": true,
-    "strict": true
+    "strict": true,
+    "sourceMap": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/tests/*"]

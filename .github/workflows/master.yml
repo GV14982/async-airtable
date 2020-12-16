@@ -1,8 +1,14 @@
-name: Publish to NPM
+name: master
 
 on:
-  release:
-    type: [published]
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - master
 
 jobs:
   test:
@@ -33,10 +39,11 @@ jobs:
           DESTRUCTIVE_UPDATE_RECORD: '{"title": "test-UPDATED-destructive", "value": 23}'
           RETRY_TIMEOUT: 60000
           REQ_COUNT: 100
-
   publish-npm:
     needs: test
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -44,20 +51,21 @@ jobs:
           node-version: 12
           registry-url: https://registry.npmjs.org/
       - run: npm ci
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
-  
-  publish-gpr:
-    needs: test
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_AUTH_TOKEN }}
+          tag: next
+          check-version: false
+  release:
+    if: github.ref != 'refs/heads/master' && github.event_name == 'push'
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/create-release@v1
         with:
-          node-version: 12
-          registry-url: https://npm.pkg.github.com/
-      - run: npm ci
-      - run: npm publish
+          tag_name: ${{github.ref}}
+          release_name: Release ${{github.ref}}
+          draft: true
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

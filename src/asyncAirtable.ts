@@ -1,60 +1,24 @@
-import nodeFetch, { Response } from 'node-fetch';
+import fetch from './fetch';
 import buildOpts from './buildOpts';
 import checkError from './checkError';
 import checkArg from './checkArg';
 import rateLimitHandler from './rateLimitHandler';
 const baseURL = 'https://api.airtable.com/v0';
+import {
+  SelectOptions,
+  AirtableDeletedResponse,
+  AirtableRecord,
+  AirtableRecordResponse,
+  AirtableUpdateRecord,
+  DeleteResponse,
+  Fields,
+  Config,
+} from './@types';
 
-export interface SelectOptions {
-  fields?: string[];
-  filterByFormula?: string;
-  maxRecords?: number;
-  pageSize?: number;
-  view?: string;
-  sort?: SortObject[];
-  offset?: string;
-}
-
-export interface Config {
-  retryOnRateLimit?: boolean;
-  maxRetry?: number;
-  retryTimeout?: number;
-}
-
-export type ConfigKey = keyof Config;
-
-export interface SortObject {
-  field: string;
-  direction?: 'asc' | 'desc';
-}
-
-export interface DeleteResponse {
-  id?: string;
-  deleted: boolean;
-}
-
-export interface AirtableRecord {
-  id: string;
-  fields: Fields;
-  createdTime?: string;
-}
-
-export interface Fields {
-  [key: string]: unknown;
-}
-
-export interface AirtableRecordResponse {
-  records: AirtableRecord[];
-  offset?: string;
-}
-
-export interface AirtableDeletedResponse {
-  records: DeleteResponse[];
-}
-
-export interface AirtableUpdateRecord {
-  id: string;
-  fields: Fields;
+declare global {
+  interface Window {
+    AsyncAirtable: typeof AsyncAirtable;
+  }
 }
 
 /**
@@ -190,7 +154,7 @@ const validOptions: string[] = [
  * The main AsyncAirtable Library
  * @class
  */
-export default class AsyncAirtable {
+class AsyncAirtable {
   retryOnRateLimit: boolean;
   maxRetry: number;
   retryTimeout: number;
@@ -246,7 +210,7 @@ export default class AsyncAirtable {
             opts.offset = offset;
           }
           try {
-            const res: Response = await nodeFetch(`${url}?${buildOpts(opts)}`, {
+            const res: Response = await fetch(`${url}?${buildOpts(opts)}`, {
               headers: { Authorization: `Bearer ${this.apiKey}` },
             });
             const body: AirtableRecordResponse = await res.json();
@@ -284,7 +248,7 @@ export default class AsyncAirtable {
             opts.offset = offset;
           }
           try {
-            const res: Response = await nodeFetch(`${url}?${buildOpts(opts)}`, {
+            const res: Response = await fetch(`${url}?${buildOpts(opts)}`, {
               headers: { Authorization: `Bearer ${this.apiKey}` },
             });
             const body: AirtableRecordResponse = await res.json();
@@ -333,7 +297,7 @@ export default class AsyncAirtable {
       checkArg(table, 'table', 'string', true);
       checkArg(id, 'id', 'string', true);
       const url = `${baseURL}/${this.base}/${table}/${id}`;
-      const res: Response = await nodeFetch(url, {
+      const res: Response = await fetch(url, {
         headers: { Authorization: `Bearer ${this.apiKey}` },
       });
       const data: AirtableRecord = await res.json();
@@ -375,7 +339,7 @@ export default class AsyncAirtable {
       checkArg(record, 'record', 'object', true);
       const url = `${baseURL}/${this.base}/${table}`;
       const body = { fields: record };
-      const res: Response = await nodeFetch(url, {
+      const res: Response = await fetch(url, {
         method: 'post',
         body: JSON.stringify(body),
         headers: {
@@ -429,7 +393,7 @@ export default class AsyncAirtable {
       checkArg(record, 'record', 'object', true);
       const url = `${baseURL}/${this.base}/${table}/${record.id}`;
       const { fields } = record;
-      const res: Response = await nodeFetch(url, {
+      const res: Response = await fetch(url, {
         method: destructive ? 'put' : 'patch',
         body: JSON.stringify({ fields }),
         headers: {
@@ -477,7 +441,7 @@ export default class AsyncAirtable {
       checkArg(table, 'table', 'string', true);
       checkArg(id, 'id', 'string', true);
       const url = `${baseURL}/${this.base}/${table}/${id}`;
-      const res: Response = await nodeFetch(url, {
+      const res: Response = await fetch(url, {
         method: 'delete',
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
@@ -527,7 +491,7 @@ export default class AsyncAirtable {
       const body = records.map((record) => ({
         fields: record,
       }));
-      const res: Response = await nodeFetch(url, {
+      const res: Response = await fetch(url, {
         method: 'post',
         body: JSON.stringify({ records: body }),
         headers: {
@@ -579,7 +543,7 @@ export default class AsyncAirtable {
       checkArg(table, 'table', 'string', true);
       checkArg(records, 'records', 'object', true);
       const url = `${baseURL}/${this.base}/${table}`;
-      const res: Response = await nodeFetch(url, {
+      const res: Response = await fetch(url, {
         method: 'patch',
         body: JSON.stringify({ records }),
         headers: {
@@ -639,7 +603,7 @@ export default class AsyncAirtable {
         }
       });
       const url = `${baseURL}/${this.base}/${table}?${encodeURI(query)}`;
-      const res: Response = await nodeFetch(url, {
+      const res: Response = await fetch(url, {
         method: 'delete',
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
@@ -698,4 +662,10 @@ export default class AsyncAirtable {
       });
     }
   };
+}
+
+export = AsyncAirtable;
+
+if (typeof window !== 'undefined') {
+  window.AsyncAirtable = AsyncAirtable;
 }

@@ -20,6 +20,8 @@
     "src/tests",
     "jest.config.js",
     "/docs",
-    "/coverage"
+    "/coverage",
+    "/dist",
+    "webpack.*.js"
   ]
 }

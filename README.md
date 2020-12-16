@@ -1,7 +1,11 @@
 # Async Airtable
 
-[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/Tests?label=Tests&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
+[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/develop?label=Develop&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
+[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/master?label=Master&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
+[![npm](https://img.shields.io/npm/v/asyncairtable)](https://www.npmjs.com/package/asyncairtable)
+[![npm (tag)](https://img.shields.io/npm/v/asyncairtable/next)](https://www.npmjs.com/package/asyncairtable)
 [![MIT License](https://img.shields.io/github/license/GV14982/async-airtable?style=flat)](LICENSE.md)
+
 
 AsyncAirtable is a lightweight npm package to handle working with the [Airtable API](https://airtable.com/api).
 
@@ -28,6 +32,15 @@ npm install asyncairtable
 ```
 
 Then you should be good to go!👍
+
+## Browser
+
+If you want to use AsyncAirtable in a browser, please use the files in the `./dist` folder. There is a regular and a minified version.
+
+They are also available via [unpkg.com](https://unpkg.com/):
+
+- [Regular](https://unpkg.com/asyncairtable/dist/asyncAirtable.js)
+- [Minified](https://unpkg.com/asyncairtable/dist/asyncAirtable.min.js)
 
 ## Usage
 

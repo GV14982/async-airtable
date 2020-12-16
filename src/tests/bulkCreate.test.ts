@@ -1,7 +1,5 @@
-import AsyncAirtable, {
-  AirtableRecord,
-  DeleteResponse,
-} from '../asyncAirtable';
+import AsyncAirtable = require('../asyncAirtable');
+import { AirtableRecord } from '../@types';
 import { config } from 'dotenv';
 config();
 const asyncAirtable = new AsyncAirtable(
