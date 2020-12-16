@@ -67,5 +67,5 @@ jobs:
           tag_name: ${{github.ref}}
           release_name: Release ${{github.ref}}
           draft: true
-      - env:
+        env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
