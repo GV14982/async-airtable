@@ -56,16 +56,3 @@ jobs:
         with:
           token: ${{ secrets.NPM_AUTH_TOKEN }}
           check-version: false
-  release:
-    if: github.ref != 'refs/heads/master' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/create-release@v1
-        with:
-          tag_name: ${{github.ref}}
-          release_name: Release ${{github.ref}}
-          draft: true
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
