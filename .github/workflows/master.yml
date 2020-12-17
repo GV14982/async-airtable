@@ -55,7 +55,6 @@ jobs:
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_AUTH_TOKEN }}
-          tag: next
           check-version: false
   release:
     if: github.ref != 'refs/heads/master' && github.event_name == 'push'
