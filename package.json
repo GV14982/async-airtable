@@ -5,8 +5,10 @@
   "main": "./lib/asyncAirtable.js",
   "types": "./lib/asyncAirtable.d.ts",
   "files": [
+    "dist/**/*",
     "lib/**/*",
-    "LICENSE.md"
+    "LICENSE.md",
+    "README.md"
   ],
   "scripts": {
     "test": "jest -i --no-cache --coverage",
