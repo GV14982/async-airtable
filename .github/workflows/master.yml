@@ -12,6 +12,7 @@ on:
 
 jobs:
   test:
+    if: github.ref == 'refs/heads/master' || github.base_ref === master
     strategy:
       max-parallel: 1
       matrix:
