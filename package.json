@@ -55,7 +55,8 @@
   },
   "homepage": "https://github.com/GV14982/async-airtable#readme",
   "dependencies": {
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "typedoc": "^0.19.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.14",
