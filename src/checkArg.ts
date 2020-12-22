@@ -1,14 +1,4 @@
-import { SelectOptions, AirtableUpdateRecord } from './@types';
-
-type Arg =
-  | string
-  | number
-  | SelectOptions
-  | Record<string, unknown>[]
-  | string[]
-  | AirtableUpdateRecord
-  | AirtableUpdateRecord[]
-  | undefined;
+import { Arg } from './@types';
 
 export default (
   arg: Arg,

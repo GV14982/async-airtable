@@ -1,6 +1,8 @@
 {
-  "inputFiles": ["./src"],
+  "inputFiles": ["./src/asyncAirtable.ts", "./src/@types.ts"],
   "mode": "modules",
   "out": "docs",
-  "exclude": "**/*.test.ts"
+  "includeDeclarations": true,
+  "excludeExternals": true,
+  "includeVersion": true
 }
