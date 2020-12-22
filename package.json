@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "test": "jest -i --no-cache --coverage",
-    "doc": "jsdoc -c jsdoc.conf.json",
+    "docs": "typedoc",
     "build": "npm run build:js && npm run build:browser && npm run build:browser-min",
     "build:js": "tsc",
     "build:browser": "webpack -c ./webpack.config.js",

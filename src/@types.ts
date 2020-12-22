@@ -5,7 +5,7 @@
  * ```
  * {
  *    fields: ['name', 'email', 'date'],
- *    filterByFormula: "{name} = 'Paul'",
+ *    where: {name: 'Paul'},
  *    maxRecords: 50,
  *    pageSize: 10,
  *    sort: [
@@ -31,9 +31,15 @@ export interface SelectOptions {
   fields?: string[];
   /**
    * A [formula used](https://support.airtable.com/hc/en-us/articles/203255215-Formula-Field-Reference)
-   * to filter the records.
+   * to filter the records to return.
    */
   filterByFormula?: string;
+  /**
+   * A Query Object used to build a
+   * [filter formula](https://support.airtable.com/hc/en-us/articles/203255215-Formula-Field-Reference)
+   * to filter the records to return.
+   */
+  where?: QueryObject;
   /**
    * @default=100
    * The maximum total number of records that will be returned in your requests.
@@ -202,60 +208,117 @@ export interface AirtableUpdateRecord {
 }
 
 /**
- * Query
- * @ignore
- */
-export interface Query {
-  where: QueryObject;
-}
-/**
- * Query Object
- * @ignore
+ * An object to handle filtering the records returned by the #select and #upsert methods.
+ *
+ * @example
+ * ```
+ * {
+ *   id: 'Some ID',
+ *   $and: [
+ *     {$lte: {count: 10}},
+ *     {$gte: {count: 5}}
+ *   ],
+ *   $or: [
+ *     {$neq: {name: 'datboi'}},
+ *     {$neq: {name: 'graham'}}
+ *   ]
+ * }
+ * ```
  */
 export interface QueryObject {
   /**
-   * Less than
+   * Less than operator
+   *
+   * @example
+   * ```
+   * {$lt: {field: value}}
+   * ```
    */
   $lt?: QueryObject;
   /**
-   * Greater than
+   * Greater than operator
+   *
+   * @example
+   * ```
+   * {$gt: {field: value}}
+   * ```
    */
   $gt?: QueryObject;
   /**
-   * Less than or equal
+   * Less than or equal operator
+   *
+   * @example
+   * ```
+   * {$lte: {field: value}}
+   * ```
    */
   $lte?: QueryObject;
   /**
-   * Greater than or equal
+   * Greater than or equal operator
+   *
+   * @example
+   * ```
+   * {$gte: {field: value}}
+   * ```
    */
   $gte?: QueryObject;
   /**
-   * Equal
+   * Equal operator
+   *
+   * @example
+   * ```
+   * {$eq: {field: value}}
+   * ```
    */
   $eq?: QueryObject;
   /**
-   * Not Equal
+   * Not equal operator
+   *
+   * @example
+   * ```
+   * {$neq: {field: value}}
+   * ```
    */
   $neq?: QueryObject;
   /**
-   * Not
+   * NOT logical operator
+   *
+   * @example
+   * ```
+   * {$not: expression}
+   * ```
    */
   $not?: QueryObject;
   /**
-   * And
+   * AND logical operator
+   *
+   * @example
+   * ```
+   * {$and: [{expression}, {expression}, ...{expression}]}
+   * ```
    */
   $and?: QueryObject[];
   /**
-   * Or
+   * OR logical operator
+   *
+   * @example
+   * ```
+   * {$or: [{expression}, {expression}, ...{expression}]}
+   * ```
    */
   $or?: QueryObject[];
   /**
    * Shortform equal
+   *
+   * @example
+   * ```
+   * {field: value}
+   * ```
    */
   [key: string]: QueryField | QueryObject | QueryObject[] | undefined;
 }
 /** @ignore */
-type ComparisonObject = Record<string, BaseFieldType>;
+export type ComparisonObject = Record<string, BaseFieldType>;
 /** @ignore */
 type ComparisonFunction = (vals: ComparisonObject) => string;
 /** @ignore */
@@ -279,7 +342,7 @@ export interface LogicalOperators extends Record<string, LogicalFunction> {
 }
 
 /** @ignore */
-export type QueryField = QueryObject | string | number | boolean;
+export type QueryField = QueryObject | BaseFieldType;
 /** @ignore */
 export type BaseFieldType = string | number | boolean | null;
 

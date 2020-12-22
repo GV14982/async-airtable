@@ -7,12 +7,19 @@ import {
   ComparisonObject,
 } from './@types';
 
-const isQueryObject = (item: QueryField) => {
+const operators = ['=', '!=', '>', '>=', '<', '<='];
+
+export const isQueryObject = (item: QueryField): boolean => {
+  if (item === undefined) throw new Error('Missing Query Object');
   const types = ['string', 'number', 'boolean'];
   return item !== null && !types.includes(typeof item);
 };
 
-const buildExpression = (obj: ComparisonObject, op: string) => {
+export const buildExpression = (obj: ComparisonObject, op: string): string => {
+  if (typeof obj !== 'object' || Array.isArray(obj))
+    throw new Error('Missing or Invalid Comparison Object');
+  if (typeof op !== 'string' && !operators.includes(op))
+    throw new Error('Missing or Invalid Comparison Operator');
   const keys = Object.keys(obj);
   const expressionMapper = (k: string, i: number) => {
     const val = baseHandler(obj[k]);
@@ -23,7 +30,7 @@ const buildExpression = (obj: ComparisonObject, op: string) => {
   return keys.length > 1 ? `AND(${exp})` : exp;
 };
 
-const numericalOperators: NumericalOperators = {
+export const numericalOperators: NumericalOperators = {
   $gt: (val) => {
     return buildExpression(val, '>');
   },
@@ -44,7 +51,7 @@ const numericalOperators: NumericalOperators = {
   },
 };
 
-const logicalOperators: LogicalOperators = {
+export const logicalOperators: LogicalOperators = {
   $not: (expression: QueryObject) => `NOT(${queryBuilder(expression)})`,
   $and: (args: QueryObject[]) => {
     let str = 'AND(';
@@ -68,14 +75,14 @@ const logicalOperators: LogicalOperators = {
   },
 };
 
-const booleanHandler = (bool: boolean) => {
+export const booleanHandler = (bool: boolean): string => {
   if (typeof bool !== 'boolean') {
     throw new Error('Invalid type');
   }
   return bool ? 'TRUE()' : 'FALSE()';
 };
 
-const baseHandler = (val: string | number | boolean | null) => {
+export const baseHandler = (val: string | number | boolean | null): string => {
   if (val === null) {
     return 'BLANK()';
   }
@@ -91,7 +98,7 @@ const baseHandler = (val: string | number | boolean | null) => {
   }
 };
 
-export const queryBuilder = (query: QueryObject): string => {
+const queryBuilder = (query: QueryObject): string => {
   let formulaString = '';
   if (Object.keys(query as Record<string, QueryField>).length > 1) {
     formulaString += logicalOperators.$and(
@@ -101,14 +108,17 @@ export const queryBuilder = (query: QueryObject): string => {
     for (const key in query) {
       const current = query[key];
 
-      if (key in numericalOperators && isQueryObject(current)) {
+      if (key in numericalOperators && isQueryObject(current as QueryObject)) {
         formulaString += numericalOperators[key](
           current as Record<string, number>,
         );
-      } else if (key in logicalOperators && isQueryObject(current)) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        formulaString += logicalOperators[key](current);
+      } else if (
+        key in logicalOperators &&
+        (isQueryObject(current as QueryObject) || Array.isArray(current))
+      ) {
+        formulaString += logicalOperators[key](
+          current as QueryObject & QueryObject[],
+        );
       } else {
         formulaString += buildExpression(
           query as Record<string, BaseFieldType>,
@@ -119,3 +129,5 @@ export const queryBuilder = (query: QueryObject): string => {
   }
   return formulaString;
 };
+
+export default queryBuilder;

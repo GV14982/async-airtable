@@ -28,6 +28,7 @@ const validOptions: string[] = [
   'pageSize',
   'sort',
   'view',
+  'where',
 ];
 
 /**
@@ -86,9 +87,9 @@ class AsyncAirtable {
     page?: number,
   ): Promise<AirtableRecord[]> => {
     try {
-      checkArg(table, 'table', 'string', true);
-      checkArg(options, 'options', 'object');
-      checkArg(page, 'page', 'number');
+      checkArg(table, 'table', 'string');
+      checkArg(options, 'options', 'object', false);
+      checkArg(page, 'page', 'number', false);
       const url = `${baseURL}/${this.base}/${table}`;
       const opts: SelectOptions = options ? { ...options } : {};
       Object.keys(opts).forEach((option) => {
@@ -187,8 +188,8 @@ class AsyncAirtable {
    */
   find = async (table: string, id: string): Promise<AirtableRecord> => {
     try {
-      checkArg(table, 'table', 'string', true);
-      checkArg(id, 'id', 'string', true);
+      checkArg(table, 'table', 'string');
+      checkArg(id, 'id', 'string');
       const url = `${baseURL}/${this.base}/${table}/${id}`;
       const res: Response = await fetch(url, {
         headers: { Authorization: `Bearer ${this.apiKey}` },
@@ -227,8 +228,8 @@ class AsyncAirtable {
     record: Fields,
   ): Promise<AirtableRecord> => {
     try {
-      checkArg(table, 'table', 'string', true);
-      checkArg(record, 'record', 'object', true);
+      checkArg(table, 'table', 'string');
+      checkArg(record, 'record', 'object');
       const url = `${baseURL}/${this.base}/${table}`;
       const body = { fields: record };
       const res: Response = await fetch(url, {
@@ -280,8 +281,8 @@ class AsyncAirtable {
     destructive = false,
   ): Promise<AirtableRecord> => {
     try {
-      checkArg(table, 'table', 'string', true);
-      checkArg(record, 'record', 'object', true);
+      checkArg(table, 'table', 'string');
+      checkArg(record, 'record', 'object');
       const url = `${baseURL}/${this.base}/${table}/${record.id}`;
       const { fields } = record;
       const res: Response = await fetch(url, {
@@ -328,8 +329,8 @@ class AsyncAirtable {
    */
   deleteRecord = async (table: string, id: string): Promise<DeleteResponse> => {
     try {
-      checkArg(table, 'table', 'string', true);
-      checkArg(id, 'id', 'string', true);
+      checkArg(table, 'table', 'string');
+      checkArg(id, 'id', 'string');
       const url = `${baseURL}/${this.base}/${table}/${id}`;
       const res: Response = await fetch(url, {
         method: 'delete',
@@ -374,8 +375,8 @@ class AsyncAirtable {
     records: Fields[],
   ): Promise<AirtableRecord[]> => {
     try {
-      checkArg(table, 'table', 'string', true);
-      checkArg(records, 'records', 'object', true);
+      checkArg(table, 'table', 'string');
+      checkArg(records, 'records', 'array');
       const url = `${baseURL}/${this.base}/${table}`;
       const body = records.map((record) => ({
         fields: record,
@@ -428,8 +429,8 @@ class AsyncAirtable {
     records: AirtableUpdateRecord[],
   ): Promise<AirtableRecord[]> => {
     try {
-      checkArg(table, 'table', 'string', true);
-      checkArg(records, 'records', 'object', true);
+      checkArg(table, 'table', 'string');
+      checkArg(records, 'records', 'array');
       const url = `${baseURL}/${this.base}/${table}`;
       const res: Response = await fetch(url, {
         method: 'patch',
@@ -479,8 +480,8 @@ class AsyncAirtable {
     ids: string[],
   ): Promise<DeleteResponse[]> => {
     try {
-      checkArg(table, 'table', 'string', true);
-      checkArg(ids, 'ids', 'object', true);
+      checkArg(table, 'table', 'string');
+      checkArg(ids, 'ids', 'array');
       let query = '';
       ids.forEach((id, i) => {
         if (i !== 0) {
@@ -535,9 +536,9 @@ class AsyncAirtable {
     filterString: string,
     record: Fields,
   ): Promise<AirtableRecord> => {
-    checkArg(table, 'table', 'string', true);
-    checkArg(filterString, 'filterString', 'string', true);
-    checkArg(record, 'record', 'object', true);
+    checkArg(table, 'table', 'string');
+    checkArg(filterString, 'filterString', 'string');
+    checkArg(record, 'record', 'object');
     const exists = await this.select(table, { filterByFormula: filterString });
     if (!exists[0]) {
       return await this.createRecord(table, record);
