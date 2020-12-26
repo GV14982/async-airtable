@@ -350,9 +350,45 @@ export type BaseFieldType = string | number | boolean | null;
 export type Arg =
   | string
   | number
+  | boolean
   | SelectOptions
   | Record<string, unknown>[]
   | string[]
   | AirtableUpdateRecord
   | AirtableUpdateRecord[]
   | undefined;
+
+/** @ignore */
+export interface queryBody {
+  fields: Fields;
+  typecast?: Typecast;
+}
+
+/** @ignore */
+interface fieldsObject {
+  fields: Fields;
+}
+
+/** @ignore */
+export interface bulkQueryBody {
+  records: fieldsObject[] | AirtableRecord[];
+  typecast?: Typecast;
+}
+
+/**
+ * Used for allowing the option to add additional
+ * select items when creating or updating a record.
+ * Without, it will throw an INVALID_MULTIPLE_CHOICE error if you
+ * try to pass an item that doesn't already exist.
+ */
+export type Typecast = boolean;
+
+/** Options for updating records */
+export interface updateOpts {
+  /** (Dis-)Allow a destructive update */
+  destructive?: boolean;
+  /**
+   * Used for allowing the ability to add new selections for Select and Multiselect fields.
+   */
+  typecast?: Typecast;
+}

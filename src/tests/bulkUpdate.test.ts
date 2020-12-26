@@ -34,6 +34,7 @@ describe('.bulkUpdate', () => {
           fields: JSON.parse(process.env.UPDATE_RECORD || ''),
         },
       ],
+      {},
     );
     expect(results).toBeDefined();
     expect(Array.isArray(results)).toBe(true);
@@ -46,6 +47,42 @@ describe('.bulkUpdate', () => {
     });
     results.forEach((result, i) => {
       expect(JSON.stringify(result)).not.toEqual(JSON.stringify(initResult[i]));
+    });
+    done();
+  });
+
+  test('should update a record with provided data and the destructive flag', async (done) => {
+    const results = await asyncAirtable.bulkUpdate(
+      process.env.AIRTABLE_TABLE || '',
+      [
+        {
+          id: initResult[0].id,
+          fields: JSON.parse(process.env.DESTRUCTIVE_UPDATE_RECORD || ''),
+        },
+        {
+          id: initResult[1].id,
+          fields: JSON.parse(process.env.DESTRUCTIVE_UPDATE_RECORD || ''),
+        },
+        {
+          id: initResult[2].id,
+          fields: JSON.parse(process.env.DESTRUCTIVE_UPDATE_RECORD || ''),
+        },
+      ],
+      {
+        destructive: true,
+      },
+    );
+    expect(results).toBeDefined();
+    expect(Array.isArray(results)).toBe(true);
+    expect(results.length).toBeGreaterThan(0);
+    results.forEach((result) => {
+      expect(result.id).toBeDefined();
+      expect(result.fields).toBeDefined();
+      expect(Object.keys(result.fields).length).toBeGreaterThan(0);
+      expect(result.createdTime).toBeDefined();
+    });
+    results.forEach((result, i) => {
+      expect(result).not.toHaveProperty('email');
     });
     done();
   });
@@ -123,38 +160,38 @@ describe('.bulkUpdate', () => {
     done();
   });
 
-  // test('should retry if rate limited', async (done) => {
-  //   let results = [];
-  //   for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
-  //     results.push(
-  //       asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
-  //         {
-  //           id: initResult[0].id,
-  //           fields: JSON.parse(process.env.UPDATE_RECORD || ''),
-  //         },
-  //         {
-  //           id: initResult[1].id,
-  //           fields: JSON.parse(process.env.UPDATE_RECORD || ''),
-  //         },
-  //         {
-  //           id: initResult[2].id,
-  //           fields: JSON.parse(process.env.UPDATE_RECORD || ''),
-  //         },
-  //       ]),
-  //     );
-  //   }
-  //   const data: Array<AirtableRecord[]> = await Promise.all(results);
-  //   data.forEach((results) => {
-  //     expect(results).toBeDefined();
-  //     expect(Array.isArray(results)).toBe(true);
-  //     expect(results.length).toBeGreaterThan(0);
-  //     results.forEach((result) => {
-  //       expect(result.id).toBeDefined();
-  //       expect(result.fields).toBeDefined();
-  //       expect(Object.keys(result.fields).length).toBeGreaterThan(0);
-  //       expect(result.createdTime).toBeDefined();
-  //     });
-  //   });
-  //   done();
-  // });
+  test('should retry if rate limited', async (done) => {
+    let results = [];
+    for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
+      results.push(
+        asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
+          {
+            id: initResult[0].id,
+            fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+          },
+          {
+            id: initResult[1].id,
+            fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+          },
+          {
+            id: initResult[2].id,
+            fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+          },
+        ]),
+      );
+    }
+    const data: Array<AirtableRecord[]> = await Promise.all(results);
+    data.forEach((results) => {
+      expect(results).toBeDefined();
+      expect(Array.isArray(results)).toBe(true);
+      expect(results.length).toBeGreaterThan(0);
+      results.forEach((result) => {
+        expect(result.id).toBeDefined();
+        expect(result.fields).toBeDefined();
+        expect(Object.keys(result.fields).length).toBeGreaterThan(0);
+        expect(result.createdTime).toBeDefined();
+      });
+    });
+    done();
+  });
 });

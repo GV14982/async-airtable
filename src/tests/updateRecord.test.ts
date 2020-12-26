@@ -44,7 +44,7 @@ describe('.updateRecord', () => {
         id: initResult[0].id,
         fields: JSON.parse(process.env.DESTRUCTIVE_UPDATE_RECORD || ''),
       },
-      true,
+      { destructive: true },
     );
     expect(result).toBeDefined();
     expect(typeof result).toBe('object');
