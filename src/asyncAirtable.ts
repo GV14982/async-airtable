@@ -15,6 +15,7 @@ import {
   Config,
 } from './@types';
 
+/** @ignore */
 declare global {
   interface Window {
     AsyncAirtable: typeof AsyncAirtable;
@@ -32,7 +33,7 @@ const validOptions: string[] = [
 ];
 
 /**
- * AsyncAirtable
+ * The main AsyncAirtable class.
  */
 class AsyncAirtable {
   /**
@@ -80,6 +81,7 @@ class AsyncAirtable {
    * @param options Options object, used to filter records
    * @param page Used to get a specific page of records
    * @returns
+   * @async
    */
   select = async (
     table: string,
@@ -185,6 +187,7 @@ class AsyncAirtable {
    * @param table Table name
    * @param id Airtable record ID
    * @returns
+   * @async
    */
   find = async (table: string, id: string): Promise<AirtableRecord> => {
     try {
@@ -222,6 +225,7 @@ class AsyncAirtable {
    * @param table - Table name
    * @param record - Record object, used to structure data for insert
    * @returns
+   * @async
    */
   createRecord = async (
     table: string,
@@ -274,6 +278,7 @@ class AsyncAirtable {
    * @param record - Record object, used to update data within a specific record
    * @param destructive - (Dis-)Allow a destructive update
    * @returns
+   * @async
    */
   updateRecord = async (
     table: string,
@@ -326,6 +331,7 @@ class AsyncAirtable {
    * @param table - Table name
    * @param id - Airtable record ID
    * @returns
+   * @async
    */
   deleteRecord = async (table: string, id: string): Promise<DeleteResponse> => {
     try {
@@ -369,6 +375,7 @@ class AsyncAirtable {
    * @param table - Table name
    * @param records - An array of Record objects
    * @returns
+   * @async
    */
   bulkCreate = async (
     table: string,
@@ -423,6 +430,7 @@ class AsyncAirtable {
    * @param table - Table name
    * @param records - An array of Record objects
    * @returns
+   * @async
    */
   bulkUpdate = async (
     table: string,
@@ -474,6 +482,7 @@ class AsyncAirtable {
    * @param table - Table name
    * @param ids - Array of Airtable record IDs
    * @returns
+   * @async
    */
   bulkDelete = async (
     table: string,
@@ -530,6 +539,7 @@ class AsyncAirtable {
    * @param filterString - The filter formula string used to check for a record
    * @param record - Record object used to either update or create a record
    * @returns
+   * @async
    */
   upsertRecord = async (
     table: string,
