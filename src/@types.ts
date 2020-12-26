@@ -361,16 +361,18 @@ export type Arg =
 /** @ignore */
 export interface queryBody {
   fields: Fields;
-  typecast?: boolean;
+  typecast?: Typecast;
 }
 
+/** @ignore */
 interface fieldsObject {
   fields: Fields;
 }
 
+/** @ignore */
 export interface bulkQueryBody {
   records: fieldsObject[] | AirtableRecord[];
-  typecast?: typecast;
+  typecast?: Typecast;
 }
 
 /**
@@ -379,11 +381,14 @@ export interface bulkQueryBody {
  * Without, it will throw an INVALID_MULTIPLE_CHOICE error if you
  * try to pass an item that doesn't already exist.
  */
-export type typecast = boolean;
+export type Typecast = boolean;
 
 /** Options for updating records */
 export interface updateOpts {
   /** (Dis-)Allow a destructive update */
   destructive?: boolean;
-  typecast?: typecast;
+  /**
+   * Used for allowing the ability to add new selections for Select and Multiselect fields.
+   */
+  typecast?: Typecast;
 }

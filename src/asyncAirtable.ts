@@ -14,7 +14,7 @@ import {
   Fields,
   Config,
   queryBody,
-  typecast,
+  Typecast,
   updateOpts,
   bulkQueryBody,
 } from './@types';
@@ -235,7 +235,7 @@ class AsyncAirtable {
   createRecord = async (
     table: string,
     record: Fields,
-    typecast?: typecast,
+    typecast?: Typecast,
   ): Promise<AirtableRecord> => {
     try {
       checkArg(table, 'table', 'string');
@@ -398,7 +398,7 @@ class AsyncAirtable {
   bulkCreate = async (
     table: string,
     records: Fields[],
-    typecast?: typecast,
+    typecast?: Typecast,
   ): Promise<AirtableRecord[]> => {
     try {
       checkArg(table, 'table', 'string');
