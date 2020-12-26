@@ -1,9 +1,20 @@
 import { SelectOptions } from './@types';
+import queryBuilder from './queryBuilder';
 
 export default (opts: SelectOptions): string => {
+  if (
+    Object.prototype.hasOwnProperty.call(opts, 'filterByFormula') &&
+    Object.prototype.hasOwnProperty.call(opts, 'where')
+  )
+    throw new Error(
+      'Cannot use both where and filterByFormula as they accomplish the same thing',
+    );
+
   const params = Object.keys(opts)
     .map((key: string, i) => {
-      const opt: unknown = opts[key as keyof SelectOptions];
+      /** @todo Find a better type than any for this */
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const opt: any = opts[key as keyof SelectOptions];
       let formatted;
       if (Array.isArray(opt)) {
         formatted = opt
@@ -21,7 +32,11 @@ export default (opts: SelectOptions): string => {
           })
           .join('&');
       } else {
-        formatted = `${key}=${opt}`;
+        if (key === 'where') {
+          formatted = `filterByFormula=${queryBuilder(opt)}`;
+        } else {
+          formatted = `${key}=${opt}`;
+        }
       }
       return i !== 0 ? `&${formatted}` : formatted;
     })

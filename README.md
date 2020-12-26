@@ -6,10 +6,22 @@
 [![npm (tag)](https://img.shields.io/npm/v/asyncairtable/next)](https://www.npmjs.com/package/asyncairtable)
 [![MIT License](https://img.shields.io/github/license/GV14982/async-airtable?style=flat)](LICENSE.md)
 
-
 AsyncAirtable is a lightweight npm package to handle working with the [Airtable API](https://airtable.com/api).
 
 They have an existing library, but it is callback based and can get a little klunky at times, so I wrote this one that is promise based to make your life easier 😊.
+
+I also wrote a query builder so, instead of having to write those really annyoying [filter formula strings](https://support.airtable.com/hc/en-us/articles/203255215-Formula-Field-Reference#array_functions) you can just use an object like:
+
+```
+{
+  where: {
+    name: 'AsyncAirtable',
+    $gte: {stars: 13}
+  }
+}
+```
+
+which will generate the following filterFormula string for you: `AND({name} = 'AsyncAirtable', {stars} >= 13)`
 
 ## Requirements
 

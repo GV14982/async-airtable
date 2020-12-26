@@ -5,7 +5,8 @@ export default async (
   retryTimeout: number,
   maxRetry: number,
   key?: string,
-  //TODO, figure out a better type for this.
+  /** @todo Find a better type than any for this */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
   return new Promise((resolve, reject) => {
     const retryRateLimit = (
