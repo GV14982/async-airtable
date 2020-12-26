@@ -36,6 +36,24 @@ describe('.upsertRecord', () => {
     done();
   });
 
+  test('should update a record with provided data desctructively if it exists', async (done) => {
+    const result = await asyncAirtable.upsertRecord(
+      process.env.AIRTABLE_TABLE || '',
+      "{title} = 'test-upsert'",
+      JSON.parse(process.env.DESTRUCTIVE_UPDATE_RECORD || ''),
+      { destructive: true },
+    );
+    expect(result).toBeDefined();
+    expect(typeof result).toBe('object');
+    expect(Object.keys(result).length).toBeGreaterThan(0);
+    expect(result.id).toBeDefined();
+    expect(result.fields).toBeDefined();
+    expect(result.createdTime).toBeDefined();
+    expect(Object.keys(result.fields).length).toBeGreaterThan(0);
+    expect(result.fields).not.toHaveProperty('email');
+    done();
+  });
+
   test('should create a new record with provided data if one does not exist', async (done) => {
     const result = await asyncAirtable.upsertRecord(
       process.env.AIRTABLE_TABLE || '',

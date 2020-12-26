@@ -13,6 +13,10 @@ import {
   DeleteResponse,
   Fields,
   Config,
+  queryBody,
+  typecast,
+  updateOpts,
+  bulkQueryBody,
 } from './@types';
 
 /** @ignore */
@@ -224,18 +228,24 @@ class AsyncAirtable {
    * Creates a new record on the specified table.
    * @param table - Table name
    * @param record - Record object, used to structure data for insert
+   * @param typecast - Used for allowing the ability to add new selections for Select and Multiselect fields.
    * @returns
    * @async
    */
   createRecord = async (
     table: string,
     record: Fields,
+    typecast?: typecast,
   ): Promise<AirtableRecord> => {
     try {
       checkArg(table, 'table', 'string');
       checkArg(record, 'record', 'object');
+      checkArg(typecast, 'typecast', 'boolean', false);
       const url = `${baseURL}/${this.base}/${table}`;
-      const body = { fields: record };
+      const body: queryBody = { fields: record };
+      if (typecast !== undefined) {
+        body.typecast = typecast;
+      }
       const res: Response = await fetch(url, {
         method: 'post',
         body: JSON.stringify(body),
@@ -276,23 +286,30 @@ class AsyncAirtable {
    * Updates a record on the specified table.
    * @param table - Table name
    * @param record - Record object, used to update data within a specific record
-   * @param destructive - (Dis-)Allow a destructive update
+   * @param opts - An object with options for your update statement
    * @returns
    * @async
    */
   updateRecord = async (
     table: string,
     record: AirtableUpdateRecord,
-    destructive = false,
+    opts?: updateOpts,
   ): Promise<AirtableRecord> => {
     try {
       checkArg(table, 'table', 'string');
       checkArg(record, 'record', 'object');
+      if (opts) {
+        checkArg(opts.destructive, 'opts.desctructive', 'boolean');
+        checkArg(opts.typecast, 'opts.typecast', 'boolean', false);
+      }
       const url = `${baseURL}/${this.base}/${table}/${record.id}`;
-      const { fields } = record;
+      const body: queryBody = { fields: record.fields };
+      if (opts?.typecast !== undefined) {
+        body.typecast = opts?.typecast;
+      }
       const res: Response = await fetch(url, {
-        method: destructive ? 'put' : 'patch',
-        body: JSON.stringify({ fields }),
+        method: opts?.destructive ? 'put' : 'patch',
+        body: JSON.stringify(body),
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
@@ -308,8 +325,8 @@ class AsyncAirtable {
           return await rateLimitHandler(
             url,
             {
-              method: destructive ? 'put' : 'patch',
-              body: JSON.stringify({ fields }),
+              method: opts?.destructive ? 'put' : 'patch',
+              body: JSON.stringify(body),
               headers: {
                 Authorization: `Bearer ${this.apiKey}`,
                 'Content-Type': 'application/json',
@@ -374,23 +391,31 @@ class AsyncAirtable {
    * Creates multiple new records on the specified table.
    * @param table - Table name
    * @param records - An array of Record objects
+   * @param typecast - Used for allowing the ability to add new selections for Select and Multiselect fields.
    * @returns
    * @async
    */
   bulkCreate = async (
     table: string,
     records: Fields[],
+    typecast?: typecast,
   ): Promise<AirtableRecord[]> => {
     try {
       checkArg(table, 'table', 'string');
       checkArg(records, 'records', 'array');
+      checkArg(typecast, 'typecast', 'boolean', false);
       const url = `${baseURL}/${this.base}/${table}`;
-      const body = records.map((record) => ({
-        fields: record,
-      }));
+      const body: bulkQueryBody = {
+        records: records.map((record) => ({
+          fields: record,
+        })),
+      };
+      if (typecast !== undefined) {
+        body.typecast = typecast;
+      }
       const res: Response = await fetch(url, {
         method: 'post',
-        body: JSON.stringify({ records: body }),
+        body: JSON.stringify(body),
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
@@ -407,7 +432,7 @@ class AsyncAirtable {
             url,
             {
               method: 'post',
-              body: JSON.stringify({ records: body }),
+              body: JSON.stringify(body),
               headers: {
                 Authorization: `Bearer ${this.apiKey}`,
                 'Content-Type': 'application/json',
@@ -429,20 +454,30 @@ class AsyncAirtable {
    * Updates multiple records on the specified table
    * @param table - Table name
    * @param records - An array of Record objects
+   * @param opts - An object with options for your update statement
    * @returns
    * @async
    */
   bulkUpdate = async (
     table: string,
     records: AirtableUpdateRecord[],
+    opts?: updateOpts,
   ): Promise<AirtableRecord[]> => {
     try {
       checkArg(table, 'table', 'string');
       checkArg(records, 'records', 'array');
+      if (opts) {
+        checkArg(opts.destructive, 'opts.desctructive', 'boolean', false);
+        checkArg(opts.typecast, 'opts.typecast', 'boolean', false);
+      }
       const url = `${baseURL}/${this.base}/${table}`;
+      const body: bulkQueryBody = { records };
+      if (opts?.typecast !== undefined) {
+        body.typecast = opts?.typecast;
+      }
       const res: Response = await fetch(url, {
-        method: 'patch',
-        body: JSON.stringify({ records }),
+        method: opts?.destructive ? 'put' : 'patch',
+        body: JSON.stringify(body),
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
@@ -458,8 +493,8 @@ class AsyncAirtable {
           return await rateLimitHandler(
             url,
             {
-              method: 'patch',
-              body: JSON.stringify({ records }),
+              method: opts?.destructive ? 'put' : 'patch',
+              body: JSON.stringify(body),
               headers: {
                 Authorization: `Bearer ${this.apiKey}`,
                 'Content-Type': 'application/json',
@@ -538,6 +573,7 @@ class AsyncAirtable {
    * @param table - Table name
    * @param filterString - The filter formula string used to check for a record
    * @param record - Record object used to either update or create a record
+   * @param opts - An object with options for your update statement
    * @returns
    * @async
    */
@@ -545,18 +581,27 @@ class AsyncAirtable {
     table: string,
     filterString: string,
     record: Fields,
+    opts?: updateOpts,
   ): Promise<AirtableRecord> => {
     checkArg(table, 'table', 'string');
     checkArg(filterString, 'filterString', 'string');
     checkArg(record, 'record', 'object');
+    if (opts) {
+      checkArg(opts.destructive, 'opts.desctructive', 'boolean', false);
+      checkArg(opts.typecast, 'opts.typecast', 'boolean', false);
+    }
     const exists = await this.select(table, { filterByFormula: filterString });
     if (!exists[0]) {
-      return await this.createRecord(table, record);
+      return await this.createRecord(table, record, opts?.typecast);
     } else {
-      return await this.updateRecord(table, {
-        id: exists[0].id,
-        fields: record,
-      });
+      return await this.updateRecord(
+        table,
+        {
+          id: exists[0].id,
+          fields: record,
+        },
+        opts,
+      );
     }
   };
 }
