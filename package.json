@@ -1,6 +1,6 @@
 {
   "name": "asyncairtable",
-  "version": "1.2.4",
+  "version": "2.1.0",
   "description": "A lightweight, promisified airtable client",
   "main": "./lib/asyncAirtable.js",
   "types": "./lib/asyncAirtable.d.ts",
@@ -12,16 +12,14 @@
   ],
   "scripts": {
     "test": "jest -i --no-cache --coverage",
-    "doc": "jsdoc -c jsdoc.conf.json",
+    "docs": "typedoc",
     "build": "npm run build:js && npm run build:browser && npm run build:browser-min",
     "build:js": "tsc",
     "build:browser": "webpack -c ./webpack.config.js",
     "build:browser-min": "webpack -c ./webpack.config.min.js",
     "lint": "eslint ./ --fix --cache",
     "format": "prettier ./ --write",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm run lint",
-    "preversion": "npm run lint"
+    "prepublishOnly": "npm run build && npm run lint"
   },
   "repository": {
     "type": "git",
@@ -62,19 +60,18 @@
     "@types/node-fetch": "^2.5.7",
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.6.0",
-    "docdash": "^1.2.0",
     "dotenv": "^8.2.0",
     "eslint": "^7.10.0",
     "eslint-config-prettier": "^6.12.0",
     "eslint-plugin-jest": "^24.0.2",
     "husky": "^4.3.0",
     "jest": "^26.5.0",
-    "jsdoc": "^3.6.6",
     "lint-staged": "^10.4.0",
     "prettier": "^2.1.2",
     "ts-jest": "^26.4.3",
     "ts-loader": "^8.0.12",
     "ts-node": "^9.0.0",
+    "typedoc": "^0.19.2",
     "typescript": "^4.0.5",
     "webpack": "^5.3.2",
     "webpack-cli": "^4.1.0"

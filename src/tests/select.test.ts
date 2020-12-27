@@ -83,6 +83,16 @@ describe('.select', () => {
     done();
   });
 
+  test('should respond with only specific records when using the where option', async (done) => {
+    const items = await asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
+      where: {
+        email: 'same@test.com',
+      },
+    });
+    checkResult(items);
+    done();
+  });
+
   test('should respond with records in the format of the view specified.', async (done) => {
     const items = await asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
       view: 'Kanban',
