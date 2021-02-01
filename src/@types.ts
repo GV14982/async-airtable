@@ -231,7 +231,7 @@ export interface QueryObject {
    *
    * @example
    * ```
-   * {$lt: {field: value}}
+   * {$lt: {left: right}}
    * ```
    */
   $lt?: QueryObject;
@@ -240,7 +240,7 @@ export interface QueryObject {
    *
    * @example
    * ```
-   * {$gt: {field: value}}
+   * {$gt: {left: right}}
    * ```
    */
   $gt?: QueryObject;
@@ -249,7 +249,7 @@ export interface QueryObject {
    *
    * @example
    * ```
-   * {$lte: {field: value}}
+   * {$lte: {left: right}}
    * ```
    */
   $lte?: QueryObject;
@@ -258,7 +258,7 @@ export interface QueryObject {
    *
    * @example
    * ```
-   * {$gte: {field: value}}
+   * {$gte: {left: right}}
    * ```
    */
   $gte?: QueryObject;
@@ -267,7 +267,7 @@ export interface QueryObject {
    *
    * @example
    * ```
-   * {$eq: {field: value}}
+   * {$eq: {left: right}}
    * ```
    */
   $eq?: QueryObject;
@@ -276,7 +276,7 @@ export interface QueryObject {
    *
    * @example
    * ```
-   * {$neq: {field: value}}
+   * {$neq: {left: right}}
    * ```
    */
   $neq?: QueryObject;
@@ -308,6 +308,70 @@ export interface QueryObject {
    */
   $or?: QueryObject[];
   /**
+   * Removes empty strings and null values from the array. Keeps "false" and strings that contain one or more blank characters.
+   *
+   * @example
+   * ```
+   * {$arrayCompact: "field name"}
+   * ```
+   */
+  $arrayCompact?: ArrayArg[0];
+  /**
+   * 	Takes all subarrays and flattens the elements into a single array.
+   *
+   * @example
+   * ```
+   * {$arrayFlatten: "field name"}
+   * ```
+   */
+  $arrayFlatten?: ArrayArg[0];
+  /**
+   * Filters out duplicate array elements.
+   *
+   * @example
+   * ```
+   * {$arrayUnique: "field name"}
+   * ```
+   */
+  $arrayUnique?: ArrayArg[0];
+  /**
+   * 	Joins all array elements into a string with the given separator
+   *
+   * @example
+   * ```
+   * {$arrayJoin: ["field name", "separator"]}
+   * ```
+   * @default separator ","
+   */
+  $arrayJoin?: ArrayArg;
+  /**
+   * Finds an occurrence of stringToFind in whereToSearch string starting from an optional startFromPosition.(startFromPosition is 0 by default.) If no occurrence of stringToFind is found, the result will be 0. Similar to SEARCH(), though SEARCH() returns empty rather than 0 if no occurrence of stringToFind is found.
+   *
+   * @example
+   * ```
+   * {$textFind: ["test", "This is some test text"]}
+   * ```
+   */
+  $textFind?: TextArg;
+  /**
+   * Searches for an occurrence of stringToFind in whereToSearch string starting from an optional startFromPosition. (startFromPosition is 0 by default.) If no occurrence of stringToFind is found, the result will be empty. Similar to FIND(), though FIND() returns 0 rather than empty if no occurrence of stringToFind is found.
+   *
+   * @example
+   * ```
+   * {$textSearch: ["test", "This is some test text"]}
+   * ```
+   */
+  $textSearch?: TextArg;
+  /**
+   * Used for handling fieldNames in text methods
+   *
+   * @example
+   * ```
+   * {$textFind("text to find", {fieldName: "field to search"})}
+   * ```
+   */
+  $fieldName?: string;
+  /**
    * Shortform equal
    *
    * @example
@@ -315,14 +379,22 @@ export interface QueryObject {
    * {field: value}
    * ```
    */
-  [key: string]: QueryField | QueryObject | QueryObject[] | undefined;
+  [key: string]:
+    | QueryField
+    | QueryField[]
+    | QueryObject
+    | QueryObject[]
+    | ArrayArg[0]
+    | ArrayArg
+    | TextArg
+    | undefined;
 }
 /** @ignore */
 export type ComparisonObject = Record<string, BaseFieldType>;
 /** @ignore */
 type ComparisonFunction = (vals: ComparisonObject) => string;
 /** @ignore */
-export interface NumericalOperators extends Record<string, ComparisonFunction> {
+export interface LogicalOperators extends Record<string, ComparisonFunction> {
   $lt: (vals: ComparisonObject) => string;
   $gt: (vals: ComparisonObject) => string;
   $lte: (vals: ComparisonObject) => string;
@@ -331,11 +403,18 @@ export interface NumericalOperators extends Record<string, ComparisonFunction> {
   $neq: (vals: ComparisonObject) => string;
 }
 /** @ignore */
+export interface ArrayMethods extends Record<string, ComparisonFunction> {
+  $arrayCompact: (vals: ComparisonObject) => string;
+  $gt: (vals: ComparisonObject) => string;
+  $lte: (vals: ComparisonObject) => string;
+  $gte: (vals: ComparisonObject) => string;
+}
+/** @ignore */
 type LogicalFunction =
   | ((expression: QueryObject) => string)
   | ((args: QueryObject[]) => string);
 /** @ignore */
-export interface LogicalOperators extends Record<string, LogicalFunction> {
+export interface LogicalFunctions extends Record<string, LogicalFunction> {
   $not: (expression: QueryObject) => string;
   $and: (args: QueryObject[]) => string;
   $or: (args: QueryObject[]) => string;
@@ -344,7 +423,7 @@ export interface LogicalOperators extends Record<string, LogicalFunction> {
 /** @ignore */
 export type QueryField = QueryObject | BaseFieldType;
 /** @ignore */
-export type BaseFieldType = string | number | boolean | null;
+export type BaseFieldType = FieldNameObject | string | number | boolean | null;
 
 /** @ignore */
 export type Arg =
@@ -392,3 +471,15 @@ export interface updateOpts {
    */
   typecast?: Typecast;
 }
+
+export type ArrayArg = [string, string | undefined];
+
+export type TextArg = [
+  string | { $fieldName: string },
+  string | { $fieldName: string },
+  number | undefined,
+];
+
+export type FieldNameObject = {
+  $fieldName: string;
+};

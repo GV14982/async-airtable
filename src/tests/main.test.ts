@@ -1,6 +1,6 @@
 import { config } from 'dotenv';
 config();
-import AsyncAirtable = require('../asyncAirtable');
+import { AsyncAirtable } from '../asyncAirtable';
 const requiredMethods = [
   'select',
   'find',
