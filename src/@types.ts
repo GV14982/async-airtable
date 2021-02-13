@@ -225,15 +225,9 @@ export interface AirtableUpdateRecord {
  * }
  * ```
  */
-export interface QueryObject {
-  /**
-   * Less than operator
-   *
-   * @example
-   * ```
-   * {$lt: {left: right}}
-   * ```
-   */
+
+interface AirtableFilters
+  extends Record<string, QueryField | JoinArgs | TextArgs | undefined> {
   $lt?: QueryObject;
   /**
    * Greater than operator
@@ -315,7 +309,7 @@ export interface QueryObject {
    * {$arrayCompact: "field name"}
    * ```
    */
-  $arrayCompact?: ArrayArg[0];
+  $arrayCompact?: string;
   /**
    * 	Takes all subarrays and flattens the elements into a single array.
    *
@@ -324,7 +318,7 @@ export interface QueryObject {
    * {$arrayFlatten: "field name"}
    * ```
    */
-  $arrayFlatten?: ArrayArg[0];
+  $arrayFlatten?: string;
   /**
    * Filters out duplicate array elements.
    *
@@ -333,7 +327,7 @@ export interface QueryObject {
    * {$arrayUnique: "field name"}
    * ```
    */
-  $arrayUnique?: ArrayArg[0];
+  $arrayUnique?: string;
   /**
    * 	Joins all array elements into a string with the given separator
    *
@@ -343,7 +337,7 @@ export interface QueryObject {
    * ```
    * @default separator ","
    */
-  $arrayJoin?: ArrayArg;
+  $arrayJoin?: [string, string];
   /**
    * Finds an occurrence of stringToFind in whereToSearch string starting from an optional startFromPosition.(startFromPosition is 0 by default.) If no occurrence of stringToFind is found, the result will be 0. Similar to SEARCH(), though SEARCH() returns empty rather than 0 if no occurrence of stringToFind is found.
    *
@@ -352,7 +346,7 @@ export interface QueryObject {
    * {$textFind: ["test", "This is some test text"]}
    * ```
    */
-  $textFind?: TextArg;
+  $textFind?: TextArgs;
   /**
    * Searches for an occurrence of stringToFind in whereToSearch string starting from an optional startFromPosition. (startFromPosition is 0 by default.) If no occurrence of stringToFind is found, the result will be empty. Similar to FIND(), though FIND() returns 0 rather than empty if no occurrence of stringToFind is found.
    *
@@ -361,7 +355,7 @@ export interface QueryObject {
    * {$textSearch: ["test", "This is some test text"]}
    * ```
    */
-  $textSearch?: TextArg;
+  $textSearch?: TextArgs;
   /**
    * Used for handling fieldNames in text methods
    *
@@ -371,6 +365,9 @@ export interface QueryObject {
    * ```
    */
   $fieldName?: string;
+}
+
+export interface QueryObject {
   /**
    * Shortform equal
    *
@@ -379,20 +376,19 @@ export interface QueryObject {
    * {field: value}
    * ```
    */
-  [key: string]:
-    | QueryField
-    | QueryField[]
-    | QueryObject
-    | QueryObject[]
-    | ArrayArg[0]
-    | ArrayArg
-    | TextArg
-    | undefined;
+  [key: string]: QueryField | QueryField[];
 }
 /** @ignore */
-export type ComparisonObject = Record<string, BaseFieldType>;
+export type ComparisonObject = Record<string, BaseFieldType | QueryObject>;
 /** @ignore */
 type ComparisonFunction = (vals: ComparisonObject) => string;
+/** @ignore */
+type ArrayFunction = (arg: string, separator?: string) => string;
+type TextFunction = (
+  search: FieldNameObject | string | QueryObject,
+  set: FieldNameObject | string | QueryObject,
+  startIndex?: number,
+) => string;
 /** @ignore */
 export interface LogicalOperators extends Record<string, ComparisonFunction> {
   $lt: (vals: ComparisonObject) => string;
@@ -403,11 +399,11 @@ export interface LogicalOperators extends Record<string, ComparisonFunction> {
   $neq: (vals: ComparisonObject) => string;
 }
 /** @ignore */
-export interface ArrayMethods extends Record<string, ComparisonFunction> {
-  $arrayCompact: (vals: ComparisonObject) => string;
-  $gt: (vals: ComparisonObject) => string;
-  $lte: (vals: ComparisonObject) => string;
-  $gte: (vals: ComparisonObject) => string;
+export interface ArrayFunctions extends Record<string, ArrayFunction> {
+  $arrayCompact: ArrayFunction;
+  $arrayFlatten: ArrayFunction;
+  $arrayUnique: ArrayFunction;
+  $arrayJoin: ArrayFunction;
 }
 /** @ignore */
 type LogicalFunction =
@@ -415,15 +411,26 @@ type LogicalFunction =
   | ((args: QueryObject[]) => string);
 /** @ignore */
 export interface LogicalFunctions extends Record<string, LogicalFunction> {
-  $not: (expression: QueryObject) => string;
-  $and: (args: QueryObject[]) => string;
-  $or: (args: QueryObject[]) => string;
+  $not: LogicalFunction;
+  $and: LogicalFunction;
+  $or: LogicalFunction;
 }
+/**@ignore */
+export interface TextFunctions extends Record<string, TextFunction> {
+  $textFind: TextFunction;
+  $textSearch: TextFunction;
+}
+/** @ignore */
+export type QueryField =
+  | QueryObject
+  | QueryField[]
+  | AirtableFilters
+  | BaseFieldType;
+/** @ignore */
+export type BaseFieldType = string | number | boolean | null;
 
-/** @ignore */
-export type QueryField = QueryObject | BaseFieldType;
-/** @ignore */
-export type BaseFieldType = FieldNameObject | string | number | boolean | null;
+/**@ignore */
+export type UncheckedArray = (QueryField | QueryField[] | undefined)[];
 
 /** @ignore */
 export type Arg =
@@ -472,14 +479,19 @@ export interface updateOpts {
   typecast?: Typecast;
 }
 
-export type ArrayArg = [string, string | undefined];
-
-export type TextArg = [
-  string | { $fieldName: string },
-  string | { $fieldName: string },
-  number | undefined,
-];
-
 export type FieldNameObject = {
   $fieldName: string;
 };
+
+export type TextArgs =
+  | [
+      string | FieldNameObject | QueryObject,
+      string | FieldNameObject | QueryObject,
+    ]
+  | [
+      string | FieldNameObject | QueryObject,
+      string | FieldNameObject | QueryObject,
+      number,
+    ];
+
+export type JoinArgs = [string, string];

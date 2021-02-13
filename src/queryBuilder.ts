@@ -1,207 +1,87 @@
+import { QueryField, QueryObject } from './@types';
+import { arrayFunctions } from './arrayFunctions';
+import { baseHandler } from './baseHandlers';
+import { logicalFunctions } from './logicalFunctions';
+import { logicalOperators } from './logicalOperators';
+import { textFunctions } from './textFunctions';
 import {
-  QueryObject,
-  LogicalOperators,
-  QueryField,
-  BaseFieldType,
-  ComparisonObject,
-  ArrayArg,
-  FieldNameObject,
-  TextArg,
-  LogicalFunctions,
-} from './@types';
+  allIndexesValid,
+  isBaseField,
+  isJoinArgs,
+  isQueryObject,
+  isQueryObjectArray,
+  isStringArray,
+  isTextArgs,
+} from './typeCheckers';
 
-const operators = ['=', '!=', '>', '>=', '<', '<='];
-const baseTypes = ['string', 'number', 'boolean', 'null'];
+export const queryBuilder = (arg: QueryField): string => {
+  if (arg !== undefined && !(arg instanceof Function)) {
+    if (isBaseField(arg)) {
+      return baseHandler(arg);
+    }
 
-export const isQueryObject = (item: QueryField): boolean => {
-  if (item === undefined) throw new Error('Missing Query Object');
-  const types = ['string', 'number', 'boolean'];
-  return item !== null && !types.includes(typeof item);
-};
+    if (arg instanceof Array) {
+      const str = arg.map((a: QueryField) => queryBuilder(a)).join(', ');
+      return str.trim();
+    }
 
-export const buildExpression = (obj: ComparisonObject, op: string): string => {
-  if (typeof obj !== 'object' || Array.isArray(obj))
-    throw new Error('Missing or Invalid Comparison Object');
-  if (typeof op !== 'string' && !operators.includes(op))
-    throw new Error('Missing or Invalid Comparison Operator');
-  const keys = Object.keys(obj);
-  const expressionMapper = (k: string, i: number) => {
-    const val = queryBuilder(obj[k]);
-    return `{${k}} ${op} ${val}${i < keys.length - 1 ? ', ' : ''}`;
-  };
+    const keys = Object.keys(arg);
+    const vals = Object.values(arg);
 
-  const exp = `${keys.map(expressionMapper).join('')}`;
-  return keys.length > 1 ? `AND(${exp})` : exp;
-};
+    if (
+      keys.length > 1 &&
+      allIndexesValid(vals) &&
+      isQueryObjectArray(keys.map((k, i) => ({ [k]: vals[i] })))
+    ) {
+      return logicalFunctions.$and(
+        keys.map((k, i) => ({ [k]: vals[i] })) as QueryObject & QueryObject[],
+      );
+    }
 
-export const arrayMethods = {
-  $arrayCompact: (arg: string): string => {
-    return `ARRAYCOMPACT({${arg}})`;
-  },
-  $arrayFlatten: (arg: string): string => {
-    return `ARRAYFLATTEN({${arg}})`;
-  },
-  $arrayJoin: (arg: string, seperator = ','): string => {
-    return `ARRAYJOIN({${arg}}, '${seperator}')`;
-  },
-  $arrayUnique: (arg: string): string => {
-    return `ARRAYUNIQUE({${arg}})`;
-  },
-};
+    const key = keys[0];
 
-export const textMethods = {
-  $stringFind: (
-    search: FieldNameObject | string,
-    set: FieldNameObject | string,
-    startIndex = 0,
-  ): string =>
-    `FIND(${
-      typeof search === 'string' ? baseHandler(search) : queryBuilder(search)
-    }, ${
-      typeof set === 'string' ? baseHandler(set) : queryBuilder(set)
-    }, ${startIndex})`,
-  $stringSearch: (
-    search: FieldNameObject | string,
-    set: FieldNameObject | string,
-    startIndex = 0,
-  ): string =>
-    `SEARCH(${
-      typeof search === 'string' ? baseHandler(search) : queryBuilder(search)
-    }, ${
-      typeof set === 'string' ? baseHandler(set) : queryBuilder(set)
-    }, ${startIndex})`,
-};
+    if (arg[key] === undefined) {
+      throw new Error('Invalid query');
+    }
 
-export const logicalOperators: LogicalOperators = {
-  $gt: (val) => {
-    return buildExpression(val, '>');
-  },
-  $lt: (val) => {
-    return buildExpression(val, '<');
-  },
-  $gte: (val) => {
-    return buildExpression(val, '>=');
-  },
-  $lte: (val) => {
-    return buildExpression(val, '<=');
-  },
-  $eq: (val) => {
-    return buildExpression(val, '=');
-  },
-  $neq: (val) => {
-    return buildExpression(val, '!=');
-  },
-};
+    if (key === '$fieldName') {
+      return `{${arg.$fieldName}}`;
+    }
 
-export const logicalFunctions: LogicalFunctions = {
-  $not: (expression: QueryObject) => `NOT(${queryBuilder(expression)})`,
-  $and: (args: QueryObject[]) => {
-    let str = 'AND(';
-    args.forEach((arg, i) => {
-      str += queryBuilder(arg);
-      if (i < args.length - 1) {
-        str += ', ';
-      }
-    });
-    return str + ')';
-  },
-  $or: (args: QueryObject[]) => {
-    let str = 'OR(';
-    args.forEach((arg, i) => {
-      str += queryBuilder(arg);
-      if (i < args.length - 1) {
-        str += ', ';
-      }
-    });
-    return str + ')';
-  },
-};
-
-export const booleanHandler = (bool: boolean): string => {
-  if (typeof bool !== 'boolean') {
-    throw new Error('Invalid type');
-  }
-  return bool ? 'TRUE()' : 'FALSE()';
-};
-
-export const baseHandler = (val: BaseFieldType): string => {
-  if (val === null) {
-    return 'BLANK()';
-  }
-  switch (typeof val) {
-    case 'number':
-      return `${val}`;
-    case 'string':
-      return `'${val}'`;
-    case 'boolean':
-      return booleanHandler(val);
-    default:
-      throw new Error('Wrong Type');
-  }
-};
-
-const queryBuilder = (query: QueryField): string => {
-  let formulaString = '';
-  if (baseTypes.includes(typeof query)) {
-    formulaString += baseHandler(query as BaseFieldType);
-  }
-  if (query && typeof query === 'object') {
-    if (query && typeof query === 'object' && '$fieldName' in query) {
-      formulaString += `{${query.$fieldName}}`;
-    } else {
-      if (Object.keys(query as Record<string, QueryField>).length > 1) {
-        formulaString += logicalFunctions.$and(
-          Object.keys(query).map((k) => ({ [k]: query[k] })),
-        );
-      } else {
-        for (const key in query) {
-          const current = query[key];
-
-          if (
-            key in logicalOperators &&
-            isQueryObject(current as QueryObject)
-          ) {
-            formulaString += logicalOperators[key](
-              current as Record<string, number>,
-            );
-          } else if (
-            key in logicalFunctions &&
-            (isQueryObject(current as QueryObject) || Array.isArray(current))
-          ) {
-            formulaString += logicalFunctions[key](
-              current as QueryObject & QueryObject[],
-            );
-          } else if (
-            key in arrayMethods &&
-            Array.isArray(current) &&
-            current.length > 0
-          ) {
-            formulaString += arrayMethods[key as keyof typeof arrayMethods](
-              ...(current as ArrayArg),
-            );
-          } else if (
-            key in textMethods &&
-            Array.isArray(current) &&
-            current.length > 0
-          ) {
-            formulaString += textMethods[key as keyof typeof textMethods](
-              ...(current as TextArg),
-            );
-          } else if (key === '$fieldName' && typeof current === 'string') {
-            formulaString += `{${current}}`;
-          } else {
-            formulaString += buildExpression(
-              query as Record<string, BaseFieldType>,
-              '=',
-            );
-          }
+    const val = arg[key] as QueryField;
+    if (val !== undefined) {
+      if (
+        key in logicalFunctions &&
+        (isQueryObject(val) || isQueryObjectArray(val))
+      ) {
+        return logicalFunctions[key](val as QueryObject & QueryObject[]);
+      } else if (key in arrayFunctions) {
+        if (isStringArray(val) && isJoinArgs(val)) {
+          return arrayFunctions[key](...val);
+        } else if (typeof val === 'string') {
+          return arrayFunctions[key](val);
         }
+      } else if (
+        key in textFunctions &&
+        Array.isArray(val) &&
+        isTextArgs(val)
+      ) {
+        return textFunctions[key](val[0], val[1], val[2] ?? 0);
+      } else if (isQueryObject(val)) {
+        const valKey = Object.keys(val)[0];
+        const subVal = Object.values(val)[0];
+        if (
+          valKey in logicalOperators &&
+          (isQueryObject(subVal) || isBaseField(subVal))
+        ) {
+          return logicalOperators[valKey]({
+            [key]: subVal,
+          });
+        }
+      } else if (isQueryObject(val) || isBaseField(val)) {
+        return logicalOperators.$eq({ [key]: val });
       }
     }
-  } else {
-    throw new Error('Invalid query');
   }
-  return formulaString;
+  throw new Error('Invalid Query Object');
 };
-
-export default queryBuilder;

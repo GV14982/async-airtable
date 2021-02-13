@@ -1,17 +1,16 @@
-import { LogicalOperators } from './../@types';
+import { LogicalOperators, QueryObject } from './../@types';
 import buildOpts from '../buildOpts';
 import checkArg from '../checkArg';
 import checkError from '../checkError';
 // import rateLimitHandler from '../rateLimitHandler';
 
-import queryBuilder, {
-  buildExpression,
-  isQueryObject,
-  logicalOperators,
-  logicalFunctions,
-  arrayMethods,
-  textMethods,
-} from '../queryBuilder';
+import { queryBuilder } from '../queryBuilder';
+import { arrayFunctions } from '../arrayFunctions';
+import { buildExpression } from '../buildExpression';
+import { logicalFunctions } from '../logicalFunctions';
+import { logicalOperators } from '../logicalOperators';
+import { textFunctions } from '../textFunctions';
+import { isQueryObject } from '../typeCheckers';
 
 const operators = [
   { $eq: '=' },
@@ -90,43 +89,82 @@ describe('Helper Functions', () => {
 
     describe('Logical Functions', () => {
       test('Should return a string wrapped in a NOT function', () => {
-        expect(logicalFunctions.$not({ field: 'value', otherField: 10 })).toBe(
-          "NOT(AND({field} = 'value', {otherField} = 10))",
-        );
+        expect(
+          //@ts-ignore
+          logicalFunctions.$not({
+            field: 'value',
+            otherField: 10,
+          }),
+        ).toBe("NOT(AND({field} = 'value', {otherField} = 10))");
       });
 
       test('Should return a string wrapped in an AND function', () => {
         expect(
-          logicalFunctions.$and([{ $lt: { coins: 10 } }, { name: 'fred' }]),
+          //@ts-ignore
+          logicalFunctions.$and([{ coins: { $lt: 10 } }, { name: 'fred' }]),
         ).toBe("AND({coins} < 10, {name} = 'fred')");
       });
 
       test('Should return a string wrapped in an OR function', () => {
         expect(
-          logicalFunctions.$or([{ $lt: { coins: 10 } }, { name: 'fred' }]),
+          //@ts-ignore
+          logicalFunctions.$or([{ coins: { $lt: 10 } }, { name: 'fred' }]),
         ).toBe("OR({coins} < 10, {name} = 'fred')");
       });
     });
 
-    describe('Array Methods', () => {
+    describe('Array Functions', () => {
       test('should return the string with the specified method', () => {
-        expect(arrayMethods.$arrayCompact('test')).toBe('ARRAYCOMPACT({test})');
-        expect(arrayMethods.$arrayFlatten('test')).toBe('ARRAYFLATTEN({test})');
-        expect(arrayMethods.$arrayUnique('test')).toBe('ARRAYUNIQUE({test})');
-        expect(arrayMethods.$arrayJoin('test', ',')).toBe(
+        expect(arrayFunctions.$arrayCompact('test')).toBe(
+          'ARRAYCOMPACT({test})',
+        );
+        expect(arrayFunctions.$arrayFlatten('test')).toBe(
+          'ARRAYFLATTEN({test})',
+        );
+        expect(arrayFunctions.$arrayUnique('test')).toBe('ARRAYUNIQUE({test})');
+        expect(arrayFunctions.$arrayJoin('test', ',')).toBe(
           "ARRAYJOIN({test}, ',')",
         );
       });
     });
 
-    describe('String Methods', () => {
+    describe('Text Functions', () => {
       test('should return a string with the specified method', () => {
-        expect(textMethods.$stringFind('test', 'test')).toBe(
+        expect(textFunctions.$textFind('test', 'test')).toBe(
+          "FIND('test', 'test', 0)",
+        );
+        expect(textFunctions.$textSearch('test', 'test')).toBe(
+          "SEARCH('test', 'test', 0)",
+        );
+        expect(textFunctions.$textFind({ $fieldName: 'test' }, 'test')).toBe(
+          "FIND({test}, 'test', 0)",
+        );
+        expect(textFunctions.$textSearch({ $fieldName: 'test' }, 'test')).toBe(
+          "SEARCH({test}, 'test', 0)",
+        );
+        expect(textFunctions.$textFind('test', { $fieldName: 'test' })).toBe(
           "FIND('test', {test}, 0)",
         );
-
-        expect(textMethods.$stringSearch('test', 'test')).toBe(
+        expect(textFunctions.$textSearch('test', { $fieldName: 'test' })).toBe(
           "SEARCH('test', {test}, 0)",
+        );
+        expect(
+          textFunctions.$textFind(
+            { $fieldName: 'test' },
+            { $fieldName: 'test' },
+          ),
+        ).toBe('FIND({test}, {test}, 0)');
+        expect(
+          textFunctions.$textSearch(
+            { $fieldName: 'test' },
+            { $fieldName: 'test' },
+          ),
+        ).toBe('SEARCH({test}, {test}, 0)');
+        expect(textFunctions.$textFind('test', 'test', 2)).toBe(
+          "FIND('test', 'test', 2)",
+        );
+        expect(textFunctions.$textSearch('test', 'test', 2)).toBe(
+          "SEARCH('test', 'test', 2)",
         );
       });
     });
@@ -135,7 +173,7 @@ describe('Helper Functions', () => {
       test('should return a filter formula string from a query object', () => {
         expect(queryBuilder({ field: 'value' })).toBe("{field} = 'value'");
         operators.forEach((op) => {
-          expect(queryBuilder({ [Object.keys(op)[0]]: { field: 10 } })).toBe(
+          expect(queryBuilder({ field: { [Object.keys(op)[0]]: 10 } })).toBe(
             `{field} ${Object.values(op)[0]} 10`,
           );
         });
