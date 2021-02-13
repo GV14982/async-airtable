@@ -228,13 +228,21 @@ export interface AirtableUpdateRecord {
 
 interface AirtableFilters
   extends Record<string, QueryField | JoinArgs | TextArgs | undefined> {
+  /**
+   * Less than operator
+   *
+   * @example
+   * ```
+   * {field: {$lt: value}}
+   * ```
+   */
   $lt?: QueryObject;
   /**
    * Greater than operator
    *
    * @example
    * ```
-   * {$gt: {left: right}}
+   * {field: {$gt: value}}
    * ```
    */
   $gt?: QueryObject;
@@ -243,7 +251,7 @@ interface AirtableFilters
    *
    * @example
    * ```
-   * {$lte: {left: right}}
+   * {field: {$lte: value}}
    * ```
    */
   $lte?: QueryObject;
@@ -252,7 +260,7 @@ interface AirtableFilters
    *
    * @example
    * ```
-   * {$gte: {left: right}}
+   * {field: {$gte: value}}
    * ```
    */
   $gte?: QueryObject;
@@ -261,7 +269,7 @@ interface AirtableFilters
    *
    * @example
    * ```
-   * {$eq: {left: right}}
+   * {field: {$eq: value}}
    * ```
    */
   $eq?: QueryObject;
@@ -270,7 +278,7 @@ interface AirtableFilters
    *
    * @example
    * ```
-   * {$neq: {left: right}}
+   * {field: {$neq: value}}
    * ```
    */
   $neq?: QueryObject;
@@ -370,6 +378,7 @@ interface AirtableFilters
 export interface QueryObject {
   /**
    * Shortform equal
+   * (equivalent to $eq)
    *
    * @example
    * ```
