@@ -68,8 +68,25 @@ export const queryBuilder = (arg: QueryField): string => {
       ) {
         return textFunctions[key](val[0], val[1], val[2] ?? 0);
       } else if (isQueryObject(val)) {
-        const valKey = Object.keys(val)[0];
-        const subVal = Object.values(val)[0];
+        const valKeys = Object.keys(val);
+        const subVals = Object.values(val);
+
+        if (
+          valKeys.length > 1 &&
+          allIndexesValid(subVals) &&
+          isQueryObjectArray(valKeys.map((k, i) => ({ [k]: subVals[i] }))) &&
+          valKeys.every((k) => k in logicalOperators) &&
+          subVals.every((v) => isQueryObject(v) || isBaseField(v))
+        ) {
+          return logicalFunctions.$and(
+            valKeys.map((k, i) => ({
+              [key]: { [k]: subVals[i] },
+            })) as QueryObject & QueryObject[],
+          );
+        }
+
+        const valKey = valKeys[0];
+        const subVal = subVals[0];
         if (
           valKey in logicalOperators &&
           (isQueryObject(subVal) || isBaseField(subVal))

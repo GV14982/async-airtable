@@ -186,6 +186,21 @@ describe('Helper Functions', () => {
         expect(
           queryBuilder({ $or: [{ field: 'value' }, { otherField: 'value' }] }),
         ).toBe("OR({field} = 'value', {otherField} = 'value')");
+
+        expect(
+          queryBuilder({
+            field: {
+              $lt: 10,
+              $gt: 5,
+            },
+            $not: {
+              $textSearch: ['test', { $arrayJoin: ['otherField', ':'] }],
+              anotherField: false,
+            },
+          }),
+        ).toBe(
+          "AND(AND({field} < 10, {field} > 5), NOT(AND(SEARCH('test', ARRAYJOIN({otherField}, ':'), 0), {anotherField} = FALSE())))",
+        );
       });
     });
   });
