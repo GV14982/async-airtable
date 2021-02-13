@@ -214,13 +214,13 @@ export interface AirtableUpdateRecord {
  * ```
  * {
  *   id: 'Some ID',
- *   $and: [
- *     {$lte: {count: 10}},
- *     {$gte: {count: 5}}
- *   ],
+ *   count: {
+ *     $lt: 10,
+ *     $gt: 5
+ *   },
  *   $or: [
- *     {$neq: {name: 'datboi'}},
- *     {$neq: {name: 'graham'}}
+ *     active: true,
+ *     name: 'active'
  *   ]
  * }
  * ```
@@ -478,7 +478,7 @@ export interface updateOpts {
    */
   typecast?: Typecast;
 }
-
+/** For using a fieldname as a value in the query builder. */
 export type FieldNameObject = {
   $fieldName: string;
 };
