@@ -62,6 +62,8 @@ class AsyncAirtable {
   apiKey: string;
   /** The base id from AirTable */
   base: string;
+  /** the base URL to use when making API requests */
+  baseURL: string;
 
   /**
    * Creates a new instance of the AsyncAirtable library.
@@ -77,6 +79,7 @@ class AsyncAirtable {
     this.retryOnRateLimit = config?.retryOnRateLimit || true;
     this.retryTimeout = config?.retryTimeout || 5000;
     this.maxRetry = config?.maxRetry || 60000;
+    this.baseURL = config?.baseURL || 'https://api.airtable.com/v0';
   }
 
   /**
