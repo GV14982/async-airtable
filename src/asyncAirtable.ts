@@ -3,7 +3,6 @@ import buildOpts from './buildOpts';
 import checkError from './checkError';
 import checkArg from './checkArg';
 import rateLimitHandler from './rateLimitHandler';
-const baseURL = 'https://api.airtable.com/v0';
 import {
   SelectOptions,
   AirtableDeletedResponse,
@@ -99,7 +98,7 @@ class AsyncAirtable {
       checkArg(table, 'table', 'string');
       checkArg(options, 'options', 'object', false);
       checkArg(page, 'page', 'number', false);
-      const url = `${baseURL}/${this.base}/${table}`;
+      const url = `${this.baseURL}/${this.base}/${table}`;
       const opts: SelectOptions = options ? { ...options } : {};
       Object.keys(opts).forEach((option) => {
         if (!validOptions.includes(option)) {
@@ -200,7 +199,7 @@ class AsyncAirtable {
     try {
       checkArg(table, 'table', 'string');
       checkArg(id, 'id', 'string');
-      const url = `${baseURL}/${this.base}/${table}/${id}`;
+      const url = `${this.baseURL}/${this.base}/${table}/${id}`;
       const res: Response = await fetch(url, {
         headers: { Authorization: `Bearer ${this.apiKey}` },
       });
@@ -244,7 +243,7 @@ class AsyncAirtable {
       checkArg(table, 'table', 'string');
       checkArg(record, 'record', 'object');
       checkArg(typecast, 'typecast', 'boolean', false);
-      const url = `${baseURL}/${this.base}/${table}`;
+      const url = `${this.baseURL}/${this.base}/${table}`;
       const body: queryBody = { fields: record };
       if (typecast !== undefined) {
         body.typecast = typecast;
@@ -305,7 +304,7 @@ class AsyncAirtable {
         checkArg(opts.destructive, 'opts.desctructive', 'boolean');
         checkArg(opts.typecast, 'opts.typecast', 'boolean', false);
       }
-      const url = `${baseURL}/${this.base}/${table}/${record.id}`;
+      const url = `${this.baseURL}/${this.base}/${table}/${record.id}`;
       const body: queryBody = { fields: record.fields };
       if (opts?.typecast !== undefined) {
         body.typecast = opts?.typecast;
@@ -357,7 +356,7 @@ class AsyncAirtable {
     try {
       checkArg(table, 'table', 'string');
       checkArg(id, 'id', 'string');
-      const url = `${baseURL}/${this.base}/${table}/${id}`;
+      const url = `${this.baseURL}/${this.base}/${table}/${id}`;
       const res: Response = await fetch(url, {
         method: 'delete',
         headers: {
@@ -407,7 +406,7 @@ class AsyncAirtable {
       checkArg(table, 'table', 'string');
       checkArg(records, 'records', 'array');
       checkArg(typecast, 'typecast', 'boolean', false);
-      const url = `${baseURL}/${this.base}/${table}`;
+      const url = `${this.baseURL}/${this.base}/${table}`;
       const body: bulkQueryBody = {
         records: records.map((record) => ({
           fields: record,
@@ -473,7 +472,7 @@ class AsyncAirtable {
         checkArg(opts.destructive, 'opts.desctructive', 'boolean', false);
         checkArg(opts.typecast, 'opts.typecast', 'boolean', false);
       }
-      const url = `${baseURL}/${this.base}/${table}`;
+      const url = `${this.baseURL}/${this.base}/${table}`;
       const body: bulkQueryBody = { records };
       if (opts?.typecast !== undefined) {
         body.typecast = opts?.typecast;
@@ -537,7 +536,7 @@ class AsyncAirtable {
           query = `records[]=${id}`;
         }
       });
-      const url = `${baseURL}/${this.base}/${table}?${encodeURI(query)}`;
+      const url = `${this.baseURL}/${this.base}/${table}?${encodeURI(query)}`;
       const res: Response = await fetch(url, {
         method: 'delete',
         headers: {
