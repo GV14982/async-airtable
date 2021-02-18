@@ -104,6 +104,11 @@ export interface Config {
    * larger with each try until you hit the maxRetry amount
    */
   retryTimeout?: number;
+  /**
+   * @default=https://api.airtable.com/v0
+   * The endpoint to make API calls against. This is useful when setting up a custom caching server as succested in the Airtable API docs
+   */
+  baseURL?: string;
 }
 
 /** @ignore */
