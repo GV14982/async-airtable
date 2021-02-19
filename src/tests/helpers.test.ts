@@ -1,14 +1,16 @@
+import { LogicalOperators, QueryObject } from './../@types';
 import buildOpts from '../buildOpts';
 import checkArg from '../checkArg';
 import checkError from '../checkError';
-import rateLimitHandler from '../rateLimitHandler';
+// import rateLimitHandler from '../rateLimitHandler';
 
-import queryBuilder, {
-  buildExpression,
-  isQueryObject,
-  logicalOperators,
-  numericalOperators,
-} from '../queryBuilder';
+import { queryBuilder } from '../queryBuilder';
+import { arrayFunctions } from '../arrayFunctions';
+import { buildExpression } from '../buildExpression';
+import { logicalFunctions } from '../logicalFunctions';
+import { logicalOperators } from '../logicalOperators';
+import { textFunctions } from '../textFunctions';
+import { isQueryObject } from '../typeCheckers';
 
 const operators = [
   { $eq: '=' },
@@ -22,7 +24,7 @@ const operators = [
 describe('Helper Functions', () => {
   describe('Query Builder', () => {
     describe('isQueryObject', () => {
-      it('should return true if the passed object is of type QueryObject', () => {
+      test('should return true if the passed object is of type QueryObject', () => {
         expect(
           isQueryObject({
             $or: [{ name: 'fred' }, { lt$: { coins: 10 } }],
@@ -36,14 +38,14 @@ describe('Helper Functions', () => {
         ).toBe(true);
       });
 
-      it('should return false if the passed object is of type a string, number, boolean, or null', () => {
+      test('should return false if the passed object is of type a string, number, boolean, or null', () => {
         expect(isQueryObject('NotQueryObject')).toBe(false);
         expect(isQueryObject(10)).toBe(false);
         expect(isQueryObject(true)).toBe(false);
         expect(isQueryObject(null)).toBe(false);
       });
 
-      it('should throw an error if passed an undefined value', () => {
+      test('should throw an error if passed an undefined value', () => {
         expect(() => {
           //@ts-ignore
           isQueryObject(undefined);
@@ -52,20 +54,20 @@ describe('Helper Functions', () => {
     });
 
     describe('buildExpression', () => {
-      it('should return a string when passed in a numerical expression', () => {
+      test('should return a string when passed in a numerical expression', () => {
         expect(buildExpression({ email: 'test@test.com' }, '=')).toBe(
           "{email} = 'test@test.com'",
         );
       });
 
-      it('should throw an error if you pass an incorrect value for the comparison object', () => {
+      test('should throw an error if you pass an incorrect value for the comparison object', () => {
         expect(() => {
           //@ts-ignore
           buildExpression(['false'], '=');
         }).toThrow('Missing or Invalid Comparison Object');
       });
 
-      it('should throw an error if you pass an incorrect value for the comparison operator', () => {
+      test('should throw an error if you pass an incorrect value for the comparison operator', () => {
         expect(() => {
           //@ts-ignore
           buildExpression({ email: 'test@test.com' }, false);
@@ -73,43 +75,105 @@ describe('Helper Functions', () => {
       });
     });
 
-    describe('NumericalOperators', () => {
+    describe('Logical Operators', () => {
       operators.forEach((op) => {
-        it(`should return a string with the correct comparison operator: ${
+        test(`should return a string with the correct comparison operator: ${
           Object.values(op)[0]
         } for ${Object.keys(op)[0]}`, () => {
-          expect(numericalOperators[Object.keys(op)[0]]({ field: 10 })).toBe(
+          expect(logicalOperators[Object.keys(op)[0]]({ field: 10 })).toBe(
             `{field} ${Object.values(op)[0]} 10`,
           );
         });
       });
     });
 
-    describe('Logical Operators', () => {
-      it('Should return a string wrapped in a NOT function', () => {
-        expect(logicalOperators.$not({ field: 'value', otherField: 10 })).toBe(
-          "NOT(AND({field} = 'value', {otherField} = 10))",
-        );
+    describe('Logical Functions', () => {
+      test('Should return a string wrapped in a NOT function', () => {
+        expect(
+          //@ts-ignore
+          logicalFunctions.$not({
+            field: 'value',
+            otherField: 10,
+          }),
+        ).toBe("NOT(AND({field} = 'value', {otherField} = 10))");
       });
 
-      it('Should return a string wrapped in an AND function', () => {
+      test('Should return a string wrapped in an AND function', () => {
         expect(
-          logicalOperators.$and([{ $lt: { coins: 10 } }, { name: 'fred' }]),
+          //@ts-ignore
+          logicalFunctions.$and([{ coins: { $lt: 10 } }, { name: 'fred' }]),
         ).toBe("AND({coins} < 10, {name} = 'fred')");
       });
 
-      it('Should return a string wrapped in an OR function', () => {
+      test('Should return a string wrapped in an OR function', () => {
         expect(
-          logicalOperators.$or([{ $lt: { coins: 10 } }, { name: 'fred' }]),
+          //@ts-ignore
+          logicalFunctions.$or([{ coins: { $lt: 10 } }, { name: 'fred' }]),
         ).toBe("OR({coins} < 10, {name} = 'fred')");
       });
     });
 
+    describe('Array Functions', () => {
+      test('should return the string with the specified method', () => {
+        expect(arrayFunctions.$arrayCompact('test')).toBe(
+          'ARRAYCOMPACT({test})',
+        );
+        expect(arrayFunctions.$arrayFlatten('test')).toBe(
+          'ARRAYFLATTEN({test})',
+        );
+        expect(arrayFunctions.$arrayUnique('test')).toBe('ARRAYUNIQUE({test})');
+        expect(arrayFunctions.$arrayJoin('test', ',')).toBe(
+          "ARRAYJOIN({test}, ',')",
+        );
+      });
+    });
+
+    describe('Text Functions', () => {
+      test('should return a string with the specified method', () => {
+        expect(textFunctions.$textFind('test', 'test')).toBe(
+          "FIND('test', 'test', 0)",
+        );
+        expect(textFunctions.$textSearch('test', 'test')).toBe(
+          "SEARCH('test', 'test', 0)",
+        );
+        expect(textFunctions.$textFind({ $fieldName: 'test' }, 'test')).toBe(
+          "FIND({test}, 'test', 0)",
+        );
+        expect(textFunctions.$textSearch({ $fieldName: 'test' }, 'test')).toBe(
+          "SEARCH({test}, 'test', 0)",
+        );
+        expect(textFunctions.$textFind('test', { $fieldName: 'test' })).toBe(
+          "FIND('test', {test}, 0)",
+        );
+        expect(textFunctions.$textSearch('test', { $fieldName: 'test' })).toBe(
+          "SEARCH('test', {test}, 0)",
+        );
+        expect(
+          textFunctions.$textFind(
+            { $fieldName: 'test' },
+            { $fieldName: 'test' },
+          ),
+        ).toBe('FIND({test}, {test}, 0)');
+        expect(
+          textFunctions.$textSearch(
+            { $fieldName: 'test' },
+            { $fieldName: 'test' },
+          ),
+        ).toBe('SEARCH({test}, {test}, 0)');
+        expect(textFunctions.$textFind('test', 'test', 2)).toBe(
+          "FIND('test', 'test', 2)",
+        );
+        expect(textFunctions.$textSearch('test', 'test', 2)).toBe(
+          "SEARCH('test', 'test', 2)",
+        );
+      });
+    });
+
     describe('queryBuilder', () => {
-      it('should return a filter formula string from a query object', () => {
+      test('should return a filter formula string from a query object', () => {
         expect(queryBuilder({ field: 'value' })).toBe("{field} = 'value'");
         operators.forEach((op) => {
-          expect(queryBuilder({ [Object.keys(op)[0]]: { field: 10 } })).toBe(
+          expect(queryBuilder({ field: { [Object.keys(op)[0]]: 10 } })).toBe(
             `{field} ${Object.values(op)[0]} 10`,
           );
         });
@@ -122,12 +186,27 @@ describe('Helper Functions', () => {
         expect(
           queryBuilder({ $or: [{ field: 'value' }, { otherField: 'value' }] }),
         ).toBe("OR({field} = 'value', {otherField} = 'value')");
+
+        expect(
+          queryBuilder({
+            field: {
+              $lt: 10,
+              $gt: 5,
+            },
+            $not: {
+              $textSearch: ['test', { $arrayJoin: ['otherField', ':'] }],
+              anotherField: false,
+            },
+          }),
+        ).toBe(
+          "AND(AND({field} < 10, {field} > 5), NOT(AND(SEARCH('test', ARRAYJOIN({otherField}, ':'), 0), {anotherField} = FALSE())))",
+        );
       });
     });
   });
 
   describe('buildOpts', () => {
-    it('should return a URI encoded string from an object of select options', () => {
+    test('should return a URI encoded string from an object of select options', () => {
       expect(
         buildOpts({
           fields: ['name', 'email', 'date'],
@@ -173,7 +252,7 @@ describe('Helper Functions', () => {
       );
     });
 
-    it('should throw an error if both filterByFormula and where are used', () => {
+    test('should throw an error if both filterByFormula and where are used', () => {
       expect(() => {
         buildOpts({
           where: { field: 'value' },
@@ -186,7 +265,7 @@ describe('Helper Functions', () => {
   });
 
   describe('checkArgs', () => {
-    it('should not throw an error if the argument is passed and matches the type', () => {
+    test('should not throw an error if the argument is passed and matches the type', () => {
       expect(checkArg('test', 'test', 'string')).toBeUndefined();
       expect(checkArg(10, 'test', 'number')).toBeUndefined();
       expect(checkArg(['test'], 'test', 'array')).toBeUndefined();
@@ -194,7 +273,7 @@ describe('Helper Functions', () => {
       expect(checkArg(undefined, 'test', 'object', false)).toBeUndefined();
     });
 
-    it('should throw an error if the argument is undefined and required or the wrong type', () => {
+    test('should throw an error if the argument is undefined and required or the wrong type', () => {
       expect(() => {
         //@ts-ignore
         checkArg(undefined, 'test', 'string');
@@ -210,7 +289,7 @@ describe('Helper Functions', () => {
   });
 
   describe('checkErrors', () => {
-    it('should return a boolean denoting if the status is in the 200 range', () => {
+    test('should return a boolean denoting if the status is in the 200 range', () => {
       expect(checkError(200)).toBe(false);
       expect(checkError(300)).toBe(true);
     });

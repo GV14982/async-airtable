@@ -1,4 +1,4 @@
-import AsyncAirtable = require('../asyncAirtable');
+import { AsyncAirtable } from '../asyncAirtable';
 import { AirtableRecord } from '../@types';
 import { config } from 'dotenv';
 config();
@@ -10,7 +10,7 @@ let initResult: AirtableRecord[];
 describe('.updateRecord', () => {
   beforeAll(async (done) => {
     initResult = await asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
-      maxRecords: 1,
+      maxRecords: 2,
       sort: [{ field: 'value', direction: 'desc' }],
       view: 'Grid view',
     });
@@ -132,7 +132,7 @@ describe('.updateRecord', () => {
     for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
       results.push(
         asyncAirtable.updateRecord(process.env.AIRTABLE_TABLE || '', {
-          id: initResult[0].id,
+          id: initResult[1].id,
           fields: JSON.parse(process.env.UPDATE_RECORD || ''),
         }),
       );
@@ -146,7 +146,7 @@ describe('.updateRecord', () => {
       expect(result.fields).toBeDefined();
       expect(result.createdTime).toBeDefined();
       expect(Object.keys(result.fields).length).toBeGreaterThan(0);
-      expect(JSON.stringify(result)).not.toEqual(JSON.stringify(initResult[0]));
+      expect(JSON.stringify(result)).not.toEqual(JSON.stringify(initResult[1]));
     });
     done();
   });

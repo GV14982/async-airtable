@@ -1,4 +1,4 @@
-import AsyncAirtable = require('../asyncAirtable');
+import { AsyncAirtable } from '../asyncAirtable';
 import { AirtableRecord, DeleteResponse } from '../@types';
 import { config } from 'dotenv';
 config();

@@ -38,7 +38,7 @@ const validOptions: string[] = [
 /**
  * The main AsyncAirtable class.
  */
-class AsyncAirtable {
+export class AsyncAirtable {
   /**
    * @default=true
    * This decides whether or not the library will
@@ -607,8 +607,6 @@ class AsyncAirtable {
     }
   };
 }
-
-export = AsyncAirtable;
 
 if (typeof window !== 'undefined') {
   window.AsyncAirtable = AsyncAirtable;

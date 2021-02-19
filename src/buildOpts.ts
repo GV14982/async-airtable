@@ -1,5 +1,5 @@
 import { SelectOptions } from './@types';
-import queryBuilder from './queryBuilder';
+import { queryBuilder } from './queryBuilder';
 
 export default (opts: SelectOptions): string => {
   if (

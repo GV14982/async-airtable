@@ -1,4 +1,4 @@
-import AsyncAirtable = require('../asyncAirtable');
+import { AsyncAirtable } from '../asyncAirtable';
 import { AirtableRecord } from '../@types';
 import { config } from 'dotenv';
 config();
@@ -23,15 +23,15 @@ describe('.bulkUpdate', () => {
       [
         {
           id: initResult[0].id,
-          fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+          fields: JSON.parse(process.env.BULK_UPDATE || ''),
         },
         {
           id: initResult[1].id,
-          fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+          fields: JSON.parse(process.env.BULK_UPDATE || ''),
         },
         {
           id: initResult[2].id,
-          fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+          fields: JSON.parse(process.env.BULK_UPDATE || ''),
         },
       ],
       {},
@@ -118,7 +118,7 @@ describe('.bulkUpdate', () => {
   test('should throw an error if you send an incorrect id', async (done) => {
     await expect(
       asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
-        { id: 'doesnotexist', ...JSON.parse(process.env.UPDATE_RECORD || '') },
+        { id: 'doesnotexist', ...JSON.parse(process.env.BULK_UPDATE || '') },
       ]),
     ).rejects.toThrowError(/INVALID_RECORDS/g);
     done();
@@ -130,7 +130,7 @@ describe('.bulkUpdate', () => {
         {
           id: initResult[0].id,
           fields: {
-            ...JSON.parse(process.env.UPDATE_RECORD || ''),
+            ...JSON.parse(process.env.BULK_UPDATE || ''),
             value: 'nope',
           },
         },
@@ -145,7 +145,7 @@ describe('.bulkUpdate', () => {
       asyncAirtable.bulkUpdate(10, [
         {
           id: initResult[0].id,
-          fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+          fields: JSON.parse(process.env.BULK_UPDATE || ''),
         },
       ]),
     ).rejects.toThrowError(/Incorrect data type/g);
@@ -167,15 +167,15 @@ describe('.bulkUpdate', () => {
         asyncAirtable.bulkUpdate(process.env.AIRTABLE_TABLE || '', [
           {
             id: initResult[0].id,
-            fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+            fields: JSON.parse(process.env.BULK_UPDATE || ''),
           },
           {
             id: initResult[1].id,
-            fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+            fields: JSON.parse(process.env.BULK_UPDATE || ''),
           },
           {
             id: initResult[2].id,
-            fields: JSON.parse(process.env.UPDATE_RECORD || ''),
+            fields: JSON.parse(process.env.BULK_UPDATE || ''),
           },
         ]),
       );

@@ -219,24 +219,26 @@ export interface AirtableUpdateRecord {
  * ```
  * {
  *   id: 'Some ID',
- *   $and: [
- *     {$lte: {count: 10}},
- *     {$gte: {count: 5}}
- *   ],
+ *   count: {
+ *     $lt: 10,
+ *     $gt: 5
+ *   },
  *   $or: [
- *     {$neq: {name: 'datboi'}},
- *     {$neq: {name: 'graham'}}
+ *     active: true,
+ *     name: 'active'
  *   ]
  * }
  * ```
  */
-export interface QueryObject {
+
+interface AirtableFilters
+  extends Record<string, QueryField | JoinArgs | TextArgs | undefined> {
   /**
    * Less than operator
    *
    * @example
    * ```
-   * {$lt: {field: value}}
+   * {field: {$lt: value}}
    * ```
    */
   $lt?: QueryObject;
@@ -245,7 +247,7 @@ export interface QueryObject {
    *
    * @example
    * ```
-   * {$gt: {field: value}}
+   * {field: {$gt: value}}
    * ```
    */
   $gt?: QueryObject;
@@ -254,7 +256,7 @@ export interface QueryObject {
    *
    * @example
    * ```
-   * {$lte: {field: value}}
+   * {field: {$lte: value}}
    * ```
    */
   $lte?: QueryObject;
@@ -263,7 +265,7 @@ export interface QueryObject {
    *
    * @example
    * ```
-   * {$gte: {field: value}}
+   * {field: {$gte: value}}
    * ```
    */
   $gte?: QueryObject;
@@ -272,7 +274,7 @@ export interface QueryObject {
    *
    * @example
    * ```
-   * {$eq: {field: value}}
+   * {field: {$eq: value}}
    * ```
    */
   $eq?: QueryObject;
@@ -281,7 +283,7 @@ export interface QueryObject {
    *
    * @example
    * ```
-   * {$neq: {field: value}}
+   * {field: {$neq: value}}
    * ```
    */
   $neq?: QueryObject;
@@ -313,21 +315,96 @@ export interface QueryObject {
    */
   $or?: QueryObject[];
   /**
+   * Removes empty strings and null values from the array. Keeps "false" and strings that contain one or more blank characters.
+   *
+   * @example
+   * ```
+   * {$arrayCompact: "field name"}
+   * ```
+   */
+  $arrayCompact?: string;
+  /**
+   * 	Takes all subarrays and flattens the elements into a single array.
+   *
+   * @example
+   * ```
+   * {$arrayFlatten: "field name"}
+   * ```
+   */
+  $arrayFlatten?: string;
+  /**
+   * Filters out duplicate array elements.
+   *
+   * @example
+   * ```
+   * {$arrayUnique: "field name"}
+   * ```
+   */
+  $arrayUnique?: string;
+  /**
+   * 	Joins all array elements into a string with the given separator
+   *
+   * @example
+   * ```
+   * {$arrayJoin: ["field name", "separator"]}
+   * ```
+   * @default separator ","
+   */
+  $arrayJoin?: [string, string];
+  /**
+   * Finds an occurrence of stringToFind in whereToSearch string starting from an optional startFromPosition.(startFromPosition is 0 by default.) If no occurrence of stringToFind is found, the result will be 0. Similar to SEARCH(), though SEARCH() returns empty rather than 0 if no occurrence of stringToFind is found.
+   *
+   * @example
+   * ```
+   * {$textFind: ["test", "This is some test text"]}
+   * ```
+   */
+  $textFind?: TextArgs;
+  /**
+   * Searches for an occurrence of stringToFind in whereToSearch string starting from an optional startFromPosition. (startFromPosition is 0 by default.) If no occurrence of stringToFind is found, the result will be empty. Similar to FIND(), though FIND() returns 0 rather than empty if no occurrence of stringToFind is found.
+   *
+   * @example
+   * ```
+   * {$textSearch: ["test", "This is some test text"]}
+   * ```
+   */
+  $textSearch?: TextArgs;
+  /**
+   * Used for handling fieldNames in text methods
+   *
+   * @example
+   * ```
+   * {$textFind("text to find", {fieldName: "field to search"})}
+   * ```
+   */
+  $fieldName?: string;
+}
+
+export interface QueryObject {
+  /**
    * Shortform equal
+   * (equivalent to $eq)
    *
    * @example
    * ```
    * {field: value}
    * ```
    */
-  [key: string]: QueryField | QueryObject | QueryObject[] | undefined;
+  [key: string]: QueryField | QueryField[];
 }
 /** @ignore */
-export type ComparisonObject = Record<string, BaseFieldType>;
+export type ComparisonObject = Record<string, BaseFieldType | QueryObject>;
 /** @ignore */
 type ComparisonFunction = (vals: ComparisonObject) => string;
 /** @ignore */
-export interface NumericalOperators extends Record<string, ComparisonFunction> {
+type ArrayFunction = (arg: string, separator?: string) => string;
+type TextFunction = (
+  search: FieldNameObject | string | QueryObject,
+  set: FieldNameObject | string | QueryObject,
+  startIndex?: number,
+) => string;
+/** @ignore */
+export interface LogicalOperators extends Record<string, ComparisonFunction> {
   $lt: (vals: ComparisonObject) => string;
   $gt: (vals: ComparisonObject) => string;
   $lte: (vals: ComparisonObject) => string;
@@ -336,20 +413,38 @@ export interface NumericalOperators extends Record<string, ComparisonFunction> {
   $neq: (vals: ComparisonObject) => string;
 }
 /** @ignore */
+export interface ArrayFunctions extends Record<string, ArrayFunction> {
+  $arrayCompact: ArrayFunction;
+  $arrayFlatten: ArrayFunction;
+  $arrayUnique: ArrayFunction;
+  $arrayJoin: ArrayFunction;
+}
+/** @ignore */
 type LogicalFunction =
   | ((expression: QueryObject) => string)
   | ((args: QueryObject[]) => string);
 /** @ignore */
-export interface LogicalOperators extends Record<string, LogicalFunction> {
-  $not: (expression: QueryObject) => string;
-  $and: (args: QueryObject[]) => string;
-  $or: (args: QueryObject[]) => string;
+export interface LogicalFunctions extends Record<string, LogicalFunction> {
+  $not: LogicalFunction;
+  $and: LogicalFunction;
+  $or: LogicalFunction;
 }
-
+/**@ignore */
+export interface TextFunctions extends Record<string, TextFunction> {
+  $textFind: TextFunction;
+  $textSearch: TextFunction;
+}
 /** @ignore */
-export type QueryField = QueryObject | BaseFieldType;
+export type QueryField =
+  | QueryObject
+  | QueryField[]
+  | AirtableFilters
+  | BaseFieldType;
 /** @ignore */
 export type BaseFieldType = string | number | boolean | null;
+
+/**@ignore */
+export type UncheckedArray = (QueryField | QueryField[] | undefined)[];
 
 /** @ignore */
 export type Arg =
@@ -397,3 +492,20 @@ export interface updateOpts {
    */
   typecast?: Typecast;
 }
+/** For using a fieldname as a value in the query builder. */
+export type FieldNameObject = {
+  $fieldName: string;
+};
+
+export type TextArgs =
+  | [
+      string | FieldNameObject | QueryObject,
+      string | FieldNameObject | QueryObject,
+    ]
+  | [
+      string | FieldNameObject | QueryObject,
+      string | FieldNameObject | QueryObject,
+      number,
+    ];
+
+export type JoinArgs = [string, string];

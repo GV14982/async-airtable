@@ -34,6 +34,7 @@ jobs:
           TEST_FILTER: "{email} = 'same@test.com'"
           NEW_RECORD: '{"title": "test-create", "value": 23, "email": "new@test.com"}'
           UPDATE_RECORD: '{"title": "test-UPDATED"}'
+          BULK_UPDATE: '{"title": "test-BULK"}'
           DESTRUCTIVE_UPDATE_RECORD: '{"title": "test-UPDATED-destructive", "value": 23}'
           RETRY_TIMEOUT: 60000
           REQ_COUNT: 100
