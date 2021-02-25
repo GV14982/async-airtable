@@ -405,12 +405,12 @@ type TextFunction = (
 ) => string;
 /** @ignore */
 export interface LogicalOperators extends Record<string, ComparisonFunction> {
-  $lt: (vals: ComparisonObject) => string;
-  $gt: (vals: ComparisonObject) => string;
-  $lte: (vals: ComparisonObject) => string;
-  $gte: (vals: ComparisonObject) => string;
-  $eq: (vals: ComparisonObject) => string;
-  $neq: (vals: ComparisonObject) => string;
+  $lt: ComparisonFunction;
+  $gt: ComparisonFunction;
+  $lte: ComparisonFunction;
+  $gte: ComparisonFunction;
+  $eq: ComparisonFunction;
+  $neq: ComparisonFunction;
 }
 /** @ignore */
 export interface ArrayFunctions extends Record<string, ArrayFunction> {
@@ -420,14 +420,42 @@ export interface ArrayFunctions extends Record<string, ArrayFunction> {
   $arrayJoin: ArrayFunction;
 }
 /** @ignore */
-type LogicalFunction =
-  | ((expression: QueryObject) => string)
-  | ((args: QueryObject[]) => string);
+type ExpressionFunc = (expression: QueryField) => string;
 /** @ignore */
-export interface LogicalFunctions extends Record<string, LogicalFunction> {
-  $not: LogicalFunction;
-  $and: LogicalFunction;
-  $or: LogicalFunction;
+type ArrayExpressionFunc = (args: QueryField[]) => string;
+/** @ignore */
+type IfFunc = (
+  expression: QueryField,
+  val1: QueryField,
+  val2: QueryField,
+) => string;
+/** @ignore */
+type SwitchFunc = (expression: QueryField, ...rest: QueryField[]) => string;
+/** @ignore */
+type ErrorFunc = () => string;
+/** @ignore */
+export interface ExpressionFuncs extends Record<string, ExpressionFunc> {
+  $not: ExpressionFunc;
+  $isError: ExpressionFunc;
+}
+/** @ignore */
+export interface ArrayExpressionFuncs
+  extends Record<string, ArrayExpressionFunc> {
+  $and: ArrayExpressionFunc;
+  $or: ArrayExpressionFunc;
+  $xor: ArrayExpressionFunc;
+}
+/** @ignore */
+export interface IfFuncs extends Record<string, IfFunc> {
+  $if: IfFunc;
+}
+/** @ignore */
+export interface SwitchFuncs extends Record<string, SwitchFunc> {
+  $switch: SwitchFunc;
+}
+/** @ignore */
+export interface ErrorFuncs extends Record<string, ErrorFunc> {
+  $error: ErrorFunc;
 }
 /**@ignore */
 export interface TextFunctions extends Record<string, TextFunction> {
@@ -509,3 +537,13 @@ export type TextArgs =
     ];
 
 export type JoinArgs = [string, string];
+
+export type IfArgs = [QueryField, QueryField, QueryField];
+
+export type SwitchArgs = [
+  QueryField,
+  QueryField,
+  QueryField,
+  QueryField,
+  ...QueryField[]
+];

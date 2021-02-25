@@ -1,12 +1,19 @@
 import { QueryField, QueryObject } from './@types';
 import { arrayFunctions } from './arrayFunctions';
 import { baseHandler } from './baseHandlers';
-import { logicalFunctions } from './logicalFunctions';
+import {
+  arrayArgFuncs,
+  expressionFuncs,
+  ifFunc,
+  switchFunc,
+  errorFunc,
+} from './logicalFunctions';
 import { logicalOperators } from './logicalOperators';
 import { textFunctions } from './textFunctions';
 import {
   allIndexesValid,
   isBaseField,
+  isIfArgs,
   isJoinArgs,
   isQueryObject,
   isQueryObjectArray,
@@ -33,7 +40,7 @@ export const queryBuilder = (arg: QueryField): string => {
       allIndexesValid(vals) &&
       isQueryObjectArray(keys.map((k, i) => ({ [k]: vals[i] })))
     ) {
-      return logicalFunctions.$and(
+      return arrayArgFuncs.$and(
         keys.map((k, i) => ({ [k]: vals[i] })) as QueryObject & QueryObject[],
       );
     }
@@ -50,11 +57,16 @@ export const queryBuilder = (arg: QueryField): string => {
 
     const val = arg[key] as QueryField;
     if (val !== undefined) {
-      if (
-        key in logicalFunctions &&
-        (isQueryObject(val) || isQueryObjectArray(val))
-      ) {
-        return logicalFunctions[key](val as QueryObject & QueryObject[]);
+      if (key in arrayArgFuncs && isQueryObjectArray(val)) {
+        return arrayArgFuncs[key](val);
+      } else if (key in expressionFuncs && isQueryObject(val)) {
+        return expressionFuncs[key](val);
+      } else if (key in ifFunc && isIfArgs(val)) {
+        return ifFunc[key](...val);
+      } else if (key in switchFunc) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        return switchFunc[key](val);
       } else if (key in arrayFunctions) {
         if (isStringArray(val) && isJoinArgs(val)) {
           return arrayFunctions[key](...val);
@@ -78,7 +90,7 @@ export const queryBuilder = (arg: QueryField): string => {
           valKeys.every((k) => k in logicalOperators) &&
           subVals.every((v) => isQueryObject(v) || isBaseField(v))
         ) {
-          return logicalFunctions.$and(
+          return arrayArgFuncs.$and(
             valKeys.map((k, i) => ({
               [key]: { [k]: subVals[i] },
             })) as QueryObject & QueryObject[],

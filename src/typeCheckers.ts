@@ -6,6 +6,7 @@ import {
   FieldNameObject,
   UncheckedArray,
   BaseFieldType,
+  IfArgs,
 } from './@types';
 
 export const isQueryObject = (item: QueryField): item is QueryObject => {
@@ -42,3 +43,6 @@ export const allIndexesValid = (arr: UncheckedArray): arr is QueryField[] =>
 
 export const isBaseField = (item: QueryField): item is BaseFieldType =>
   typeof item !== 'object' || item === null;
+
+export const isIfArgs = (vals: QueryField): vals is IfArgs =>
+  Array.isArray(vals) && isQueryObjectArray(vals) && vals.length === 3;
