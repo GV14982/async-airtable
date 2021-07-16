@@ -29,7 +29,7 @@ export default (opts: SelectOptions): string => {
                   })
                   .join('&');
               case 'string':
-                return `${encodeURIComponent(key)}[]=${encodeURIComponent(
+                return `${encodeURIComponent(key + '[]')}=${encodeURIComponent(
                   item,
                 )}`;
             }
