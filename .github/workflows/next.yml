@@ -1,12 +1,12 @@
-name: develop
+name: next
 
 on:
   push:
     branches:
-      - develop
+      - next
   pull_request:
     branches:
-      - develop
+      - next
 
 jobs:
   test:
@@ -38,3 +38,20 @@ jobs:
           DESTRUCTIVE_UPDATE_RECORD: '{"title": "test-UPDATED-destructive", "value": 23}'
           RETRY_TIMEOUT: 60000
           REQ_COUNT: 100
+  publish-npm:
+    needs: test
+    if: github.ref == 'refs/heads/next'
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+      - run: npm ci
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_AUTH_TOKEN }}
+          tag: next
+          check-version: false

@@ -1,7 +1,7 @@
 # Async Airtable
 
-[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/develop?label=Develop&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
-[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/master?label=Master&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
+[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/next?label=Next&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
+[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/main?label=Main&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
 [![npm](https://img.shields.io/npm/v/asyncairtable)](https://www.npmjs.com/package/asyncairtable)
 [![npm (tag)](https://img.shields.io/npm/v/asyncairtable/next)](https://www.npmjs.com/package/asyncairtable)
 [![MIT License](https://img.shields.io/github/license/GV14982/async-airtable?style=flat)](LICENSE.md)

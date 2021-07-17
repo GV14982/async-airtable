@@ -5,3 +5,4 @@ coverage/
 docs/
 lib/
 dist/
+.DS_STORE
