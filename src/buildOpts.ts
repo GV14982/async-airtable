@@ -23,23 +23,29 @@ export default (opts: SelectOptions): string => {
               case 'object':
                 return Object.keys(item)
                   .map((subKey) => {
-                    return `${key}[${j}][${subKey}]=${item[subKey]}`;
+                    return `${encodeURIComponent(
+                      `${key}[${j}][${subKey}]`,
+                    )}=${encodeURIComponent(item[subKey])}`;
                   })
                   .join('&');
               case 'string':
-                return `${key}[]=${item}`;
+                return `${encodeURIComponent(key + '[]')}=${encodeURIComponent(
+                  item,
+                )}`;
             }
           })
           .join('&');
       } else {
         if (key === 'where') {
-          formatted = `filterByFormula=${queryBuilder(opt)}`;
+          formatted = `filterByFormula=${encodeURIComponent(
+            queryBuilder(opt),
+          )}`;
         } else {
-          formatted = `${key}=${opt}`;
+          formatted = `${key}=${encodeURIComponent(opt)}`;
         }
       }
       return i !== 0 ? `&${formatted}` : formatted;
     })
     .join('');
-  return encodeURI(params);
+  return params;
 };
