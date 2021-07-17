@@ -1,18 +1,18 @@
-name: master
+name: main
 
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - 'v*'
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   test:
-    if: github.ref == 'refs/heads/master' || github.base_ref == 'master'
+    if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
     strategy:
       max-parallel: 1
       matrix:
@@ -43,7 +43,7 @@ jobs:
           REQ_COUNT: 100
   publish-npm:
     needs: test
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
