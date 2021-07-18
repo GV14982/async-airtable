@@ -98,29 +98,4 @@ describe('.bulkDelete', () => {
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
-
-  test('should retry if rate limited', async (done) => {
-    let results = [];
-    for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
-      results.push(
-        asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE || '', [
-          deleteTest[i].id,
-        ]),
-      );
-    }
-    const data: Array<DeleteResponse[]> = await Promise.all(results);
-    data.forEach((deleted, i) => {
-      expect(deleted).toBeDefined();
-      expect(Array.isArray(deleted)).toBe(true);
-      expect(deleted.length).toBeGreaterThan(0);
-      deleted.forEach((del) => {
-        expect(Object.keys(del).length).toBeGreaterThan(0);
-        expect(del.deleted).toBeDefined();
-        expect(del.deleted).toBe(true);
-        expect(del.id).toBeDefined();
-        expect(del.id).toEqual(deleteTest[i].id);
-      });
-    });
-    done();
-  });
 });

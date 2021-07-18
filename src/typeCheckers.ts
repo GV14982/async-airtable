@@ -2,7 +2,7 @@ import {
   QueryObject,
   QueryField,
   JoinArgs,
-  TextArgs,
+  TextSearchArgs,
   FieldNameObject,
   UncheckedArray,
   BaseFieldType,
@@ -20,8 +20,8 @@ export const isQueryObjectArray = (arr: QueryField): arr is QueryObject[] =>
 export const isStringArray = (arr: QueryField): arr is string[] =>
   arr instanceof Array && arr.every((v: QueryField) => typeof v === 'string');
 
-export const isJoinArgs = (arr: string[]): arr is JoinArgs =>
-  isStringArray(arr) && arr.length === 2;
+export const isJoinArgs = (arg: QueryField): arg is JoinArgs =>
+  !!(arg && arg instanceof Object && !(arg instanceof Array) && arg.fieldName);
 
 export const isStringOrFieldNameObject = (
   val: QueryField,
@@ -31,12 +31,14 @@ export const isStringOrFieldNameObject = (
     !Array.isArray(val) &&
     typeof val?.$fieldName === 'string');
 
-export const isTextArgs = (arr: QueryField[]): arr is TextArgs =>
-  arr instanceof Array &&
-  ((arr.length === 3 && typeof arr[2] === 'number') ||
-    (arr.length === 2 &&
-      (isStringOrFieldNameObject(arr[0]) || isQueryObject(arr[0])) &&
-      (isStringOrFieldNameObject(arr[1]) || isQueryObject(arr[1]))));
+export const isTextSearchArgs = (arg: QueryField): arg is TextSearchArgs =>
+  !!(
+    arg &&
+    arg instanceof Object &&
+    !(arg instanceof Array) &&
+    arg.searchText &&
+    arg.query
+  );
 
 export const allIndexesValid = (arr: UncheckedArray): arr is QueryField[] =>
   arr.every((e) => e !== undefined && e !== null);

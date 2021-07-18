@@ -93,27 +93,4 @@ describe('.createRecord', () => {
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
-
-  test('should retry if rate limited', async (done) => {
-    let results = [];
-    for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
-      results.push(
-        asyncAirtable.createRecord(
-          process.env.AIRTABLE_TABLE || '',
-          JSON.parse(process.env.NEW_RECORD || ''),
-        ),
-      );
-    }
-    const data: AirtableRecord[] = await Promise.all(results);
-    data.forEach((result) => {
-      expect(result).toBeDefined();
-      expect(typeof result).toBe('object');
-      expect(Object.keys(result).length).toBeGreaterThan(0);
-      expect(result).toHaveProperty('id');
-      expect(result).toHaveProperty('fields');
-      expect(result).toHaveProperty('createdTime');
-      expect(Object.keys(result.fields).length).toBeGreaterThan(0);
-    });
-    done();
-  });
 });

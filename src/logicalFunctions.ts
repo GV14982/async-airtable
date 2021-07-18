@@ -1,8 +1,10 @@
 import {
   ArrayExpressionFuncs,
   ExpressionFuncs,
+  IfArgs,
   IfFuncs,
   QueryField,
+  SwitchFuncs,
 } from './@types';
 import { queryBuilder } from './queryBuilder';
 
@@ -19,18 +21,21 @@ export const expressionFuncs: ExpressionFuncs = {
 };
 
 export const ifFunc: IfFuncs = {
-  $if: (expression: QueryField, val1: QueryField, val2: QueryField): string =>
-    `IF(${queryBuilder(expression)}, ${queryBuilder(val1)}, ${queryBuilder(
-      val2,
+  $if: ({ expression, ifTrue, ifFalse }: IfArgs): string =>
+    `IF(${queryBuilder(expression)}, ${queryBuilder(ifTrue)}, ${queryBuilder(
+      ifFalse,
     )})`,
 };
 
-export const switchFunc = {
-  $switch: (expression: QueryField, ...rest: QueryField[]): string =>
-    `SWITCH(${queryBuilder(expression)}, ${rest
-      .slice(0, rest.length - 2)
-      .map((v) => queryBuilder(v))
-      .join(', ')}${queryBuilder(rest[rest.length - 1])})`,
+export const switchFunc: SwitchFuncs = {
+  $switch: ({ expression, cases, defaultVal }): string =>
+    `SWITCH(${queryBuilder(expression)}, ${cases
+      .slice(0)
+      .map(
+        ({ switchCase, val }) =>
+          `${queryBuilder(switchCase)}, ${queryBuilder(val)}`,
+      )
+      .join(', ')}, ${queryBuilder(defaultVal)})`,
 };
 
 export const errorFunc = {

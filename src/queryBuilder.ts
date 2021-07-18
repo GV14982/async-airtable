@@ -6,10 +6,9 @@ import {
   expressionFuncs,
   ifFunc,
   switchFunc,
-  errorFunc,
 } from './logicalFunctions';
 import { logicalOperators } from './logicalOperators';
-import { textFunctions } from './textFunctions';
+import { textSearchFunctions } from './textFunctions';
 import {
   allIndexesValid,
   isBaseField,
@@ -17,8 +16,7 @@ import {
   isJoinArgs,
   isQueryObject,
   isQueryObjectArray,
-  isStringArray,
-  isTextArgs,
+  isTextSearchArgs,
 } from './typeCheckers';
 
 export const queryBuilder = (arg: QueryField): string => {
@@ -62,23 +60,19 @@ export const queryBuilder = (arg: QueryField): string => {
       } else if (key in expressionFuncs && isQueryObject(val)) {
         return expressionFuncs[key](val);
       } else if (key in ifFunc && isIfArgs(val)) {
-        return ifFunc[key](...val);
+        return ifFunc[key](val);
       } else if (key in switchFunc) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
         return switchFunc[key](val);
       } else if (key in arrayFunctions) {
-        if (isStringArray(val) && isJoinArgs(val)) {
-          return arrayFunctions[key](...val);
+        if (isJoinArgs(val)) {
+          return arrayFunctions.$arrayJoin(val.fieldName, val.separator);
         } else if (typeof val === 'string') {
           return arrayFunctions[key](val);
         }
-      } else if (
-        key in textFunctions &&
-        Array.isArray(val) &&
-        isTextArgs(val)
-      ) {
-        return textFunctions[key](val[0], val[1], val[2] ?? 0);
+      } else if (key in textSearchFunctions && isTextSearchArgs(val)) {
+        return textSearchFunctions[key](val);
       } else if (isQueryObject(val)) {
         const valKeys = Object.keys(val);
         const subVals = Object.values(val);
@@ -112,5 +106,6 @@ export const queryBuilder = (arg: QueryField): string => {
       }
     }
   }
-  throw new Error('Invalid Query Object');
+  // throw new Error('Invalid Query Object');
+  return 'null';
 };

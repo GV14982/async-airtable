@@ -160,29 +160,4 @@ describe('.upsertRecord', () => {
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
-
-  test('should if rate limited', async (done) => {
-    let results = [];
-    for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
-      results.push(
-        asyncAirtable.upsertRecord(
-          process.env.AIRTABLE_TABLE || '',
-          "{title} = 'test-upsert-2'",
-          JSON.parse(process.env.UPDATE_RECORD || ''),
-        ),
-      );
-    }
-    const data: AirtableRecord[] = await Promise.all(results);
-    data.forEach((result) => {
-      expect(result).toBeDefined();
-      expect(typeof result).toBe('object');
-      expect(Object.keys(result).length).toBeGreaterThan(0);
-      expect(result.id).toBeDefined();
-      expect(result.fields).toBeDefined();
-      expect(result.createdTime).toBeDefined();
-      expect(Object.keys(result.fields).length).toBeGreaterThan(0);
-      expect(JSON.stringify(result)).not.toEqual(JSON.stringify(initResult[0]));
-    });
-    done();
-  });
 });

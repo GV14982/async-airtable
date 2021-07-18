@@ -232,7 +232,7 @@ export interface AirtableUpdateRecord {
  */
 
 interface AirtableFilters
-  extends Record<string, QueryField | JoinArgs | TextArgs | undefined> {
+  extends Record<string, QueryField | JoinArgs | TextSearchArgs | undefined> {
   /**
    * Less than operator
    *
@@ -346,29 +346,29 @@ interface AirtableFilters
    *
    * @example
    * ```
-   * {$arrayJoin: ["field name", "separator"]}
+   * {$arrayJoin: {fieldName: 'test', separator: '; '}}
    * ```
    * @default separator ","
    */
-  $arrayJoin?: [string, string];
+  $arrayJoin?: JoinArgs;
   /**
    * Finds an occurrence of stringToFind in whereToSearch string starting from an optional startFromPosition.(startFromPosition is 0 by default.) If no occurrence of stringToFind is found, the result will be 0. Similar to SEARCH(), though SEARCH() returns empty rather than 0 if no occurrence of stringToFind is found.
    *
    * @example
    * ```
-   * {$textFind: ["test", "This is some test text"]}
+   * {$textFind: {searchText: 'test', query: 'test'}}
    * ```
    */
-  $textFind?: TextArgs;
+  $textFind?: TextSearchArgs;
   /**
    * Searches for an occurrence of stringToFind in whereToSearch string starting from an optional startFromPosition. (startFromPosition is 0 by default.) If no occurrence of stringToFind is found, the result will be empty. Similar to FIND(), though FIND() returns 0 rather than empty if no occurrence of stringToFind is found.
    *
    * @example
    * ```
-   * {$textSearch: ["test", "This is some test text"]}
+   * {$textSearch: {searchText: 'test', query: 'test'}}
    * ```
    */
-  $textSearch?: TextArgs;
+  $textSearch?: TextSearchArgs;
   /**
    * Used for handling fieldNames in text methods
    *
@@ -398,11 +398,7 @@ export type ComparisonObject = Record<string, BaseFieldType | QueryObject>;
 type ComparisonFunction = (vals: ComparisonObject) => string;
 /** @ignore */
 type ArrayFunction = (arg: string, separator?: string) => string;
-type TextFunction = (
-  search: FieldNameObject | string | QueryObject,
-  set: FieldNameObject | string | QueryObject,
-  startIndex?: number,
-) => string;
+type TextSearchFunction = (arg: TextSearchArgs) => string;
 /** @ignore */
 export interface LogicalOperators extends Record<string, ComparisonFunction> {
   $lt: ComparisonFunction;
@@ -424,13 +420,9 @@ type ExpressionFunc = (expression: QueryField) => string;
 /** @ignore */
 type ArrayExpressionFunc = (args: QueryField[]) => string;
 /** @ignore */
-type IfFunc = (
-  expression: QueryField,
-  val1: QueryField,
-  val2: QueryField,
-) => string;
+type IfFunc = (arg: IfArgs) => string;
 /** @ignore */
-type SwitchFunc = (expression: QueryField, ...rest: QueryField[]) => string;
+type SwitchFunc = (args: SwitchArgs) => string;
 /** @ignore */
 type ErrorFunc = () => string;
 /** @ignore */
@@ -458,9 +450,10 @@ export interface ErrorFuncs extends Record<string, ErrorFunc> {
   $error: ErrorFunc;
 }
 /**@ignore */
-export interface TextFunctions extends Record<string, TextFunction> {
-  $textFind: TextFunction;
-  $textSearch: TextFunction;
+export interface TextSearchFunctions
+  extends Record<string, TextSearchFunction> {
+  $textFind: TextSearchFunction;
+  $textSearch: TextSearchFunction;
 }
 /** @ignore */
 export type QueryField =
@@ -525,25 +518,30 @@ export type FieldNameObject = {
   $fieldName: string;
 };
 
-export type TextArgs =
-  | [
-      string | FieldNameObject | QueryObject,
-      string | FieldNameObject | QueryObject,
-    ]
-  | [
-      string | FieldNameObject | QueryObject,
-      string | FieldNameObject | QueryObject,
-      number,
-    ];
+type TextArg = string | FieldNameObject | QueryObject;
 
-export type JoinArgs = [string, string];
+export type TextSearchArgs = {
+  searchText: TextArg;
+  query: TextArg;
+  index?: number;
+};
 
-export type IfArgs = [QueryField, QueryField, QueryField];
+export type JoinArgs = {
+  fieldName: string;
+  separator?: string;
+};
 
-export type SwitchArgs = [
-  QueryField,
-  QueryField,
-  QueryField,
-  QueryField,
-  ...QueryField[]
-];
+export type IfArgs = {
+  expression: QueryField;
+  ifTrue: QueryField;
+  ifFalse: QueryField;
+};
+
+export type SwitchArgs = {
+  expression: QueryField;
+  cases: {
+    switchCase: QueryField;
+    val: QueryField;
+  }[];
+  defaultVal: QueryField;
+};

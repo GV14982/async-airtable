@@ -155,33 +155,4 @@ describe('.select', () => {
     ).rejects.toThrowError(/NOT_FOUND/g);
     done();
   });
-
-  test('should retry if rate limited', async (done) => {
-    let results = [];
-    for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
-      results.push(
-        i % 2 === 0
-          ? asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
-              maxRecords: 1,
-            })
-          : asyncAirtable.select(
-              process.env.AIRTABLE_TABLE || '',
-              { pageSize: 1 },
-              1,
-            ),
-      );
-    }
-    const data: Array<AirtableRecord[]> = await Promise.all(results);
-    data.forEach((result) => {
-      expect(result).toBeDefined();
-      expect(Array.isArray(result)).toBe(true);
-      expect(result).toHaveLength(1);
-      result.forEach((record) => {
-        expect(record).toHaveProperty('id');
-        expect(record).toHaveProperty('fields');
-        expect(record).toHaveProperty('createdTime');
-      });
-    });
-    done();
-  });
 });

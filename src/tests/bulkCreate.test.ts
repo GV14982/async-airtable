@@ -100,29 +100,4 @@ describe('.bulkCreate', () => {
     ).rejects.toThrowError(/Incorrect data type/g);
     done();
   });
-
-  test('should retry if rate limited', async (done) => {
-    let results = [];
-    for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
-      results.push(
-        asyncAirtable.bulkCreate(process.env.AIRTABLE_TABLE || '', [
-          JSON.parse(process.env.NEW_RECORD || ''),
-          JSON.parse(process.env.NEW_RECORD || ''),
-        ]),
-      );
-    }
-    const data: Array<AirtableRecord[]> = await Promise.all(results);
-    data.forEach((results) => {
-      expect(results).toBeDefined();
-      expect(Array.isArray(results)).toBe(true);
-      expect(results.length).toBeGreaterThan(0);
-      results.forEach((result) => {
-        expect(result.id).toBeDefined();
-        expect(result.fields).toBeDefined();
-        expect(Object.keys(result.fields).length).toBeGreaterThan(0);
-        expect(result.createdTime).toBeDefined();
-      });
-    });
-    done();
-  });
 });
