@@ -119,7 +119,6 @@ export class AsyncAirtable {
                 index: i,
                 page: page,
               },
-              key: 'records',
             });
             if (i + 1 === page) {
               return body.records;
@@ -142,7 +141,6 @@ export class AsyncAirtable {
                 headers: { Authorization: `Bearer ${this.apiKey}` },
               },
               instance: this,
-              key: 'records',
             });
             data = data.concat(body.records);
             offset = body.offset;
@@ -333,7 +331,6 @@ export class AsyncAirtable {
           },
         },
         instance: this,
-        key: 'records',
       });
       return data.records;
     } catch (err) {
@@ -377,7 +374,6 @@ export class AsyncAirtable {
           },
         },
         instance: this,
-        key: 'records',
       });
       return data.records;
     } catch (err) {
@@ -417,7 +413,6 @@ export class AsyncAirtable {
           },
         },
         instance: this,
-        key: 'records',
       });
       return data.records;
     } catch (err) {

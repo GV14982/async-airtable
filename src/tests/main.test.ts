@@ -49,17 +49,11 @@ describe('asyncAirtable', () => {
       { retryOnRateLimit: true },
     );
     let results = [];
-    for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
+    for (let i = 0; i < parseInt(process.env.REQ_COUNT || '0'); i++) {
       results.push(
-        i % 2 === 0
-          ? asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
-              maxRecords: 1,
-            })
-          : asyncAirtable.select(
-              process.env.AIRTABLE_TABLE || '',
-              { pageSize: 1 },
-              1,
-            ),
+        asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
+          maxRecords: 1,
+        }),
       );
     }
     const data: Array<AirtableRecord[]> = await Promise.all(results);

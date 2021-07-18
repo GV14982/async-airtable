@@ -7,7 +7,6 @@ type Args = {
   endpoint: string;
   options?: RequestInit;
   instance: AsyncAirtable;
-  key?: string;
   pageHandler?: {
     index: number;
     page: number;
@@ -18,7 +17,6 @@ export const request = async <T>({
   endpoint,
   options,
   instance,
-  key,
   pageHandler,
 }: Args): Promise<T> => {
   try {
@@ -31,13 +29,13 @@ export const request = async <T>({
 
       if (instance.retryOnRateLimit) {
         if (!pageHandler || pageHandler.index + 1 === pageHandler.page) {
-          return await rateLimitHandler(
+          const limit = await rateLimitHandler(
             endpoint,
             options ?? {},
             instance.retryTimeout,
             instance.maxRetry,
-            key,
           );
+          return limit;
         }
       }
     }
