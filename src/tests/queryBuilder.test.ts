@@ -180,10 +180,18 @@ describe('Query Builder', () => {
 
   describe('Array Functions', () => {
     test('should return the string with the specified method', () => {
-      expect(arrayFunctions.$arrayCompact('test')).toBe('ARRAYCOMPACT({test})');
-      expect(arrayFunctions.$arrayFlatten('test')).toBe('ARRAYFLATTEN({test})');
-      expect(arrayFunctions.$arrayUnique('test')).toBe('ARRAYUNIQUE({test})');
-      expect(arrayFunctions.$arrayJoin('test')).toBe("ARRAYJOIN({test}, ',')");
+      expect(arrayFunctions.$arrayCompact({ $fieldName: 'test' })).toBe(
+        'ARRAYCOMPACT({test})',
+      );
+      expect(arrayFunctions.$arrayFlatten({ $fieldName: 'test' })).toBe(
+        'ARRAYFLATTEN({test})',
+      );
+      expect(arrayFunctions.$arrayUnique({ $fieldName: 'test' })).toBe(
+        'ARRAYUNIQUE({test})',
+      );
+      expect(arrayFunctions.$arrayJoin({ $fieldName: 'test' })).toBe(
+        "ARRAYJOIN({test}, ',')",
+      );
     });
   });
 
@@ -359,7 +367,10 @@ describe('Query Builder', () => {
             $search: {
               stringToFind: 'test',
               whereToSearch: {
-                $arrayJoin: { fieldName: 'otherField', separator: ':' },
+                $arrayJoin: {
+                  val: { $fieldName: 'otherField' },
+                  separator: ':',
+                },
               },
             },
             anotherField: false,

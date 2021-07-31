@@ -38,8 +38,7 @@ import {
  * ```
  */
 
-interface AirtableFilters
-  extends Record<string, QueryField | JoinArgs | TextSearchArgs | undefined> {
+interface AirtableFilters extends QueryObject {
   /**
    * Less than operator
    *
@@ -365,7 +364,7 @@ interface AirtableFilters
    */
   $fieldName?: string;
 }
-export interface QueryObject {
+export interface QueryObject extends Record<string, QueryField> {
   /**
    * Shortform equal
    * (equivalent to $eq)
@@ -375,7 +374,7 @@ export interface QueryObject {
    * {field: value}
    * ```
    */
-  [key: string]: QueryField | QueryField[];
+  [key: string]: QueryField;
 }
 
 /** @ignore */
@@ -389,17 +388,13 @@ export type QueryField =
   | QueryObject
   | QueryField[]
   | AirtableFilters
-  | BaseFieldType;
+  | BaseFieldType
+  | undefined;
 /** @ignore */
 export type BaseFieldType = string | number | boolean | null;
 
 /**@ignore */
-export type UncheckedArray = (
-  | QueryField
-  | QueryField[]
-  | TextSearchArgs
-  | undefined
-)[];
+export type UncheckedArray = (QueryField | QueryField[] | undefined)[];
 
 /** @ignore */
 export type Arg =
@@ -418,10 +413,10 @@ export type FieldNameObject = {
   $fieldName: string;
 };
 
-export type JoinArgs = {
-  fieldName: string;
-  separator?: string;
-};
+export interface JoinArgs extends QueryObject {
+  val: QueryField;
+  separator?: QueryField;
+}
 
 export type TextArg = string | FieldNameObject | QueryObject;
 export type NumArg = number | FieldNameObject | QueryObject;

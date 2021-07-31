@@ -1,35 +1,36 @@
 import { NumArg, TextArg } from '..';
+import { QueryObject } from '../queryBuilder';
 
-export type TextSearchArgs = {
+export interface TextSearchArgs extends QueryObject {
   stringToFind: TextArg;
   whereToSearch: TextArg;
   index?: NumArg;
-};
+}
 
-export type TextReplaceArgs = {
+export interface TextReplaceArgs extends QueryObject {
   text: TextArg;
   startChar: NumArg;
   numChars: NumArg;
   replacement: TextArg;
-};
+}
 
-export type TextSubArgs = {
+export interface TextSubArgs extends QueryObject {
   text: TextArg;
   oldText: TextArg;
   newText: TextArg;
   index?: NumArg;
-};
+}
 
-export type TextMidArgs = {
+export interface TextMidArgs extends QueryObject {
   text: TextArg;
   whereToStart: NumArg;
   num: NumArg;
-};
+}
 
-export type TextDoubleArg = {
+export interface TextDoubleArg extends QueryObject {
   text: TextArg;
   num: NumArg;
-};
+}
 /** @ignore */
 type TextSearchFunction = (arg: TextSearchArgs) => string;
 type TextReplaceFunction = (arg: TextReplaceArgs) => string;

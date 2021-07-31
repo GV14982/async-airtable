@@ -1,5 +1,7 @@
+import { QueryField } from '../queryBuilder';
+
 /** @ignore */
-type ArrayFunction = (arg: string, separator?: string) => string;
+type ArrayFunction = (arg: QueryField, separator?: QueryField) => string;
 
 /** @ignore */
 export interface ArrayFunctions extends Record<string, ArrayFunction> {

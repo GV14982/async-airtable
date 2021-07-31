@@ -127,7 +127,7 @@ describe('Helper Functions', () => {
       expect(isTextArgArray(['test'])).toBe(true);
       expect(isStringOrFieldNameObject('test')).toBe(true);
       expect(isStringOrFieldNameObject({ $fieldName: 'test' })).toBe(true);
-      expect(isJoinArgs({ fieldName: 'test', separator: ':' })).toBe(true);
+      expect(isJoinArgs({ val: 'test', separator: ':' })).toBe(true);
       expect(
         isTextSearchArgs({ stringToFind: 'test', whereToSearch: 'test' }),
       ).toBe(true);

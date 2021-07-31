@@ -27,12 +27,12 @@ import {
 } from './types/queryBuilder/numeric';
 
 const checkProperty = (
-  obj: Record<string, QueryField>,
+  obj: QueryObject,
   prop: string,
-  typeCheck?: (arg: QueryField) => boolean,
+  typeCheck?: (arg: QueryField | undefined) => boolean,
 ) =>
   Object.prototype.hasOwnProperty.call(obj, prop) &&
-  (typeCheck ? typeCheck(obj[prop]) : true);
+  (typeCheck !== undefined ? typeCheck(obj[prop]) : true);
 
 export const isQueryObject = (item: QueryField): item is QueryObject => {
   if (item === undefined) throw new Error('Missing Query Object');
@@ -58,7 +58,7 @@ export const isNumArgArray = (arr: QueryField): arr is NumArg[] =>
   arr instanceof Array && arr.every((v: QueryField) => isNumArg(v));
 
 export const isJoinArgs = (arg: QueryField): arg is JoinArgs =>
-  !!(isQueryObject(arg) && arg.fieldName);
+  !!(isQueryObject(arg) && arg.val);
 
 export const isFieldNameObject = (val: QueryField): val is FieldNameObject =>
   isQueryObject(val) && typeof val.$fieldName === 'string';

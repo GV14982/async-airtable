@@ -62,6 +62,9 @@ export const operatorFunctions = {
   ...numericOperators,
 };
 
+const handleError = (arg: QueryField) =>
+  new Error(`Invalid Query Object, ${JSON.stringify(arg)}`);
+
 export const queryBuilder = (arg: QueryField): string => {
   if (arg !== undefined && !(arg instanceof Function)) {
     if (isBaseField(arg)) {
@@ -109,7 +112,7 @@ export const queryBuilder = (arg: QueryField): string => {
         return regexFunctions[key](val);
       } else if (key in arrayFunctions) {
         if (isJoinArgs(val)) {
-          return arrayFunctions.$arrayJoin(val.fieldName, val.separator);
+          return arrayFunctions.$arrayJoin(val.val, val.separator);
         } else if (typeof val === 'string') {
           return arrayFunctions[key](val);
         }
@@ -146,7 +149,7 @@ export const queryBuilder = (arg: QueryField): string => {
       }
     }
   }
-  throw new Error('Invalid Query Object');
+  throw handleError(arg);
 };
 
 const handleTextFunc = (key: string, val: QueryField): string => {
@@ -168,7 +171,7 @@ const handleTextFunc = (key: string, val: QueryField): string => {
   ) {
     return textSingleArgumentFunctions[key](val);
   }
-  throw new Error('Not a valid text function');
+  throw handleError({ key, val });
 };
 
 const handleLogicalFunc = (key: string, val: QueryField): string => {
@@ -181,7 +184,7 @@ const handleLogicalFunc = (key: string, val: QueryField): string => {
   } else if (key in switchFunc && isSwitchArgs(val)) {
     return switchFunc[key](val);
   }
-  throw new Error('Not a valid logical function');
+  throw handleError({ key, val });
 };
 
 const handleNumericalFunc = (key: string, val: QueryField): string => {
@@ -200,5 +203,5 @@ const handleNumericalFunc = (key: string, val: QueryField): string => {
   } else if (key in roundNumFunctions && isRoundArg(val)) {
     return roundNumFunctions[key](val);
   }
-  throw new Error('Not a valid logical function');
+  throw handleError({ key, val });
 };
