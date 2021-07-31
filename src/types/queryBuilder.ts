@@ -394,7 +394,12 @@ export type QueryField =
 export type BaseFieldType = string | number | boolean | null;
 
 /**@ignore */
-export type UncheckedArray = (QueryField | QueryField[] | undefined)[];
+export type UncheckedArray = (
+  | QueryField
+  | QueryField[]
+  | TextSearchArgs
+  | undefined
+)[];
 
 /** @ignore */
 export type Arg =

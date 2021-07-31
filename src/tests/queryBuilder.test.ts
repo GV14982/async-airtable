@@ -368,6 +368,7 @@ describe('Query Builder', () => {
       ).toBe(
         "AND(AND({field} < 10, {field} > 5), NOT(AND(SEARCH('test', ARRAYJOIN({otherField}, ':'), 0), {anotherField} = FALSE())))",
       );
+      // @ts-ignore
       expect(() => queryBuilder({ test: undefined })).toThrowError(
         'Invalid query',
       );
