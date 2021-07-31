@@ -13,7 +13,7 @@ import {
   Typecast,
   updateOpts,
   bulkQueryBody,
-} from './@types';
+} from './types';
 import { request } from './http';
 
 /** @ignore */

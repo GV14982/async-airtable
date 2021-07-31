@@ -1,4 +1,4 @@
-import { Arg } from './@types';
+import { Arg } from './types';
 
 export default (
   arg: Arg,

@@ -1,5 +1,5 @@
 import { AsyncAirtable } from '../asyncAirtable';
-import { AirtableRecord } from '../@types';
+import { AirtableRecord } from '../types';
 import { config } from 'dotenv';
 config();
 const asyncAirtable = new AsyncAirtable(

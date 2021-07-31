@@ -1,4 +1,4 @@
-import { ArrayFunctions } from './@types';
+import { ArrayFunctions } from './types';
 
 export const arrayFunctions: ArrayFunctions = {
   $arrayCompact: (fieldName: string): string => {

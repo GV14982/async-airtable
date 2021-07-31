@@ -3,7 +3,7 @@
   "version": "2.2.0-next",
   "description": "A lightweight, promisified airtable client",
   "main": "./lib/asyncAirtable.js",
-  "types": "./lib/asyncAirtable.d.ts",
+  "types": "./lib/types/index.d.ts",
   "files": [
     "dist/**/*",
     "lib/**/*",
@@ -13,6 +13,7 @@
   "scripts": {
     "test": "jest -i --no-cache --coverage",
     "docs": "typedoc",
+    "check": "tsc --noEmit",
     "build": "npm run build:js && npm run build:browser && npm run build:browser-min",
     "build:js": "tsc",
     "build:browser": "webpack -c ./webpack.config.js",

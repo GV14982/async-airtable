@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import { AirtableRecord } from '../@types';
+import { AirtableRecord } from '../types';
 config();
 import { AsyncAirtable } from '../asyncAirtable';
 const requiredMethods = [

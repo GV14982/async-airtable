@@ -2,10 +2,10 @@ import {
   ArrayExpressionFuncs,
   ExpressionFuncs,
   IfArgs,
-  IfFuncs,
+  IfFunction,
   QueryField,
-  SwitchFuncs,
-} from './@types';
+  SwitchFunction,
+} from './types';
 import { queryBuilder } from './queryBuilder';
 
 export const arrayArgFuncs: ArrayExpressionFuncs = {
@@ -20,14 +20,14 @@ export const expressionFuncs: ExpressionFuncs = {
     `ISERROR(${queryBuilder(expression)})`,
 };
 
-export const ifFunc: IfFuncs = {
+export const ifFunc: IfFunction = {
   $if: ({ expression, ifTrue, ifFalse }: IfArgs): string =>
     `IF(${queryBuilder(expression)}, ${queryBuilder(ifTrue)}, ${queryBuilder(
       ifFalse,
     )})`,
 };
 
-export const switchFunc: SwitchFuncs = {
+export const switchFunc: SwitchFunction = {
   $switch: ({ expression, cases, defaultVal }): string =>
     `SWITCH(${queryBuilder(expression)}, ${cases
       .slice(0)
@@ -40,4 +40,12 @@ export const switchFunc: SwitchFuncs = {
 
 export const errorFunc = {
   $error: (): string => 'ERROR()',
+};
+
+export const logicalFunctions = {
+  ...arrayArgFuncs,
+  ...expressionFuncs,
+  ...errorFunc,
+  ...ifFunc,
+  ...switchFunc,
 };

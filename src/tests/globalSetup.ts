@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 config();
 import * as d from './testData.json';
 import { AsyncAirtable } from '../asyncAirtable';
-import { AirtableRecord } from '../@types';
+import { AirtableRecord } from '../types';
 const asyncAirtable = new AsyncAirtable(
   process.env.AIRTABLE_KEY || '',
   process.env.AIRTABLE_BASE || '',
