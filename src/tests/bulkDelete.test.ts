@@ -9,7 +9,7 @@ const asyncAirtable = new AsyncAirtable(
 let deleteGroup: string[];
 let deleteTest: AirtableRecord[] = [];
 describe('.bulkDelete', () => {
-  beforeAll(async (done) => {
+  beforeAll(async () => {
     const results = await asyncAirtable.select(
       process.env.AIRTABLE_TABLE || '',
       { view: 'Grid view' },
@@ -30,10 +30,9 @@ describe('.bulkDelete', () => {
       );
       deleteTest = [...deleteTest, ...values];
     }
-    done();
   });
 
-  test('should delete a record with the given id', async (done) => {
+  test('should delete a record with the given id', async () => {
     const deleted = await asyncAirtable.bulkDelete(
       process.env.AIRTABLE_TABLE || '',
       deleteGroup,
@@ -48,54 +47,47 @@ describe('.bulkDelete', () => {
       expect(del.id).toBeDefined();
       expect(deleteGroup).toContain(del.id);
     });
-    done();
   });
 
-  test('should throw an error if you do not pass a table', async (done) => {
+  test('should throw an error if you do not pass a table', async () => {
     // @ts-ignore
     await expect(asyncAirtable.bulkDelete()).rejects.toThrowError(
       'Argument "table" is required',
     );
-    done();
   });
 
-  test('should throw an error if you do not pass an id', async (done) => {
+  test('should throw an error if you do not pass an id', async () => {
     await expect(
       // @ts-ignore
       asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE || ''),
     ).rejects.toThrowError('Argument "ids" is required');
-    done();
   });
 
-  test('should throw an error if the id does not exist', async (done) => {
+  test('should throw an error if the id does not exist', async () => {
     await expect(
       asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE || '', [
         'doesnotexist',
       ]),
     ).rejects.toThrowError(/"INVALID_RECORDS"/g);
-    done();
   });
 
-  test('should throw an error if the id has already been deleted', async (done) => {
+  test('should throw an error if the id has already been deleted', async () => {
     await expect(
       asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE || '', deleteGroup),
     ).rejects.toThrowError(/"NOT_FOUND"/g);
-    done();
   });
 
-  test('should throw an error if pass the table argument with an incorrect data type', async (done) => {
+  test('should throw an error if pass the table argument with an incorrect data type', async () => {
     await expect(
       // @ts-ignore
       asyncAirtable.bulkDelete(10, deleteGroup),
     ).rejects.toThrowError(/Incorrect data type/g);
-    done();
   });
 
-  test('should throw an error if pass the id argument with an incorrect data type', async (done) => {
+  test('should throw an error if pass the id argument with an incorrect data type', async () => {
     await expect(
       // @ts-ignore
       asyncAirtable.bulkDelete(process.env.AIRTABLE_TABLE || '', 10),
     ).rejects.toThrowError(/Incorrect data type/g);
-    done();
   });
 });

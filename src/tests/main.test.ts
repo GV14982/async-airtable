@@ -42,7 +42,7 @@ describe('asyncAirtable', () => {
     }).toThrowError('Base ID is required.');
   });
 
-  test('should retry if rate limited', async (done) => {
+  test('should retry if rate limited', async () => {
     const asyncAirtable = new AsyncAirtable(
       process.env.AIRTABLE_KEY || '',
       process.env.AIRTABLE_BASE || '',
@@ -67,6 +67,5 @@ describe('asyncAirtable', () => {
         expect(record).toHaveProperty('createdTime');
       });
     });
-    done();
   });
 });

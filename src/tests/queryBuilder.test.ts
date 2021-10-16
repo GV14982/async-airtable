@@ -527,7 +527,7 @@ describe('Query Builder', () => {
             $lt: 10,
             $lte: 9,
             $gt: 5,
-            $gte: 4,
+            $gte: 6,
             $eq: 7,
             $neq: 8,
           },
@@ -584,7 +584,9 @@ describe('Query Builder', () => {
             },
           ],
         }),
-      ).toBe('');
+      ).toBe(
+        `AND(AND({field} < 10, {field} <= 9, {field} > 5, {field} >= 6, {field} = 7, {field} != 8), NOT(OR(AND({field1} = 'yes', {field2} = TRUE()), {field3} = FALSE())), IF(ISERROR({field4}), 'err', 'no err'), SWITCH({field1}, 'yes', TRUE(), 'no', FALSE(), 'maybe', BLANK(), ERROR()), XOR({field5} < 50, {field5} > 40, {field5} != 45))`,
+      );
       // @ts-ignore
       expect(() => queryBuilder({ test: undefined })).toThrowError(
         'Invalid query',

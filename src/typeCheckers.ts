@@ -44,7 +44,7 @@ const checkProperty = (
 
 export const isQueryObject = (item: QueryField): item is QueryObject => {
   if (item === undefined) throw new Error('Missing Query Object');
-  return item !== null && item instanceof Object && !Array.isArray(item);
+  return item !== null && typeof item === 'object' && !Array.isArray(item);
 };
 
 export const isTextArg = (item: QueryField): item is TextArg =>
@@ -134,7 +134,7 @@ export const allIndexesValid = (arr: UncheckedArray): arr is QueryField[] =>
   arr.every((e) => e !== undefined && e !== null);
 
 export const isBaseField = (item: QueryField): item is BaseFieldType =>
-  typeof item !== 'object' || item === null;
+  (typeof item !== 'object' && typeof item !== 'function') || item === null;
 
 export const isIfArgs = (arg: QueryField): arg is IfArgs =>
   !!(
