@@ -13,11 +13,7 @@ import {
   RoundArg,
 } from './queryBuilder/numeric';
 import { RegexReplaceArgs } from './queryBuilder/regex';
-import {
-  TextMidArgs,
-  TextReplaceArgs,
-  TextSubArgs,
-} from './queryBuilder/string';
+import { TextMidArgs, TextReplaceArgs, TextSubArgs } from './queryBuilder/text';
 
 /**
  * An object to handle filtering the records returned by the #select and #upsert methods.
@@ -363,6 +359,7 @@ interface AirtableFilters extends QueryObject {
    * ```
    */
   $fieldName?: string;
+  $insert?: string;
 }
 export interface QueryObject extends Record<string, QueryField> {
   /**
@@ -389,6 +386,7 @@ export type QueryField =
   | QueryField[]
   | AirtableFilters
   | BaseFieldType
+  | (() => string)
   | undefined;
 /** @ignore */
 export type BaseFieldType = string | number | boolean | null;

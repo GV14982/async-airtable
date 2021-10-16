@@ -1,5 +1,15 @@
 import { buildExpression } from './buildExpression';
-import { queryBuilder } from './queryBuilder';
+import { handleError, queryBuilder } from './queryBuilder';
+import {
+  isNumArgArray,
+  isNumArg,
+  isCeilFloorArg,
+  isLogArg,
+  isModArg,
+  isPowerArg,
+  isRoundArg,
+} from './typeCheckers';
+import { QueryField } from './types';
 import {
   ArrayArgNumFunctions,
   CeilFloorNumFunctions,
@@ -76,4 +86,23 @@ export const numericOperators: NumericOperators = {
   $sub: (arg) => buildExpression(arg, '-'),
   $multi: (arg) => buildExpression(arg, '*'),
   $div: (arg) => buildExpression(arg, '/'),
+};
+
+export const handleNumericalFunc = (key: string, val: QueryField): string => {
+  if (key in arrayArgNumFunctions && isNumArgArray(val)) {
+    return arrayArgNumFunctions[key](val);
+  } else if (key in singleArgNumFunctions && isNumArg(val)) {
+    return singleArgNumFunctions[key](val);
+  } else if (key in ceilFloorNumFunctions && isCeilFloorArg(val)) {
+    return ceilFloorNumFunctions[key](val);
+  } else if (key in logNumFunction && isLogArg(val)) {
+    return logNumFunction[key](val);
+  } else if (key in modNumFunction && isModArg(val)) {
+    return modNumFunction[key](val);
+  } else if (key in powerNumFunction && isPowerArg(val)) {
+    return powerNumFunction[key](val);
+  } else if (key in roundNumFunctions && isRoundArg(val)) {
+    return roundNumFunctions[key](val);
+  }
+  throw handleError({ key, val });
 };

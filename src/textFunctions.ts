@@ -1,4 +1,5 @@
 import {
+  QueryField,
   TextConcatFunctions,
   TextDoubleArgumentFunctions,
   TextMidFunction,
@@ -7,7 +8,17 @@ import {
   TextSingleArgumentFunctions,
   TextSubFunctions,
 } from './types';
-import { queryBuilder } from './queryBuilder';
+import { handleError, queryBuilder } from './queryBuilder';
+import {
+  isTextSearchArgs,
+  isTextArgArray,
+  isTextMidArgs,
+  isTextReplaceArgs,
+  isTextSubArgs,
+  isTextDoubleArg,
+  isStringOrFieldNameObject,
+  isQueryObject,
+} from './typeCheckers';
 
 export const textSearchFunctions: TextSearchFunctions = {
   $find: ({ stringToFind, whereToSearch, index }) =>
@@ -69,4 +80,26 @@ export const textFunctions = {
   ...textSubstituteFunction,
   ...textDoubleArgumentFunctions,
   ...textSingleArgumentFunctions,
+};
+
+export const handleTextFunc = (key: string, val: QueryField): string => {
+  if (key in textSearchFunctions && isTextSearchArgs(val)) {
+    return textSearchFunctions[key](val);
+  } else if (key in textConcatFunction && isTextArgArray(val)) {
+    return textConcatFunction[key](val);
+  } else if (key in textMidFunction && isTextMidArgs(val)) {
+    return textMidFunction[key](val);
+  } else if (key in textReplacementFunction && isTextReplaceArgs(val)) {
+    return textReplacementFunction[key](val);
+  } else if (key in textSubstituteFunction && isTextSubArgs(val)) {
+    return textSubstituteFunction[key](val);
+  } else if (key in textDoubleArgumentFunctions && isTextDoubleArg(val)) {
+    return textDoubleArgumentFunctions[key](val);
+  } else if (
+    key in textSingleArgumentFunctions &&
+    (isStringOrFieldNameObject(val) || isQueryObject(val))
+  ) {
+    return textSingleArgumentFunctions[key](val);
+  }
+  throw handleError({ key, val });
 };

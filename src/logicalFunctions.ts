@@ -6,7 +6,13 @@ import {
   QueryField,
   SwitchFunction,
 } from './types';
-import { queryBuilder } from './queryBuilder';
+import { handleError, queryBuilder } from './queryBuilder';
+import {
+  isQueryObjectArray,
+  isQueryObject,
+  isIfArgs,
+  isSwitchArgs,
+} from './typeCheckers';
 
 export const arrayArgFuncs: ArrayExpressionFuncs = {
   $and: (args: QueryField[]): string => `AND(${queryBuilder(args)})`,
@@ -38,14 +44,22 @@ export const switchFunc: SwitchFunction = {
       .join(', ')}, ${queryBuilder(defaultVal)})`,
 };
 
-export const errorFunc = {
-  $error: (): string => 'ERROR()',
-};
-
 export const logicalFunctions = {
   ...arrayArgFuncs,
   ...expressionFuncs,
-  ...errorFunc,
   ...ifFunc,
   ...switchFunc,
+};
+
+export const handleLogicalFunc = (key: string, val: QueryField): string => {
+  if (key in arrayArgFuncs && isQueryObjectArray(val)) {
+    return arrayArgFuncs[key](val);
+  } else if (key in expressionFuncs && isQueryObject(val)) {
+    return expressionFuncs[key](val);
+  } else if (key in ifFunc && isIfArgs(val)) {
+    return ifFunc[key](val);
+  } else if (key in switchFunc && isSwitchArgs(val)) {
+    return switchFunc[key](val);
+  }
+  throw handleError({ key, val });
 };

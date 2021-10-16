@@ -17,6 +17,14 @@ import {
   TextArg,
   NumArg,
   BoolArg,
+  AddArg,
+  DiffArg,
+  FormatArg,
+  ParseArg,
+  WeekArg,
+  WorkDayArg,
+  WorkDayDiffArg,
+  DoubleDateObj,
 } from './types';
 import {
   CeilFloorArg,
@@ -63,10 +71,15 @@ export const isJoinArgs = (arg: QueryField): arg is JoinArgs =>
 export const isFieldNameObject = (val: QueryField): val is FieldNameObject =>
   isQueryObject(val) && typeof val.$fieldName === 'string';
 
+export const isString = (arg: QueryField): arg is string =>
+  typeof arg === 'string';
+
+export const isStringArray = (arg: QueryField): arg is string[] =>
+  Array.isArray(arg) && arg.every((s) => typeof s === 'string');
+
 export const isStringOrFieldNameObject = (
   val: QueryField,
-): val is string | FieldNameObject =>
-  typeof val === 'string' || isFieldNameObject(val);
+): val is string | FieldNameObject => isString(val) || isFieldNameObject(val);
 
 export const isNumOrFieldNameObject = (
   val: QueryField,
@@ -191,4 +204,59 @@ export const isLogArg = (arg: QueryField): arg is LogArg =>
   checkProperty(arg, 'num') &&
   checkProperty(arg, 'base')
     ? isNumArg(arg.base)
+    : true);
+
+export const isFunc = (arg: QueryField | (() => string)): arg is () => string =>
+  !!(arg && typeof arg === 'function' && typeof arg() === 'string');
+
+export const hasDateArg = (arg: QueryField): arg is QueryObject =>
+  !!(isQueryObject(arg) && checkProperty(arg, 'date', isTextArg));
+
+export const hasDoubleDateArg = (arg: QueryField): arg is DoubleDateObj =>
+  !!(
+    isQueryObject(arg) &&
+    checkProperty(arg, 'date1', isTextArg) &&
+    checkProperty(arg, 'date2', isTextArg)
+  );
+
+export const isDateAddArg = (arg: QueryField): arg is AddArg =>
+  !!(
+    hasDateArg(arg) &&
+    checkProperty(arg, 'count', isNumArg) &&
+    checkProperty(arg, 'units', isString)
+  );
+
+export const isDateDiffArg = (arg: QueryField): arg is DiffArg =>
+  !!(hasDoubleDateArg(arg) && checkProperty(arg, 'units', isString));
+
+export const isDateSameArg = (arg: QueryField): arg is DiffArg =>
+  !!(hasDoubleDateArg(arg) && checkProperty(arg, 'units')
+    ? isString(arg)
+    : true);
+
+export const isDateFormatArg = (arg: QueryField): arg is FormatArg =>
+  !!(hasDateArg(arg) && checkProperty(arg, 'format', isTextArg));
+
+export const isDateParseArg = (arg: QueryField): arg is ParseArg =>
+  !!(hasDateArg(arg) &&
+  (checkProperty(arg, 'format') ? isTextArg(arg.format) : true) &&
+  checkProperty(arg, 'locale')
+    ? isTextArg(arg.locale)
+    : true);
+
+export const isDateWeekArg = (arg: QueryField): arg is WeekArg =>
+  !!(hasDateArg(arg) && checkProperty(arg, 'start')
+    ? isTextArg(arg.format)
+    : true);
+
+export const isDateWorkDayArg = (arg: QueryField): arg is WorkDayArg =>
+  !!(hasDateArg(arg) && checkProperty(arg, 'holidays')
+    ? isTextArgArray(arg.format)
+    : true);
+
+export const isDateWorkDayDiffArg = (arg: QueryField): arg is WorkDayDiffArg =>
+  !!(hasDateArg(arg) &&
+  checkProperty(arg, 'numDays', isNumArg) &&
+  checkProperty(arg, 'holidays')
+    ? isTextArgArray(arg.format)
     : true);

@@ -1,3 +1,11 @@
+import {
+  ERROR,
+  CREATED_TIME,
+  RECORD_ID,
+  NOW,
+  TODAY,
+  LAST_MODIFIED_TIME,
+} from '../asyncAirtable';
 import { operatorFunctions, queryBuilder } from '../queryBuilder';
 import { arrayFunctions } from '../arrayFunctions';
 import { buildExpression, operators } from '../buildExpression';
@@ -6,9 +14,7 @@ import {
   expressionFuncs,
   ifFunc,
   switchFunc,
-  errorFunc,
 } from '../logicalFunctions';
-import { logicalOperators } from '../logicalOperators';
 import {
   textSearchFunctions,
   textConcatFunction,
@@ -29,6 +35,18 @@ import {
   roundNumFunctions,
   singleArgNumFunctions,
 } from '../numericFunctions';
+import {
+  dateAddFunc,
+  dateDiffFunc,
+  dateFormatFunc,
+  dateParseFunc,
+  dateSameFunc,
+  dateWeekFuncs,
+  dateWorkDayDiffFunc,
+  dateWorkDayFunc,
+  lastModifiedFunc,
+  singleArgDateFuncs,
+} from '../dateFunctions';
 
 describe('Query Builder', () => {
   describe('isQueryObject', () => {
@@ -138,10 +156,6 @@ describe('Query Builder', () => {
         //@ts-ignore
         expressionFuncs.$isError({ coins: { $lt: 10 } }),
       ).toBe('ISERROR({coins} < 10)');
-    });
-
-    test('should return an error', () => {
-      expect(errorFunc.$error()).toBe('ERROR()');
     });
 
     test('Should return a string wrapped in an IF function', () => {
@@ -355,30 +369,222 @@ describe('Query Builder', () => {
     });
   });
 
+  describe('Date Functions', () => {
+    test('should return a correct string for date function', () => {
+      expect(singleArgDateFuncs.$dateStr({ $fieldName: 'date' })).toBe(
+        'DATESTR({date})',
+      );
+      expect(singleArgDateFuncs.$day({ $fieldName: 'date' })).toBe(
+        'DAY({date})',
+      );
+      expect(singleArgDateFuncs.$fromNow({ $fieldName: 'date' })).toBe(
+        'FROMNOW({date})',
+      );
+      expect(singleArgDateFuncs.$hour({ $fieldName: 'date' })).toBe(
+        'HOUR({date})',
+      );
+      expect(singleArgDateFuncs.$minute({ $fieldName: 'date' })).toBe(
+        'MINUTE({date})',
+      );
+      expect(singleArgDateFuncs.$month({ $fieldName: 'date' })).toBe(
+        'MONTH({date})',
+      );
+      expect(singleArgDateFuncs.$second({ $fieldName: 'date' })).toBe(
+        'SECOND({date})',
+      );
+      expect(singleArgDateFuncs.$timeStr({ $fieldName: 'date' })).toBe(
+        'TIMESTR({date})',
+      );
+      expect(singleArgDateFuncs.$toNow({ $fieldName: 'date' })).toBe(
+        'TONOW({date})',
+      );
+      expect(singleArgDateFuncs.$year({ $fieldName: 'date' })).toBe(
+        'YEAR({date})',
+      );
+      expect(
+        dateAddFunc.$dateAdd({
+          date: { $fieldName: 'date' },
+          count: 10,
+          units: 'days',
+        }),
+      ).toBe("DATEADD({date}, 10, 'days')");
+      expect(
+        dateDiffFunc.$dateDiff({
+          date1: { $fieldName: 'date1' },
+          date2: { $fieldName: 'date2' },
+          units: 'days',
+        }),
+      ).toBe("DATETIME_DIFF({date1}, {date2}, 'days')");
+      expect(
+        dateSameFunc.$dateSame({
+          date1: { $fieldName: 'date1' },
+          date2: { $fieldName: 'date2' },
+          units: 'days',
+        }),
+      ).toBe("IS_SAME({date1}, {date2}, 'days')");
+      expect(
+        dateSameFunc.$dateSame({
+          date1: { $fieldName: 'date1' },
+          date2: { $fieldName: 'date2' },
+        }),
+      ).toBe('IS_SAME({date1}, {date2})');
+      expect(
+        dateFormatFunc.$dateFormat({
+          date: { $fieldName: 'date' },
+          format: 'YYYY-MM-DD',
+        }),
+      ).toBe("DATETIME_FORMAT({date}, 'YYYY-MM-DD')");
+      expect(dateFormatFunc.$dateFormat({ date: { $fieldName: 'date' } })).toBe(
+        'DATETIME_FORMAT({date})',
+      );
+      expect(
+        dateParseFunc.$dateParse({
+          date: { $fieldName: 'date' },
+          format: 'YYYY-MM-DD',
+          locale: 'es',
+        }),
+      ).toBe("DATETIME_PARSE({date}, 'YYYY-MM-DD', 'es')");
+      expect(
+        dateParseFunc.$dateParse({
+          date: { $fieldName: 'date' },
+          format: 'YYYY-MM-DD',
+        }),
+      ).toBe("DATETIME_PARSE({date}, 'YYYY-MM-DD')");
+      expect(
+        dateParseFunc.$dateParse({
+          date: { $fieldName: 'date' },
+        }),
+      ).toBe('DATETIME_PARSE({date})');
+      expect(
+        dateWeekFuncs.$weekDay({
+          date: { $fieldName: 'date' },
+          start: 'Monday',
+        }),
+      ).toBe("WEEKDAY({date}, 'Monday')");
+      expect(dateWeekFuncs.$weekDay({ date: { $fieldName: 'date' } })).toBe(
+        'WEEKDAY({date})',
+      );
+      expect(
+        dateWeekFuncs.$weekNum({
+          date: { $fieldName: 'date' },
+          start: 'Monday',
+        }),
+      ).toBe("WEEKNUM({date}, 'Monday')");
+      expect(dateWeekFuncs.$weekNum({ date: { $fieldName: 'date' } })).toBe(
+        'WEEKNUM({date})',
+      );
+      expect(
+        dateWorkDayFunc.$workDay({
+          date: { $fieldName: 'date' },
+          numDays: 10,
+          holidays: ['10/30/21'],
+        }),
+      ).toBe("WORKDAY({date}, 10, '10/30/21')");
+      expect(
+        dateWorkDayFunc.$workDay({
+          date: { $fieldName: 'date' },
+          numDays: 10,
+          holidays: ['10/30/21', '11/19/21'],
+        }),
+      ).toBe("WORKDAY({date}, 10, '10/30/21', '11/19/21')");
+      expect(
+        dateWorkDayFunc.$workDay({
+          date: { $fieldName: 'date' },
+          numDays: 10,
+        }),
+      ).toBe('WORKDAY({date}, 10)');
+      expect(
+        dateWorkDayDiffFunc.$workDayDiff({
+          date1: { $fieldName: 'date1' },
+          date2: { $fieldName: 'date2' },
+          holidays: ['10/30/21'],
+        }),
+      ).toBe("WORKDAY_DIFF({date1}, {date2}, '10/30/21')");
+      expect(
+        dateWorkDayDiffFunc.$workDayDiff({
+          date1: { $fieldName: 'date1' },
+          date2: { $fieldName: 'date2' },
+          holidays: ['10/30/21', '11/19/21'],
+        }),
+      ).toBe("WORKDAY_DIFF({date1}, {date2}, '10/30/21', '11/19/21')");
+      expect(
+        dateWorkDayDiffFunc.$workDayDiff({
+          date1: { $fieldName: 'date1' },
+          date2: { $fieldName: 'date2' },
+        }),
+      ).toBe('WORKDAY_DIFF({date1}, {date2})');
+      expect(lastModifiedFunc.$lastModified(['date1', 'date2'])).toBe(
+        'LAST_MODIFIED_TIME({date1}, {date2})',
+      );
+    });
+  });
+
   describe('queryBuilder', () => {
     test('should return a filter formula string from a query object', () => {
       expect(
         queryBuilder({
           field: {
             $lt: 10,
+            $lte: 9,
             $gt: 5,
+            $gte: 4,
+            $eq: 7,
+            $neq: 8,
           },
           $not: {
-            $search: {
-              stringToFind: 'test',
-              whereToSearch: {
-                $arrayJoin: {
-                  val: { $fieldName: 'otherField' },
-                  separator: ':',
-                },
+            $or: [
+              { $and: [{ field1: 'yes' }, { field2: true }] },
+              { field3: false },
+            ],
+          },
+          $if: {
+            expression: {
+              $isError: {
+                $fieldName: 'field4',
               },
             },
-            anotherField: false,
+            ifTrue: 'err',
+            ifFalse: 'no err',
           },
+          $switch: {
+            expression: {
+              $fieldName: 'field1',
+            },
+            cases: [
+              {
+                switchCase: 'yes',
+                val: true,
+              },
+              {
+                switchCase: 'no',
+                val: false,
+              },
+              {
+                switchCase: 'maybe',
+                val: null,
+              },
+            ],
+            defaultVal: ERROR,
+          },
+          $xor: [
+            {
+              field5: {
+                $lt: 50,
+              },
+            },
+            {
+              field5: {
+                $gt: 40,
+              },
+            },
+            {
+              field5: {
+                $neq: 45,
+              },
+            },
+          ],
         }),
-      ).toBe(
-        "AND(AND({field} < 10, {field} > 5), NOT(AND(SEARCH('test', ARRAYJOIN({otherField}, ':'), 0), {anotherField} = FALSE())))",
-      );
+      ).toBe('');
       // @ts-ignore
       expect(() => queryBuilder({ test: undefined })).toThrowError(
         'Invalid query',

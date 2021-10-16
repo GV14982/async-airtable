@@ -461,3 +461,10 @@ export class AsyncAirtable {
 if (typeof window !== 'undefined') {
   window.AsyncAirtable = AsyncAirtable;
 }
+
+export const CREATED_TIME = (): string => 'CREATED_TIME()';
+export const NOW = (): string => 'NOW()';
+export const TODAY = (): string => 'TODAY()';
+export const ERROR = (): string => 'ERROR()';
+export const LAST_MODIFIED_TIME = (): string => 'LAST_MODIFIED_TIME()';
+export const RECORD_ID = (): string => 'RECORD_ID()';
