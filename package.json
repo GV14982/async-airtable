@@ -3,7 +3,7 @@
   "version": "2.2.0-next",
   "description": "A lightweight, promisified airtable client",
   "main": "./lib/asyncAirtable.js",
-  "types": "./lib/asyncAirtable.d.ts",
+  "types": "./lib/types/index.d.ts",
   "files": [
     "dist/**/*",
     "lib/**/*",
@@ -13,6 +13,7 @@
   "scripts": {
     "test": "jest -i --no-cache --coverage",
     "docs": "typedoc",
+    "check": "tsc --noEmit",
     "build": "npm run build:js && npm run build:browser && npm run build:browser-min",
     "build:js": "tsc",
     "build:browser": "webpack -c ./webpack.config.js",
@@ -53,28 +54,28 @@
   },
   "homepage": "https://github.com/GV14982/async-airtable#readme",
   "dependencies": {
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.5"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.14",
-    "@types/node-fetch": "^2.5.7",
-    "@typescript-eslint/eslint-plugin": "^4.6.0",
-    "@typescript-eslint/parser": "^4.6.0",
-    "dotenv": "^8.2.0",
-    "eslint": "^7.10.0",
+    "@types/jest": "^27.0.0",
+    "@types/node-fetch": "^2.5.12",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "dotenv": "^8.6.0",
+    "eslint": "^7.32.0",
     "eslint-config-prettier": "^6.12.0",
-    "eslint-plugin-jest": "^24.0.2",
-    "husky": "^4.3.0",
-    "jest": "^26.5.0",
-    "lint-staged": "^10.4.0",
-    "prettier": "^2.1.2",
-    "ts-jest": "^26.4.3",
-    "ts-loader": "^8.0.12",
+    "eslint-plugin-jest": "^24.7.0",
+    "husky": "^4.3.8",
+    "jest": "^27.2.5",
+    "lint-staged": "^10.5.4",
+    "prettier": "^2.4.1",
+    "ts-jest": "^27.0.0",
+    "ts-loader": "^8.3.0",
     "ts-node": "^9.0.0",
-    "typedoc": "^0.19.2",
-    "typescript": "^4.0.5",
-    "webpack": "^5.3.2",
-    "webpack-cli": "^4.1.0"
+    "typedoc": "^0.22.5",
+    "typescript": "^4.4.4",
+    "webpack": "^5.58.2",
+    "webpack-cli": "^4.9.0"
   },
   "husky": {
     "hooks": {

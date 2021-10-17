@@ -1,8 +1,5 @@
-import fetch from './fetch';
 import buildOpts from './buildOpts';
-import checkError from './checkError';
 import checkArg from './checkArg';
-import rateLimitHandler from './rateLimitHandler';
 import {
   SelectOptions,
   AirtableDeletedResponse,
@@ -16,7 +13,8 @@ import {
   Typecast,
   updateOpts,
   bulkQueryBody,
-} from './@types';
+} from './types';
+import { request } from './http';
 
 /** @ignore */
 declare global {
@@ -113,29 +111,15 @@ export class AsyncAirtable {
             opts.offset = offset;
           }
           try {
-            const res: Response = await fetch(`${url}?${buildOpts(opts)}`, {
-              headers: { Authorization: `Bearer ${this.apiKey}` },
+            const body = await request<AirtableRecordResponse>({
+              endpoint: `${url}?${buildOpts(opts)}`,
+              options: { headers: { Authorization: `Bearer ${this.apiKey}` } },
+              instance: this,
+              pageHandler: {
+                index: i,
+                page: page,
+              },
             });
-            const body: AirtableRecordResponse = await res.json();
-            if (checkError(res.status)) {
-              if (res.status !== 429) {
-                throw new Error(JSON.stringify(body));
-              }
-
-              if (this.retryOnRateLimit) {
-                if (i + 1 === page) {
-                  return await rateLimitHandler(
-                    `${url}?${buildOpts(opts)}`,
-                    {
-                      headers: { Authorization: `Bearer ${this.apiKey}` },
-                    },
-                    this.retryTimeout,
-                    this.maxRetry,
-                    'records',
-                  );
-                }
-              }
-            }
             if (i + 1 === page) {
               return body.records;
             }
@@ -151,27 +135,13 @@ export class AsyncAirtable {
             opts.offset = offset;
           }
           try {
-            const res: Response = await fetch(`${url}?${buildOpts(opts)}`, {
-              headers: { Authorization: `Bearer ${this.apiKey}` },
+            const body: AirtableRecordResponse = await request({
+              endpoint: `${url}?${buildOpts(opts)}`,
+              options: {
+                headers: { Authorization: `Bearer ${this.apiKey}` },
+              },
+              instance: this,
             });
-            const body: AirtableRecordResponse = await res.json();
-            if (checkError(res.status)) {
-              if (res.status !== 429) {
-                throw new Error(JSON.stringify(body));
-              }
-
-              if (this.retryOnRateLimit) {
-                return await rateLimitHandler(
-                  `${url}?${buildOpts(opts)}`,
-                  {
-                    headers: { Authorization: `Bearer ${this.apiKey}` },
-                  },
-                  this.retryTimeout,
-                  this.maxRetry,
-                  'records',
-                );
-              }
-            }
             data = data.concat(body.records);
             offset = body.offset;
             if (!body.offset) {
@@ -200,26 +170,13 @@ export class AsyncAirtable {
       checkArg(table, 'table', 'string');
       checkArg(id, 'id', 'string');
       const url = `${this.baseURL}/${this.base}/${table}/${id}`;
-      const res: Response = await fetch(url, {
-        headers: { Authorization: `Bearer ${this.apiKey}` },
+      const data: AirtableRecord = await request({
+        endpoint: url,
+        options: {
+          headers: { Authorization: `Bearer ${this.apiKey}` },
+        },
+        instance: this,
       });
-      const data: AirtableRecord = await res.json();
-      if (checkError(res.status)) {
-        if (res.status !== 429) {
-          throw new Error(JSON.stringify(data));
-        }
-
-        if (this.retryOnRateLimit) {
-          return await rateLimitHandler(
-            url,
-            {
-              headers: { Authorization: `Bearer ${this.apiKey}` },
-            },
-            this.retryTimeout,
-            this.maxRetry,
-          );
-        }
-      }
       return data;
     } catch (err) {
       throw new Error(err);
@@ -248,36 +205,18 @@ export class AsyncAirtable {
       if (typecast !== undefined) {
         body.typecast = typecast;
       }
-      const res: Response = await fetch(url, {
-        method: 'post',
-        body: JSON.stringify(body),
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
+      const data: AirtableRecord = await request({
+        endpoint: url,
+        instance: this,
+        options: {
+          method: 'post',
+          body: JSON.stringify(body),
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
         },
       });
-      const data: AirtableRecord = await res.json();
-      if (checkError(res.status)) {
-        if (res.status !== 429) {
-          throw new Error(JSON.stringify(data));
-        }
-
-        if (this.retryOnRateLimit) {
-          return await rateLimitHandler(
-            url,
-            {
-              method: 'post',
-              body: JSON.stringify(body),
-              headers: {
-                Authorization: `Bearer ${this.apiKey}`,
-                'Content-Type': 'application/json',
-              },
-            },
-            this.retryTimeout,
-            this.maxRetry,
-          );
-        }
-      }
       return data;
     } catch (err) {
       throw new Error(err);
@@ -309,36 +248,18 @@ export class AsyncAirtable {
       if (opts?.typecast !== undefined) {
         body.typecast = opts?.typecast;
       }
-      const res: Response = await fetch(url, {
-        method: opts?.destructive ? 'put' : 'patch',
-        body: JSON.stringify(body),
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
+      const data: AirtableRecord = await request({
+        endpoint: url,
+        instance: this,
+        options: {
+          method: opts?.destructive ? 'put' : 'patch',
+          body: JSON.stringify(body),
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
         },
       });
-      const data: AirtableRecord = await res.json();
-      if (checkError(res.status)) {
-        if (res.status !== 429) {
-          throw new Error(JSON.stringify(data));
-        }
-
-        if (this.retryOnRateLimit) {
-          return await rateLimitHandler(
-            url,
-            {
-              method: opts?.destructive ? 'put' : 'patch',
-              body: JSON.stringify(body),
-              headers: {
-                Authorization: `Bearer ${this.apiKey}`,
-                'Content-Type': 'application/json',
-              },
-            },
-            this.retryTimeout,
-            this.maxRetry,
-          );
-        }
-      }
       return data;
     } catch (err) {
       throw new Error(err);
@@ -357,32 +278,16 @@ export class AsyncAirtable {
       checkArg(table, 'table', 'string');
       checkArg(id, 'id', 'string');
       const url = `${this.baseURL}/${this.base}/${table}/${id}`;
-      const res: Response = await fetch(url, {
-        method: 'delete',
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
+      const data: DeleteResponse = await request({
+        endpoint: url,
+        instance: this,
+        options: {
+          method: 'delete',
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+          },
         },
       });
-      const data: DeleteResponse = await res.json();
-      if (checkError(res.status)) {
-        if (res.status !== 429) {
-          throw new Error(JSON.stringify(data));
-        }
-
-        if (this.retryOnRateLimit) {
-          return await rateLimitHandler(
-            url,
-            {
-              method: 'delete',
-              headers: {
-                Authorization: `Bearer ${this.apiKey}`,
-              },
-            },
-            this.retryTimeout,
-            this.maxRetry,
-          );
-        }
-      }
       return data;
     } catch (err) {
       throw new Error(err);
@@ -415,37 +320,18 @@ export class AsyncAirtable {
       if (typecast !== undefined) {
         body.typecast = typecast;
       }
-      const res: Response = await fetch(url, {
-        method: 'post',
-        body: JSON.stringify(body),
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
+      const data: AirtableRecordResponse = await request({
+        endpoint: url,
+        options: {
+          method: 'post',
+          body: JSON.stringify(body),
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
         },
+        instance: this,
       });
-      const data: AirtableRecordResponse = await res.json();
-      if (checkError(res.status)) {
-        if (res.status !== 429) {
-          throw new Error(JSON.stringify(data));
-        }
-
-        if (this.retryOnRateLimit) {
-          return await rateLimitHandler(
-            url,
-            {
-              method: 'post',
-              body: JSON.stringify(body),
-              headers: {
-                Authorization: `Bearer ${this.apiKey}`,
-                'Content-Type': 'application/json',
-              },
-            },
-            this.retryTimeout,
-            this.maxRetry,
-            'records',
-          );
-        }
-      }
       return data.records;
     } catch (err) {
       throw new Error(err);
@@ -477,37 +363,18 @@ export class AsyncAirtable {
       if (opts?.typecast !== undefined) {
         body.typecast = opts?.typecast;
       }
-      const res: Response = await fetch(url, {
-        method: opts?.destructive ? 'put' : 'patch',
-        body: JSON.stringify(body),
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
+      const data: AirtableRecordResponse = await request({
+        endpoint: url,
+        options: {
+          method: opts?.destructive ? 'put' : 'patch',
+          body: JSON.stringify(body),
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
         },
+        instance: this,
       });
-      const data: AirtableRecordResponse = await res.json();
-      if (checkError(res.status)) {
-        if (res.status !== 429) {
-          throw new Error(JSON.stringify(data));
-        }
-
-        if (this.retryOnRateLimit) {
-          return await rateLimitHandler(
-            url,
-            {
-              method: opts?.destructive ? 'put' : 'patch',
-              body: JSON.stringify(body),
-              headers: {
-                Authorization: `Bearer ${this.apiKey}`,
-                'Content-Type': 'application/json',
-              },
-            },
-            this.retryTimeout,
-            this.maxRetry,
-            'records',
-          );
-        }
-      }
       return data.records;
     } catch (err) {
       throw new Error(err);
@@ -537,33 +404,16 @@ export class AsyncAirtable {
         }
       });
       const url = `${this.baseURL}/${this.base}/${table}?${encodeURI(query)}`;
-      const res: Response = await fetch(url, {
-        method: 'delete',
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
+      const data: AirtableDeletedResponse = await request({
+        endpoint: url,
+        options: {
+          method: 'delete',
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+          },
         },
+        instance: this,
       });
-      const data: AirtableDeletedResponse = await res.json();
-      if (checkError(res.status)) {
-        if (res.status !== 429) {
-          throw new Error(JSON.stringify(data));
-        }
-
-        if (this.retryOnRateLimit) {
-          return await rateLimitHandler(
-            url,
-            {
-              method: 'delete',
-              headers: {
-                Authorization: `Bearer ${this.apiKey}`,
-              },
-            },
-            this.retryTimeout,
-            this.maxRetry,
-            'records',
-          );
-        }
-      }
       return data.records;
     } catch (err) {
       throw new Error(err);
@@ -611,3 +461,10 @@ export class AsyncAirtable {
 if (typeof window !== 'undefined') {
   window.AsyncAirtable = AsyncAirtable;
 }
+
+export const CREATED_TIME = (): string => 'CREATED_TIME()';
+export const NOW = (): string => 'NOW()';
+export const TODAY = (): string => 'TODAY()';
+export const ERROR = (): string => 'ERROR()';
+export const LAST_MODIFIED_TIME = (): string => 'LAST_MODIFIED_TIME()';
+export const RECORD_ID = (): string => 'RECORD_ID()';

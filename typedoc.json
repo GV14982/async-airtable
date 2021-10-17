@@ -1,5 +1,5 @@
 {
-  "inputFiles": ["./src/asyncAirtable.ts", "./src/@types.ts"],
+  "inputFiles": ["./src/asyncAirtable.ts", "./src/types/index.ts"],
   "mode": "file",
   "out": "docs",
   "includeVersion": true

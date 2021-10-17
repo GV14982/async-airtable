@@ -32,11 +32,7 @@ export default async (
               key,
             );
           }
-          if (key) {
-            resolve(data[key]);
-          } else {
-            resolve(data);
-          }
+          resolve(data);
         } catch (err) {
           reject(err);
         }

@@ -1,4 +1,5 @@
 import { config } from 'dotenv';
+import { AirtableRecord } from '../types';
 config();
 import { AsyncAirtable } from '../asyncAirtable';
 const requiredMethods = [
@@ -39,5 +40,32 @@ describe('asyncAirtable', () => {
       // @ts-ignore
       new AsyncAirtable(process.env.AIRTABLE_KEY || '');
     }).toThrowError('Base ID is required.');
+  });
+
+  test('should retry if rate limited', async () => {
+    const asyncAirtable = new AsyncAirtable(
+      process.env.AIRTABLE_KEY || '',
+      process.env.AIRTABLE_BASE || '',
+      { retryOnRateLimit: true },
+    );
+    let results = [];
+    for (let i = 0; i < parseInt(process.env.REQ_COUNT || '0'); i++) {
+      results.push(
+        asyncAirtable.select(process.env.AIRTABLE_TABLE || '', {
+          maxRecords: 1,
+        }),
+      );
+    }
+    const data: Array<AirtableRecord[]> = await Promise.all(results);
+    data.forEach((result) => {
+      expect(result).toBeDefined();
+      expect(Array.isArray(result)).toBe(true);
+      expect(result).toHaveLength(1);
+      result.forEach((record) => {
+        expect(record).toHaveProperty('id');
+        expect(record).toHaveProperty('fields');
+        expect(record).toHaveProperty('createdTime');
+      });
+    });
   });
 });

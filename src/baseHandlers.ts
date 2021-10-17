@@ -1,9 +1,6 @@
-import { BaseFieldType } from './@types';
+import { BaseFieldType } from './types';
 
 export const booleanHandler = (bool: boolean): string => {
-  if (typeof bool !== 'boolean') {
-    throw new Error('Invalid type');
-  }
   return bool ? 'TRUE()' : 'FALSE()';
 };
 
@@ -18,7 +15,5 @@ export const baseHandler = (val: BaseFieldType): string => {
       return `'${val}'`;
     case 'boolean':
       return booleanHandler(val);
-    default:
-      throw new Error('Wrong Type');
   }
 };

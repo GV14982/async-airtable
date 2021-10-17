@@ -1,4 +1,4 @@
-import { LogicalOperators } from './@types';
+import { LogicalOperators } from './types';
 import { buildExpression } from './buildExpression';
 
 export const logicalOperators: LogicalOperators = {

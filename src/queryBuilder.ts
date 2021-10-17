@@ -1,21 +1,40 @@
-import { QueryField, QueryObject } from './@types';
+import { QueryField, QueryObject } from './types';
 import { arrayFunctions } from './arrayFunctions';
 import { baseHandler } from './baseHandlers';
-import { logicalFunctions } from './logicalFunctions';
+import { handleLogicalFunc, logicalFunctions } from './logicalFunctions';
 import { logicalOperators } from './logicalOperators';
-import { textFunctions } from './textFunctions';
+import { handleTextFunc, textFunctions } from './textFunctions';
 import {
   allIndexesValid,
   isBaseField,
+  isFunc,
   isJoinArgs,
   isQueryObject,
   isQueryObjectArray,
-  isStringArray,
-  isTextArgs,
+  isRegexArgs,
+  isRegexReplaceArgs,
+  isString,
 } from './typeCheckers';
+import { regexFunctions, regexReplaceFunction } from './regexFunctions';
+import {
+  handleNumericalFunc,
+  numericalFunctions,
+  numericOperators,
+} from './numericFunctions';
+
+export const operatorFunctions = {
+  ...logicalOperators,
+  ...numericOperators,
+};
+
+export const handleError = (arg: QueryField): Error =>
+  new Error(`Invalid Query Object, ${JSON.stringify(arg)}`);
 
 export const queryBuilder = (arg: QueryField): string => {
-  if (arg !== undefined && !(arg instanceof Function)) {
+  if (arg !== undefined) {
+    if (isFunc(arg) && !isBaseField(arg) && !isQueryObject(arg)) {
+      return arg();
+    }
     if (isBaseField(arg)) {
       return baseHandler(arg);
     }
@@ -39,34 +58,35 @@ export const queryBuilder = (arg: QueryField): string => {
     }
 
     const key = keys[0];
-
     if (arg[key] === undefined) {
       throw new Error('Invalid query');
     }
 
-    if (key === '$fieldName') {
-      return `{${arg.$fieldName}}`;
-    }
-
-    const val = arg[key] as QueryField;
+    const val = arg[key];
     if (val !== undefined) {
-      if (
-        key in logicalFunctions &&
-        (isQueryObject(val) || isQueryObjectArray(val))
-      ) {
-        return logicalFunctions[key](val as QueryObject & QueryObject[]);
+      if (key === '$fieldName' && isString(val)) {
+        return `{${val}}`;
+      }
+
+      if (key === '$insert' && isString(val)) {
+        return val;
+      }
+      if (key in logicalFunctions) {
+        return handleLogicalFunc(key, val);
+      } else if (key in textFunctions) {
+        return handleTextFunc(key, val);
+      } else if (key in numericalFunctions) {
+        return handleNumericalFunc(key, val);
+      } else if (key in regexFunctions && isRegexArgs(val)) {
+        return regexFunctions[key](val);
+      } else if (key in regexReplaceFunction && isRegexReplaceArgs(val)) {
+        return regexFunctions[key](val);
       } else if (key in arrayFunctions) {
-        if (isStringArray(val) && isJoinArgs(val)) {
-          return arrayFunctions[key](...val);
+        if (isJoinArgs(val)) {
+          return arrayFunctions.$arrayJoin(val.val, val.separator);
         } else if (typeof val === 'string') {
           return arrayFunctions[key](val);
         }
-      } else if (
-        key in textFunctions &&
-        Array.isArray(val) &&
-        isTextArgs(val)
-      ) {
-        return textFunctions[key](val[0], val[1], val[2] ?? 0);
       } else if (isQueryObject(val)) {
         const valKeys = Object.keys(val);
         const subVals = Object.values(val);
@@ -75,30 +95,34 @@ export const queryBuilder = (arg: QueryField): string => {
           valKeys.length > 1 &&
           allIndexesValid(subVals) &&
           isQueryObjectArray(valKeys.map((k, i) => ({ [k]: subVals[i] }))) &&
-          valKeys.every((k) => k in logicalOperators) &&
           subVals.every((v) => isQueryObject(v) || isBaseField(v))
         ) {
-          return logicalFunctions.$and(
-            valKeys.map((k, i) => ({
-              [key]: { [k]: subVals[i] },
-            })) as QueryObject & QueryObject[],
-          );
+          if (valKeys.every((k) => k in logicalOperators)) {
+            return logicalFunctions.$and(
+              valKeys.map((k, i) => ({
+                [key]: { [k]: subVals[i] },
+              })),
+            );
+          }
+          if (valKeys.every((k) => k in numericOperators)) {
+            return '';
+          }
         }
 
         const valKey = valKeys[0];
         const subVal = subVals[0];
         if (
-          valKey in logicalOperators &&
+          valKey in operatorFunctions &&
           (isQueryObject(subVal) || isBaseField(subVal))
         ) {
-          return logicalOperators[valKey]({
+          return operatorFunctions[valKey]({
             [key]: subVal,
           });
         }
       } else if (isQueryObject(val) || isBaseField(val)) {
-        return logicalOperators.$eq({ [key]: val });
+        return operatorFunctions.$eq({ [key]: val });
       }
     }
   }
-  throw new Error('Invalid Query Object');
+  throw handleError(arg);
 };
