@@ -29,7 +29,7 @@ export const request = async <T>({
 
       if (instance.retryOnRateLimit) {
         if (!pageHandler || pageHandler.index + 1 === pageHandler.page) {
-          const limit = await rateLimitHandler(
+          const limit = await rateLimitHandler<T>(
             endpoint,
             options ?? {},
             instance.retryTimeout,

@@ -1,5 +1,12 @@
 import fetch from './fetch';
-export default async (
+type RateLimitHandler = <T>(
+  url: string,
+  opts: RequestInit,
+  retryTimeout: number,
+  maxRetry: number,
+  key?: string,
+) => Promise<T>;
+const rateLimitHandler: RateLimitHandler = async (
   url: string,
   opts: RequestInit,
   retryTimeout: number,
@@ -7,7 +14,7 @@ export default async (
   key?: string,
   /** @todo Find a better type than any for this */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any> => {
+) => {
   return new Promise((resolve, reject) => {
     const retryRateLimit = (
       url: string,
@@ -24,15 +31,16 @@ export default async (
           const res = await fetch(url, opts);
           const data = await res.json();
           if (res.status === 429) {
-            return retryRateLimit(
+            retryRateLimit(
               url,
               opts,
               retryTimeout * 1.5,
               maxRetry - retryTimeout,
               key,
             );
+          } else {
+            resolve(data);
           }
-          resolve(data);
         } catch (err) {
           reject(err);
         }
@@ -42,3 +50,4 @@ export default async (
     retryRateLimit(url, opts, retryTimeout, maxRetry, key);
   });
 };
+export default rateLimitHandler;
