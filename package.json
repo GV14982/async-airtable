@@ -1,6 +1,6 @@
 {
   "name": "asyncairtable",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "A lightweight, promisified airtable client",
   "main": "./lib/asyncAirtable.js",
   "types": "./lib/types/index.d.ts",
