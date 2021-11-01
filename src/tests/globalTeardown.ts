@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 config();
-import AsyncAirtable = require('../asyncAirtable');
-import { AirtableRecord, DeleteResponse } from '../@types';
+import { AsyncAirtable } from '../asyncAirtable';
+import { AirtableRecord, DeleteResponse } from '../types';
 const asyncAirtable = new AsyncAirtable(
   process.env.AIRTABLE_KEY || '',
   process.env.AIRTABLE_BASE || '',

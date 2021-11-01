@@ -1,3 +1,5 @@
+import { QueryObject } from '.';
+
 /**
  * Optional object to pass to the #select method to tailor the response.
  *
@@ -104,6 +106,11 @@ export interface Config {
    * larger with each try until you hit the maxRetry amount
    */
   retryTimeout?: number;
+  /**
+   * @default=https://api.airtable.com/v0
+   * The endpoint to make API calls against. This is useful when setting up a custom caching server as succested in the Airtable API docs
+   */
+  baseURL?: string;
 }
 
 /** @ignore */
@@ -206,157 +213,6 @@ export interface AirtableUpdateRecord {
   /** Object of fields you want to update in the record */
   fields: Fields;
 }
-
-/**
- * An object to handle filtering the records returned by the #select and #upsert methods.
- *
- * @example
- * ```
- * {
- *   id: 'Some ID',
- *   $and: [
- *     {$lte: {count: 10}},
- *     {$gte: {count: 5}}
- *   ],
- *   $or: [
- *     {$neq: {name: 'datboi'}},
- *     {$neq: {name: 'graham'}}
- *   ]
- * }
- * ```
- */
-export interface QueryObject {
-  /**
-   * Less than operator
-   *
-   * @example
-   * ```
-   * {$lt: {field: value}}
-   * ```
-   */
-  $lt?: QueryObject;
-  /**
-   * Greater than operator
-   *
-   * @example
-   * ```
-   * {$gt: {field: value}}
-   * ```
-   */
-  $gt?: QueryObject;
-  /**
-   * Less than or equal operator
-   *
-   * @example
-   * ```
-   * {$lte: {field: value}}
-   * ```
-   */
-  $lte?: QueryObject;
-  /**
-   * Greater than or equal operator
-   *
-   * @example
-   * ```
-   * {$gte: {field: value}}
-   * ```
-   */
-  $gte?: QueryObject;
-  /**
-   * Equal operator
-   *
-   * @example
-   * ```
-   * {$eq: {field: value}}
-   * ```
-   */
-  $eq?: QueryObject;
-  /**
-   * Not equal operator
-   *
-   * @example
-   * ```
-   * {$neq: {field: value}}
-   * ```
-   */
-  $neq?: QueryObject;
-  /**
-   * NOT logical operator
-   *
-   * @example
-   * ```
-   * {$not: expression}
-   * ```
-   */
-  $not?: QueryObject;
-  /**
-   * AND logical operator
-   *
-   * @example
-   * ```
-   * {$and: [{expression}, {expression}, ...{expression}]}
-   * ```
-   */
-  $and?: QueryObject[];
-  /**
-   * OR logical operator
-   *
-   * @example
-   * ```
-   * {$or: [{expression}, {expression}, ...{expression}]}
-   * ```
-   */
-  $or?: QueryObject[];
-  /**
-   * Shortform equal
-   *
-   * @example
-   * ```
-   * {field: value}
-   * ```
-   */
-  [key: string]: QueryField | QueryObject | QueryObject[] | undefined;
-}
-/** @ignore */
-export type ComparisonObject = Record<string, BaseFieldType>;
-/** @ignore */
-type ComparisonFunction = (vals: ComparisonObject) => string;
-/** @ignore */
-export interface NumericalOperators extends Record<string, ComparisonFunction> {
-  $lt: (vals: ComparisonObject) => string;
-  $gt: (vals: ComparisonObject) => string;
-  $lte: (vals: ComparisonObject) => string;
-  $gte: (vals: ComparisonObject) => string;
-  $eq: (vals: ComparisonObject) => string;
-  $neq: (vals: ComparisonObject) => string;
-}
-/** @ignore */
-type LogicalFunction =
-  | ((expression: QueryObject) => string)
-  | ((args: QueryObject[]) => string);
-/** @ignore */
-export interface LogicalOperators extends Record<string, LogicalFunction> {
-  $not: (expression: QueryObject) => string;
-  $and: (args: QueryObject[]) => string;
-  $or: (args: QueryObject[]) => string;
-}
-
-/** @ignore */
-export type QueryField = QueryObject | BaseFieldType;
-/** @ignore */
-export type BaseFieldType = string | number | boolean | null;
-
-/** @ignore */
-export type Arg =
-  | string
-  | number
-  | boolean
-  | SelectOptions
-  | Record<string, unknown>[]
-  | string[]
-  | AirtableUpdateRecord
-  | AirtableUpdateRecord[]
-  | undefined;
 
 /** @ignore */
 export interface queryBody {

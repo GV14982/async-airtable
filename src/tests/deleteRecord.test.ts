@@ -1,5 +1,5 @@
-import AsyncAirtable = require('../asyncAirtable');
-import { AirtableRecord, DeleteResponse } from '../@types';
+import { AsyncAirtable } from '../asyncAirtable';
+import { AirtableRecord } from '../types';
 import { config } from 'dotenv';
 config();
 const asyncAirtable = new AsyncAirtable(
@@ -9,7 +9,7 @@ const asyncAirtable = new AsyncAirtable(
 let deleteMe: string;
 let deleteTest: AirtableRecord[] = [];
 describe('.deleteRecord', () => {
-  beforeAll(async (done) => {
+  beforeAll(async () => {
     const result = await asyncAirtable.select(
       process.env.AIRTABLE_TABLE || '',
       { maxRecords: 2, view: 'Grid view' },
@@ -26,10 +26,9 @@ describe('.deleteRecord', () => {
       );
       deleteTest = [...deleteTest, ...values];
     }
-    done();
   });
 
-  test('should delete a record with the given id', async (done) => {
+  test('should delete a record with the given id', async () => {
     const deleted = await asyncAirtable.deleteRecord(
       process.env.AIRTABLE_TABLE || '',
       deleteMe,
@@ -41,26 +40,23 @@ describe('.deleteRecord', () => {
     expect(deleted.deleted).toBe(true);
     expect(deleted.id).toBeDefined();
     expect(deleted.id).toBe(deleteMe);
-    done();
   });
 
-  test('should throw an error if you do not pass a table', async (done) => {
+  test('should throw an error if you do not pass a table', async () => {
     // @ts-ignore
     await expect(asyncAirtable.deleteRecord()).rejects.toThrowError(
       'Argument "table" is required',
     );
-    done();
   });
 
-  test('should throw an error if you do not pass an id', async (done) => {
+  test('should throw an error if you do not pass an id', async () => {
     await expect(
       // @ts-ignore
       asyncAirtable.deleteRecord(process.env.AIRTABLE_TABLE || ''),
     ).rejects.toThrowError('Argument "id" is required');
-    done();
   });
 
-  test('should throw an error if the id does not exist', async (done) => {
+  test('should throw an error if the id does not exist', async () => {
     await expect(
       //@ts-ignore
       asyncAirtable.deleteRecord(
@@ -68,53 +64,26 @@ describe('.deleteRecord', () => {
         'doesnotexist',
       ),
     ).rejects.toThrowError(/"NOT_FOUND"/g);
-    done();
   });
 
-  test('should throw an error if the id has already been deleted', async (done) => {
+  test('should throw an error if the id has already been deleted', async () => {
     await expect(
       //@ts-ignore
       asyncAirtable.deleteRecord(process.env.AIRTABLE_TABLE || '', deleteMe),
     ).rejects.toThrowError(/"Record not found"/g);
-    done();
   });
 
-  test('should throw an error if pass the table argument with an incorrect data type', async (done) => {
+  test('should throw an error if pass the table argument with an incorrect data type', async () => {
     await expect(
       // @ts-ignore
       asyncAirtable.deleteRecord(10, deleteMe),
     ).rejects.toThrowError(/Incorrect data type/g);
-    done();
   });
 
-  test('should throw an error if pass the id argument with an incorrect data type', async (done) => {
+  test('should throw an error if pass the id argument with an incorrect data type', async () => {
     await expect(
       // @ts-ignore
       asyncAirtable.deleteRecord(process.env.AIRTABLE_TABLE || '', 10),
     ).rejects.toThrowError(/Incorrect data type/g);
-    done();
-  });
-
-  test('should retry if rate limited', async (done) => {
-    let results = [];
-    for (let i = 0; i < parseInt(process.env.REQ_COUNT || ''); i++) {
-      results.push(
-        asyncAirtable.deleteRecord(
-          process.env.AIRTABLE_TABLE || '',
-          deleteTest[i].id,
-        ),
-      );
-    }
-    const data: DeleteResponse[] = await Promise.all(results);
-    data.forEach((deleted, i) => {
-      expect(deleted).toBeDefined();
-      expect(typeof deleted).toBe('object');
-      expect(Object.keys(deleted).length).toBeGreaterThan(0);
-      expect(deleted.deleted).toBeDefined();
-      expect(deleted.deleted).toBe(true);
-      expect(deleted.id).toBeDefined();
-      expect(deleted.id).toBe(deleteTest[i].id);
-    });
-    done();
   });
 });

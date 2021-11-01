@@ -1,7 +1,7 @@
 # Async Airtable
 
-[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/develop?label=Develop&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
-[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/master?label=Master&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
+[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/next?label=Next&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
+[![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/main?label=Main&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
 [![npm](https://img.shields.io/npm/v/asyncairtable)](https://www.npmjs.com/package/asyncairtable)
 [![npm (tag)](https://img.shields.io/npm/v/asyncairtable/next)](https://www.npmjs.com/package/asyncairtable)
 [![MIT License](https://img.shields.io/github/license/GV14982/async-airtable?style=flat)](LICENSE.md)
@@ -57,29 +57,8 @@ They are also available via [unpkg.com](https://unpkg.com/):
 ## Usage
 
 ```javascript
-const AsyncAirtable = require('async-airtable');
+const AsyncAirtable = require('async-airtable'); // or import { AsyncAirtable } from 'asyncairtable';
 const asyncAirtable = new AsyncAirtable(API_KEY, BASE_ID, { ...CONFIG });
-
-asyncAirtable.select(TABLE_NAME, { ...OPTS }, PAGE_NUM);
-asyncAirtable.find(TABLE_NAME, RECORD_ID);
-asyncAirtable.createRecord(TABLE_NAME, { ...FIELDS });
-asyncAirtable.updateRecord(TABLE_NAME, { id: RECORD_ID, fields {...FIELDS} });
-asyncAirtable.deleteRecord(TABLE_NAME, RECORD_ID);
-asyncAirtable.bulkCreate(TABLE_NAME, [
-  { ...FIELDS },
-  { ...FIELDS },
-]);
-asyncAirtable.bulkUpdate(TABLE_NAME, [
-  { id: RECORD_ID, fields: {...FIELDS} },
-  { id: RECORD_ID, fields: {...FIELDS} },
-  { id: RECORD_ID, fields: {...FIELDS} },
-]);
-asyncAirtable.bulkDelete(TABLE_NAME, [
-  RECORD_ID,
-  RECORD_ID,
-  RECORD_ID,
-  RECORD_ID,
-]);
 ```
 
 ## Documentation

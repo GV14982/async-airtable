@@ -1,18 +1,12 @@
-name: master
+name: next
 
 on:
   push:
     branches:
-      - master
-    tags:
-      - 'v*'
-  pull_request:
-    branches:
-      - master
+      - next
 
 jobs:
   test:
-    if: github.ref == 'refs/heads/master' || github.base_ref == 'master'
     strategy:
       max-parallel: 1
       matrix:
@@ -37,14 +31,15 @@ jobs:
           TEST_FILTER: "{email} = 'same@test.com'"
           NEW_RECORD: '{"title": "test-create", "value": 23, "email": "new@test.com"}'
           UPDATE_RECORD: '{"title": "test-UPDATED"}'
+          BULK_UPDATE: '{"title": "test-BULK"}'
           DESTRUCTIVE_UPDATE_RECORD: '{"title": "test-UPDATED-destructive", "value": 23}'
           RETRY_TIMEOUT: 60000
           REQ_COUNT: 100
   publish-npm:
     needs: test
-    if: github.ref == 'refs/heads/master'
-    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/next'
     continue-on-error: true
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -55,4 +50,5 @@ jobs:
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_AUTH_TOKEN }}
+          tag: next
           check-version: false

@@ -1,8 +1,8 @@
 import { config } from 'dotenv';
 config();
-import * as data from './testData.json';
-import AsyncAirtable = require('../asyncAirtable');
-import { AirtableRecord } from '../@types';
+import * as d from './testData.json';
+import { AsyncAirtable } from '../asyncAirtable';
+import { AirtableRecord } from '../types';
 const asyncAirtable = new AsyncAirtable(
   process.env.AIRTABLE_KEY || '',
   process.env.AIRTABLE_BASE || '',
@@ -20,6 +20,8 @@ declare global {
 }
 module.exports = async () => {
   let created: AirtableRecord[] = [];
+  // @ts-ignore
+  const data: AirtableRecord[] = d.default;
   for (let j = 0; j < 2; j++) {
     for (let i = 0; i < data.length; i += 10) {
       const records = data.slice(i, i + 10).map((record) => record.fields);
