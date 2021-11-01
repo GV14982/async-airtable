@@ -1,16 +1,17 @@
-import { ArrayFunctions } from './@types';
+import { queryBuilder } from './queryBuilder';
+import { ArrayFunctions, QueryField } from './types';
 
 export const arrayFunctions: ArrayFunctions = {
-  $arrayCompact: (fieldName: string): string => {
-    return `ARRAYCOMPACT({${fieldName}})`;
+  $arrayCompact: (val: QueryField): string => {
+    return `ARRAYCOMPACT(${queryBuilder(val)})`;
   },
-  $arrayFlatten: (fieldName: string): string => {
-    return `ARRAYFLATTEN({${fieldName}})`;
+  $arrayFlatten: (val: QueryField): string => {
+    return `ARRAYFLATTEN(${queryBuilder(val)})`;
   },
-  $arrayUnique: (fieldName: string): string => {
-    return `ARRAYUNIQUE({${fieldName}})`;
+  $arrayUnique: (val: QueryField): string => {
+    return `ARRAYUNIQUE(${queryBuilder(val)})`;
   },
-  $arrayJoin: (fieldName: string, seperator = ','): string => {
-    return `ARRAYJOIN({${fieldName}}, '${seperator}')`;
+  $arrayJoin: (val: QueryField, seperator = ','): string => {
+    return `ARRAYJOIN(${queryBuilder(val)}, ${queryBuilder(seperator)})`;
   },
 };
