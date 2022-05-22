@@ -6,3 +6,5 @@ docs/
 lib/
 dist/
 .DS_STORE
+# Local Netlify folder
+.netlify
