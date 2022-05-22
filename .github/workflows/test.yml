@@ -25,11 +25,14 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 14.17.0
+      - uses: pnpm/action-setup@v2.1.0
+        with:
+          version: 6.27.1
       - name: Install
-        run: npm ci
+        run: pnpm ci
       - name: Run tests
-        run: npm test
+        run: pnpm test
         env:
           AIRTABLE_KEY: ${{secrets.AIRTABLE_KEY}}
           AIRTABLE_BASE: ${{secrets.AIRTABLE_BASE}}
