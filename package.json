@@ -54,7 +54,6 @@
   },
   "homepage": "https://github.com/GV14982/async-airtable#readme",
   "dependencies": {
-    "@netlify/functions": "^1.0.0",
     "@types/node": "^14.18.18",
     "node-fetch": "^2.6.5"
   },
