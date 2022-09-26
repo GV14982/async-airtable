@@ -5,6 +5,7 @@
     "outDir": "./lib",
     "resolveJsonModule": true,
     "moduleResolution": "node",
+    "module": "CommonJS",
     "strict": true,
     "sourceMap": true,
     "esModuleInterop": true,
