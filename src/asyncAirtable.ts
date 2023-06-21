@@ -240,7 +240,7 @@ export class AsyncAirtable {
       checkArg(table, 'table', 'string');
       checkArg(record, 'record', 'object');
       if (opts) {
-        checkArg(opts.destructive, 'opts.desctructive', 'boolean');
+        checkArg(opts.destructive, 'opts.destructive', 'boolean');
         checkArg(opts.typecast, 'opts.typecast', 'boolean', false);
       }
       const url = `${this.baseURL}/${this.base}/${table}/${record.id}`;
@@ -355,7 +355,7 @@ export class AsyncAirtable {
       checkArg(table, 'table', 'string');
       checkArg(records, 'records', 'array');
       if (opts) {
-        checkArg(opts.destructive, 'opts.desctructive', 'boolean', false);
+        checkArg(opts.destructive, 'opts.destructive', 'boolean', false);
         checkArg(opts.typecast, 'opts.typecast', 'boolean', false);
       }
       const url = `${this.baseURL}/${this.base}/${table}`;
