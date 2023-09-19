@@ -1,5 +1,9 @@
 # Async Airtable
 
+## ARCHIVED
+
+I strongly suggest using the current official [Airtable SDK](https://github.com/Airtable/airtable.js) as it now supports promises and I don't really have time to maintain this anymore.
+
 [![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/next?label=Next&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
 [![Build: Tests](https://img.shields.io/github/workflow/status/GV14982/async-airtable/main?label=Main&logo=jest&logoColor=white&style=flat)](https://github.com/gv14982/async-airtable/actions)
 [![npm](https://img.shields.io/npm/v/asyncairtable)](https://www.npmjs.com/package/asyncairtable)
